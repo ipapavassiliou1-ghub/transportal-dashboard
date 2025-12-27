@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TransPortal – Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f7fb;
+      margin: 0;
+      padding: 24px;
+      color: #1f2937;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .card .value {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .failed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📦 TransPortal – Dashboard</h1>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Total Requests</h2>
+      <div class="value" id="totalRequests">–</div>
+    </div>
+    <div class="card">
+      <h2>Successful</h2>
+      <div class="value" id="successful">–</div>
+    </div>
+    <div class="card">
+      <h2>Failed</h2>
+      <div class="value" id="failed">–</div>
+    </div>
+  </div>
+
+  <h2>Recent Activity</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Tracking</th>
+        <th>Courier</th>
+        <th>Status</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody id="recentTable">
+      <tr><td colspan="4">Loading…</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    async function loadDashboard() {
+      try {
+        const res = await fetch('https://track.transportal.gr/webhook/dashboard');
+        const data = await res.json();
+
+        // KPIs
+        document.getElementById('totalRequests').textContent = data.kpis.totalRequests;
+        document.getElementById('successful').textContent = data.kpis.successful;
+        document.getElementById('failed').textContent = data.kpis.failed;
+
+        // Recent table
+        const tbody = document.getElementById('recentTable');
+        tbody.innerHTML = '';
+
+        data.recent.forEach(r => {
+          const tr = document.createElement('tr');
+
+          tr.innerHTML = `
+            <td>${r.tracking || '-'}</td>
+            <td>${r.courier}</td>
+            <td>
+              <span class="badge ${r.success ? 'success' : 'failed'}">
+                ${r.success ? 'Success' : 'Failed'}
+              </span>
+            </td>
+            <td>${r.date || '-'}</td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+
+      } catch (err) {
+        console.error(err);
+        alert('Failed to load dashboard data');
+      }
+    }
+
+    loadDashboard();
+  </script>
+
+</body>
+</html>
