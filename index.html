@@ -127,7 +127,8 @@
   async function loadDashboard() {
     try {
       const res = await fetch('https://track.transportal.gr/webhook/dashboard-data');
-      const data = await res.json();
+      const raw = await res.json();
+      const data = Array.isArray(raw) ? raw[0] : raw;
 
       console.log('Dashboard API:', data);
 
