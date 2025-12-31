@@ -124,57 +124,59 @@
   </table>
 
   <script>
-  async function loadDashboard() {
-    try {
-      const res = await fetch('https://track.transportal.gr/webhook/dashboard-data');
-      const raw = await res.json();
-      const data = Array.isArray(raw) ? raw[0] : raw;
+async function loadDashboard() {
+  try {
+    const res = await fetch('https://track.transportal.gr/webhook/dashboard');
+    const raw = await res.json();
+    const data = Array.isArray(raw) ? raw[0] : raw;
 
-      console.log('Dashboard API:', data);
+    console.log('Dashboard API:', data);
 
-      // ---- KPIs
-      document.getElementById('totalRequests').textContent =
-        data.kpis?.totalRequests ?? '0';
+    // ---- KPIs
+    document.getElementById('totalRequests').textContent =
+      data.kpis?.totalRequests ?? '0';
 
-      document.getElementById('successful').textContent =
-        data.kpis?.successfulRequests ?? '0';
+    document.getElementById('successful').textContent =
+      data.kpis?.successfulRequests ?? '0';
 
-      document.getElementById('failed').textContent =
-        data.kpis?.failedRequests ?? '0';
+    document.getElementById('failed').textContent =
+      data.kpis?.failedRequests ?? '0';
 
-      // ---- Recent Activity
-      const tbody = document.getElementById('recentTable');
-      tbody.innerHTML = '';
+    // ---- Recent Activity
+    const tbody = document.getElementById('recentTable');
+    tbody.innerHTML = '';
 
-      if (!data.recentShipments || data.recentShipments.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4">No recent activity</td></tr>`;
-        return;
-      }
-
-      data.recentShipments.forEach(r => {
-        const tr = document.createElement('tr');
-
-        tr.innerHTML = `
-          <td>${r.tracking_number ?? '-'}</td>
-          <td>${r.courier ?? '-'}</td>
-          <td>
-            <span class="badge ${r.status_text?.toLowerCase().includes('invalid') ? 'failed' : 'success'}">
-              ${r.status_text ?? 'Unknown'}
-            </span>
-          </td>
-          <td>${r.created_at ?? '-'}</td>
-        `;
-
-        tbody.appendChild(tr);
-      });
-
-    } catch (err) {
-      console.error('Dashboard load failed:', err);
-      alert('Failed to load dashboard data');
+    if (!data.recentShipments || data.recentShipments.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4">No recent activity</td></tr>`;
+      return;
     }
-  }
 
-  loadDashboard();
+    data.recentShipments.forEach(r => {
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td>${r.tracking_number ?? '-'}</td>
+        <td>${r.courier ?? '-'}</td>
+        <td>
+          <span class="badge ${
+            r.status_text?.toLowerCase().includes('invalid') ? 'failed' : 'success'
+          }">
+            ${r.status_text ?? 'Unknown'}
+          </span>
+        </td>
+        <td>${r.created_at ?? '-'}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error('Dashboard load failed:', err);
+    alert('Failed to load dashboard data');
+  }
+}
+
+loadDashboard();
 </script>
 
 </body>
