@@ -128,46 +128,35 @@
       const res = await fetch('https://track.transportal.gr/webhook/dashboard');
       const data = await res.json();
 
-      /* -----------------
-         KPIs
-      ------------------ */
+      console.log('Dashboard API:', data);
+
+      // ---- KPIs
       document.getElementById('totalRequests').textContent =
-        data.kpis?.totalRequests ?? '–';
+        data.kpis?.totalRequests ?? '0';
 
       document.getElementById('successful').textContent =
-        data.kpis?.successfulRequests ?? '–';
+        data.kpis?.successfulRequests ?? '0';
 
       document.getElementById('failed').textContent =
-        data.kpis?.failedRequests ?? '–';
+        data.kpis?.failedRequests ?? '0';
 
-      /* -----------------
-         Recent activity
-      ------------------ */
+      // ---- Recent Activity
       const tbody = document.getElementById('recentTable');
       tbody.innerHTML = '';
 
-      const rows = Array.isArray(data.recentShipments)
-        ? data.recentShipments
-        : [];
-
-      if (rows.length === 0) {
+      if (!data.recentShipments || data.recentShipments.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4">No recent activity</td></tr>`;
         return;
       }
 
-      rows.forEach(r => {
+      data.recentShipments.forEach(r => {
         const tr = document.createElement('tr');
 
         tr.innerHTML = `
           <td>${r.tracking_number ?? '-'}</td>
           <td>${r.courier ?? '-'}</td>
           <td>
-            <span class="badge ${
-              r.status_text?.toLowerCase().includes('invalid') ||
-              r.status_text?.toLowerCase().includes('fail')
-                ? 'failed'
-                : 'success'
-            }">
+            <span class="badge ${r.status_text?.toLowerCase().includes('invalid') ? 'failed' : 'success'}">
               ${r.status_text ?? 'Unknown'}
             </span>
           </td>
@@ -178,7 +167,7 @@
       });
 
     } catch (err) {
-      console.error(err);
+      console.error('Dashboard load failed:', err);
       alert('Failed to load dashboard data');
     }
   }
