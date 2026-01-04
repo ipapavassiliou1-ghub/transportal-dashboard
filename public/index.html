@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Track Your Shipment – TransPortal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f7fb;
+      margin: 0;
+      padding: 24px;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: #6b7280;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 12px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .result {
+      margin-top: 24px;
+    }
+
+    .event {
+      padding: 12px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .event:last-child {
+      border-bottom: none;
+    }
+
+    .status {
+      font-weight: 600;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .error {
+      color: #b91c1c;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>📦 Track Your Shipment</h1>
+  <p>Enter your tracking number to see the latest shipment status.</p>
+
+  <div class="card">
+    <input
+      id="trackingInput"
+      type="text"
+      placeholder="Tracking number (e.g. TEST123)"
+    />
+    <button id="trackBtn" onclick="track()">Track</button>
+  </div>
+
+  <div id="result" class="card result" style="display:none;"></div>
+</div>
+
+<script>
+async function track() {
+  const tracking = document.getElementById('trackingInput').value.trim();
+  const btn = document.getElementById('trackBtn');
+  const result = document.getElementById('result');
+
+  if (!tracking) {
+    alert('Please enter a tracking number');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Tracking…';
+  result.style.display = 'none';
+
+  try {
+    const res = await fetch('https://track.transportal.gr/webhook/track-api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tracking,
+        courier: 'AUTO'
+      })
+    });
+
+    const data = await res.json();
+    console.log('Tracking response:', data);
+
+    result.innerHTML = '';
+    result.style.display = 'block';
+
+    if (!data.success) {
+      result.innerHTML = `<div class="error">${data.message || 'Unable to track shipment'}</div>`;
+      return;
+    }
+
+    result.innerHTML += `
+      <div><strong>Tracking:</strong> ${data.tracking}</div>
+      <div><strong>Courier:</strong> ${data.courier}</div>
+      <div class="status">${data.status || ''}</div>
+      <hr />
+    `;
+
+    if (Array.isArray(data.events)) {
+      data.events.forEach(e => {
+        result.innerHTML += `
+          <div class="event">
+            <div>${e.status}</div>
+            <div class="muted">${e.location || ''}</div>
+            <div class="muted">${e.datetime || ''}</div>
+          </div>
+        `;
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+    result.style.display = 'block';
+    result.innerHTML = `<div class="error">Service unavailable. Please try again.</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Track';
+  }
+}
+</script>
+
+</body>
+</html>
