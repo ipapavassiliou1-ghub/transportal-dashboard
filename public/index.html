@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Track Your Shipment – TransPortal</title>
+  <title>TransPortal – Track Shipment</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
@@ -15,159 +15,181 @@
     }
 
     .container {
-      max-width: 600px;
+      max-width: 720px;
       margin: 0 auto;
     }
 
     h1 {
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
-    p {
+    p.subtitle {
       color: #6b7280;
+      margin-bottom: 24px;
     }
 
     .card {
       background: #ffffff;
       border-radius: 12px;
       padding: 20px;
-      margin-top: 24px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      margin-bottom: 24px;
     }
 
     input, button {
       width: 100%;
       padding: 12px;
       font-size: 16px;
-      margin-top: 12px;
+      margin-top: 8px;
       border-radius: 8px;
       border: 1px solid #d1d5db;
     }
 
     button {
       background: #2563eb;
-      color: white;
+      color: #fff;
       border: none;
       cursor: pointer;
-      font-weight: 600;
+      margin-top: 16px;
     }
 
     button:disabled {
-      background: #9ca3af;
+      background: #93c5fd;
       cursor: not-allowed;
     }
 
-    .result {
-      margin-top: 24px;
-    }
-
-    .event {
-      padding: 12px 0;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .event:last-child {
-      border-bottom: none;
-    }
-
     .status {
+      margin-top: 16px;
       font-weight: 600;
     }
 
-    .muted {
+    .events {
+      margin-top: 16px;
+    }
+
+    .event {
+      border-left: 4px solid #2563eb;
+      padding-left: 12px;
+      margin-bottom: 12px;
+    }
+
+    .event .date {
+      font-size: 13px;
       color: #6b7280;
-      font-size: 14px;
+    }
+
+    .event .text {
+      font-size: 15px;
+      font-weight: 500;
     }
 
     .error {
       color: #b91c1c;
-      font-weight: 600;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>📦 Track Your Shipment</h1>
-  <p>Enter your tracking number to see the latest shipment status.</p>
+  <div class="container">
+    <h1>📦 Track your shipment</h1>
+    <p class="subtitle">Enter your tracking number to see real-time delivery status</p>
 
-  <div class="card">
-    <input
-      id="trackingInput"
-      type="text"
-      placeholder="Tracking number (e.g. TEST123)"
-    />
-    <button id="trackBtn" onclick="track()">Track</button>
+    <div class="card">
+      <label for="trackingInput">Tracking number</label>
+      <input
+        id="trackingInput"
+        placeholder="e.g. RR123456789GR"
+        autocomplete="off"
+      />
+      <button id="trackBtn">Track shipment</button>
+
+      <div id="status" class="status"></div>
+    </div>
+
+    <div id="results" class="card" style="display:none;">
+      <h3>Tracking result</h3>
+      <div id="summary"></div>
+      <div id="events" class="events"></div>
+    </div>
   </div>
 
-  <div id="result" class="card result" style="display:none;"></div>
-</div>
+  <script>
+    const btn = document.getElementById('trackBtn');
+    const input = document.getElementById('trackingInput');
+    const statusEl = document.getElementById('status');
+    const resultsEl = document.getElementById('results');
+    const summaryEl = document.getElementById('summary');
+    const eventsEl = document.getElementById('events');
 
-<script>
-async function track() {
-  const tracking = document.getElementById('trackingInput').value.trim();
-  const btn = document.getElementById('trackBtn');
-  const result = document.getElementById('result');
+    btn.addEventListener('click', async () => {
+      const tracking = input.value.trim();
 
-  if (!tracking) {
-    alert('Please enter a tracking number');
-    return;
-  }
+      if (!tracking) {
+        statusEl.textContent = 'Please enter a tracking number.';
+        statusEl.className = 'status error';
+        return;
+      }
 
-  btn.disabled = true;
-  btn.textContent = 'Tracking…';
-  result.style.display = 'none';
+      btn.disabled = true;
+      statusEl.textContent = 'Tracking in progress…';
+      statusEl.className = 'status';
+      resultsEl.style.display = 'none';
 
-  try {
-    const res = await fetch('https://track.transportal.gr/webhook/track-api', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        tracking,
-        courier: 'AUTO'
-      })
-    });
+      try {
+        const res = await fetch('https://track.transportal.gr/webhook/track-mvp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            tracking: tracking,
+            courier: 'AUTO'
+          })
+        });
 
-    const data = await res.json();
-    console.log('Tracking response:', data);
+        const data = await res.json();
+        console.log('API response:', data);
 
-    result.innerHTML = '';
-    result.style.display = 'block';
+        if (!data || !data.tracking) {
+          throw new Error('Invalid response');
+        }
 
-    if (!data.success) {
-      result.innerHTML = `<div class="error">${data.message || 'Unable to track shipment'}</div>`;
-      return;
-    }
+        statusEl.textContent = `Status: ${data.status || 'unknown'}`;
+        statusEl.className = 'status';
 
-    result.innerHTML += `
-      <div><strong>Tracking:</strong> ${data.tracking}</div>
-      <div><strong>Courier:</strong> ${data.courier}</div>
-      <div class="status">${data.status || ''}</div>
-      <hr />
-    `;
-
-    if (Array.isArray(data.events)) {
-      data.events.forEach(e => {
-        result.innerHTML += `
-          <div class="event">
-            <div>${e.status}</div>
-            <div class="muted">${e.location || ''}</div>
-            <div class="muted">${e.datetime || ''}</div>
-          </div>
+        summaryEl.innerHTML = `
+          <p><strong>Tracking:</strong> ${data.tracking}</p>
+          <p><strong>Courier:</strong> ${data.courier || 'Unknown'}</p>
+          <p><strong>Source:</strong> ${data.source || 'API'}</p>
         `;
-      });
-    }
 
-  } catch (err) {
-    console.error(err);
-    result.style.display = 'block';
-    result.innerHTML = `<div class="error">Service unavailable. Please try again.</div>`;
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Track';
-  }
-}
-</script>
+        eventsEl.innerHTML = '';
+
+        if (!data.events || data.events.length === 0) {
+          eventsEl.innerHTML = '<p>No tracking events available yet.</p>';
+        } else {
+          data.events.forEach(ev => {
+            const div = document.createElement('div');
+            div.className = 'event';
+            div.innerHTML = `
+              <div class="date">${ev.datetime || ''}</div>
+              <div class="text">${ev.description || ev.status}</div>
+            `;
+            eventsEl.appendChild(div);
+          });
+        }
+
+        resultsEl.style.display = 'block';
+
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'Failed to retrieve tracking data.';
+        statusEl.className = 'status error';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
 
 </body>
 </html>
