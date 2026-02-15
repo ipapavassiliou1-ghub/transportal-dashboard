@@ -6,127 +6,127 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <style>
-  body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #f5f7fb;
-    margin: 0;
-    padding: 32px;
-    color: #1f2937;
-  }
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f5f7fb;
+  margin: 0;
+  padding: 32px;
+  color: #1f2937;
+}
 
-  h1 {
-    margin-bottom: 4px;
-  }
+h1 { margin-bottom: 4px; }
+.subtitle { color: #6b7280; margin-bottom: 24px; }
+.section { margin-bottom: 40px; }
 
-  .subtitle {
-    color: #6b7280;
-    margin-bottom: 24px;
-  }
+select, input[type="file"] {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+}
 
-  .section {
-    margin-bottom: 32px;
-  }
+button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #6d28d9;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-    margin-top: 16px;
-  }
+button.secondary {
+  background: #374151;
+}
 
-  .card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-  }
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
-  .card h3 {
-    margin: 0 0 6px;
-    font-size: 13px;
-    color: #6b7280;
-    font-weight: 500;
-  }
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
 
-  .card .value {
-    font-size: 28px;
-    font-weight: 700;
-  }
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
 
-  select {
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    font-size: 14px;
-  }
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #6b7280;
+}
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #ffffff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-  }
+.card .value {
+  font-size: 28px;
+  font-weight: 700;
+}
 
-  th, td {
-    padding: 12px 14px;
-    border-bottom: 1px solid #e5e7eb;
-    text-align: left;
-    font-size: 14px;
-  }
+.progress {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #6b7280;
+}
 
-  th {
-    background: #f9fafb;
-    font-weight: 600;
-  }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
 
-  tr:last-child td {
-    border-bottom: none;
-  }
+th, td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  font-size: 14px;
+}
 
-  .badge {
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-  }
+th {
+  background: #f9fafb;
+  font-weight: 600;
+}
 
-  .completed {
-    background: #dcfce7;
-    color: #166534;
-  }
+.badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
 
-  .processing {
-    background: #fef3c7;
-    color: #92400e;
-  }
+.completed { background: #dcfce7; color: #166534; }
+.processing { background: #fef3c7; color: #92400e; }
+.error { background: #fee2e2; color: #991b1b; }
 
-  .error {
-    background: #fee2e2;
-    color: #991b1b;
-  }
+.footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+}
 
-  .footer {
-    margin-top: 40px;
-    text-align: center;
-    font-size: 14px;
-    color: #6b7280;
-  }
-
-  .brand {
-    font-weight: 700;
-    font-size: 18px;
-    color: #6d28d9;
-  }
+.brand {
+  font-weight: 700;
+  font-size: 18px;
+  color: #6d28d9;
+}
 </style>
 </head>
 <body>
 
 <h1>📦 transportal API Dashboard</h1>
-<div class="subtitle">Batch tracking analytics & monitoring</div>
+<div class="subtitle">Batch tracking analytics & control panel</div>
 
-<!-- API KEY SELECTOR -->
+<!-- API KEY -->
 <div class="section">
   <label><strong>Select Client API Key:</strong></label>
   <select id="apiKeySelect">
@@ -135,34 +135,26 @@
   </select>
 </div>
 
-<!-- ANALYTICS SECTION -->
+<!-- UPLOAD SECTION -->
+<div class="section">
+  <h2>Upload Batch</h2>
+  <input type="file" id="fileInput" accept=".csv,.xlsx" />
+  <button onclick="uploadBatch()">Upload</button>
+
+  <div class="progress" id="uploadStatus"></div>
+  <div id="downloadButtons" style="margin-top:12px;"></div>
+</div>
+
+<!-- ANALYTICS -->
 <div class="section">
   <h2>Analytics</h2>
   <div class="card-grid">
-    <div class="card">
-      <h3>Total Batches</h3>
-      <div class="value" id="totalBatches">–</div>
-    </div>
-    <div class="card">
-      <h3>Total Shipments</h3>
-      <div class="value" id="totalShipments">–</div>
-    </div>
-    <div class="card">
-      <h3>Delivered</h3>
-      <div class="value" id="deliveredCount">–</div>
-    </div>
-    <div class="card">
-      <h3>Pending</h3>
-      <div class="value" id="pendingCount">–</div>
-    </div>
-    <div class="card">
-      <h3>Errors</h3>
-      <div class="value" id="errorCount">–</div>
-    </div>
-    <div class="card">
-      <h3>Success Rate</h3>
-      <div class="value" id="successRate">–</div>
-    </div>
+    <div class="card"><h3>Total Batches</h3><div class="value" id="totalBatches">–</div></div>
+    <div class="card"><h3>Total Shipments</h3><div class="value" id="totalShipments">–</div></div>
+    <div class="card"><h3>Delivered</h3><div class="value" id="deliveredCount">–</div></div>
+    <div class="card"><h3>Pending</h3><div class="value" id="pendingCount">–</div></div>
+    <div class="card"><h3>Errors</h3><div class="value" id="errorCount">–</div></div>
+    <div class="card"><h3>Success Rate</h3><div class="value" id="successRate">–</div></div>
   </div>
 </div>
 
@@ -190,83 +182,133 @@
 </div>
 
 <script>
+let currentBatchId = null;
+let pollInterval = null;
+
+async function uploadBatch() {
+  const file = document.getElementById('fileInput').files[0];
+  if (!file) return alert("Select a file");
+
+  const apiKey = document.getElementById('apiKeySelect').value;
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("response_mode", "json");
+  formData.append("export_format", "xlsx");
+
+  document.getElementById("uploadStatus").innerText = "Uploading...";
+
+  const res = await fetch(
+    "https://api.transportal.gr/webhook/api/v1/track-batch",
+    {
+      method: "POST",
+      headers: { "x-api-key": apiKey },
+      body: formData
+    }
+  );
+
+  const data = await res.json();
+  if (!data[0]?.request_id) {
+    document.getElementById("uploadStatus").innerText = "Upload failed";
+    return;
+  }
+
+  currentBatchId = data[0].request_id;
+  document.getElementById("uploadStatus").innerText =
+    "Batch accepted. Processing...";
+
+  pollBatchStatus();
+}
+
+function pollBatchStatus() {
+  pollInterval = setInterval(async () => {
+    const apiKey = document.getElementById('apiKeySelect').value;
+
+    const res = await fetch(
+      `https://api.transportal.gr/webhook/api/v1/track-batch/${currentBatchId}`,
+      { headers: { "x-api-key": apiKey } }
+    );
+
+    const result = await res.json();
+    const status = result[0]?.status;
+
+    if (status === "completed") {
+      clearInterval(pollInterval);
+      document.getElementById("uploadStatus").innerText =
+        "Completed ✔";
+
+      showDownloadButtons();
+      loadDashboard();
+    }
+
+  }, 3000);
+}
+
+function showDownloadButtons() {
+  const apiKey = document.getElementById('apiKeySelect').value;
+
+  document.getElementById("downloadButtons").innerHTML = `
+    <button onclick="downloadFile('json')">Download JSON</button>
+    <button class="secondary" onclick="downloadFile('xlsx')">Download XLSX</button>
+  `;
+}
+
+function downloadFile(type) {
+  const apiKey = document.getElementById('apiKeySelect').value;
+
+  window.open(
+    `https://api.transportal.gr/webhook/api/v1/track-batch/${currentBatchId}?export=${type}`,
+    "_blank"
+  );
+}
+
 async function loadDashboard() {
   const apiKey = document.getElementById('apiKeySelect').value;
 
-  try {
-    const res = await fetch(
-      'https://api.transportal.gr/webhook/api/v1/batches',
-      {
-        headers: { 'x-api-key': apiKey }
-      }
-    );
+  const res = await fetch(
+    "https://api.transportal.gr/webhook/api/v1/batches",
+    { headers: { "x-api-key": apiKey } }
+  );
 
-    const raw = await res.json();
-    const batches = Array.isArray(raw) ? raw : [];
+  const batches = await res.json();
+  const tbody = document.getElementById("batchTable");
+  tbody.innerHTML = "";
 
-    document.getElementById('totalBatches').textContent = batches.length;
+  let totalShipments = 0, delivered = 0, pending = 0, errors = 0;
 
-    let totalShipments = 0;
-    let delivered = 0;
-    let pending = 0;
-    let errors = 0;
+  batches.forEach(b => {
+    let summary = {};
+    try { summary = JSON.parse(b.summary || "{}"); } catch {}
 
-    const tbody = document.getElementById('batchTable');
-    tbody.innerHTML = '';
+    totalShipments += summary.total || 0;
+    delivered += summary.delivered || 0;
+    pending += summary.pending || 0;
+    errors += summary.error || 0;
 
-    batches.forEach(b => {
-      let summary = {};
-      try {
-        summary = typeof b.summary === 'string'
-          ? JSON.parse(b.summary)
-          : (b.summary || {});
-      } catch {}
-
-      totalShipments += summary.total || 0;
-      delivered += summary.delivered || 0;
-      pending += summary.pending || 0;
-      errors += summary.error || 0;
-
-      const tr = document.createElement('tr');
-
-      tr.innerHTML = `
+    tbody.innerHTML += `
+      <tr>
         <td>${b.request_id}</td>
-        <td>
-          <span class="badge ${b.status}">
-            ${b.status}
-          </span>
-        </td>
+        <td><span class="badge ${b.status}">${b.status}</span></td>
         <td>${summary.total || 0}</td>
-        <td>${b.created_at || '-'}</td>
-        <td>${b.completed_at || '-'}</td>
-      `;
+        <td>${b.created_at || "-"}</td>
+        <td>${b.completed_at || "-"}</td>
+      </tr>
+    `;
+  });
 
-      tbody.appendChild(tr);
-    });
-
-    document.getElementById('totalShipments').textContent = totalShipments;
-    document.getElementById('deliveredCount').textContent = delivered;
-    document.getElementById('pendingCount').textContent = pending;
-    document.getElementById('errorCount').textContent = errors;
-
-    const success =
-      totalShipments > 0
-        ? Math.round((delivered / totalShipments) * 100)
-        : 0;
-
-    document.getElementById('successRate').textContent = success + '%';
-
-  } catch (err) {
-    console.error(err);
-    alert('Failed to load dashboard data');
-  }
+  document.getElementById("totalBatches").innerText = batches.length;
+  document.getElementById("totalShipments").innerText = totalShipments;
+  document.getElementById("deliveredCount").innerText = delivered;
+  document.getElementById("pendingCount").innerText = pending;
+  document.getElementById("errorCount").innerText = errors;
+  document.getElementById("successRate").innerText =
+    totalShipments ? Math.round(delivered / totalShipments * 100) + "%" : "0%";
 }
 
-document.getElementById('apiKeySelect')
-  .addEventListener('change', loadDashboard);
+document.getElementById("apiKeySelect")
+  .addEventListener("change", loadDashboard);
 
 loadDashboard();
-setInterval(loadDashboard, 15000); // auto refresh every 15 sec
 </script>
 
 </body>
