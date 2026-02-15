@@ -2,124 +2,181 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>TransPortal – API Dashboard</title>
+<title>transportal – API Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <style>
-body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background:#f4f6fb;
-  margin:0;
-  padding:30px;
-  color:#1f2937;
-}
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f5f7fb;
+    margin: 0;
+    padding: 32px;
+    color: #1f2937;
+  }
 
-h1 { margin-bottom:8px; }
-.subtitle { color:#6b7280; margin-bottom:30px; }
+  h1 {
+    margin-bottom: 4px;
+  }
 
-.section {
-  background:white;
-  padding:20px;
-  border-radius:12px;
-  margin-bottom:24px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.06);
-}
+  .subtitle {
+    color: #6b7280;
+    margin-bottom: 24px;
+  }
 
-label { font-weight:600; display:block; margin-bottom:6px; }
+  .section {
+    margin-bottom: 32px;
+  }
 
-input, select, button {
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #d1d5db;
-  font-size:14px;
-}
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
 
-button {
-  background:#2563eb;
-  color:white;
-  border:none;
-  cursor:pointer;
-}
+  .card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
 
-button:hover { background:#1e40af; }
+  .card h3 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+  }
 
-table {
-  width:100%;
-  border-collapse:collapse;
-  margin-top:12px;
-}
+  .card .value {
+    font-size: 28px;
+    font-weight: 700;
+  }
 
-th, td {
-  padding:10px;
-  border-bottom:1px solid #e5e7eb;
-  font-size:14px;
-}
+  select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+  }
 
-th { background:#f9fafb; text-align:left; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
 
-.badge {
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:600;
-}
+  th, td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    font-size: 14px;
+  }
 
-.completed { background:#dcfce7; color:#166534; }
-.processing { background:#fef9c3; color:#92400e; }
-.failed { background:#fee2e2; color:#991b1b; }
+  th {
+    background: #f9fafb;
+    font-weight: 600;
+  }
 
-.small { font-size:12px; color:#6b7280; }
+  tr:last-child td {
+    border-bottom: none;
+  }
 
+  .badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .completed {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .processing {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .error {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 14px;
+    color: #6b7280;
+  }
+
+  .brand {
+    font-weight: 700;
+    font-size: 18px;
+    color: #6d28d9;
+  }
 </style>
 </head>
 <body>
 
-<h1>📦 TransPortal API Dashboard</h1>
-<div class="subtitle">Batch tracking management (SaaS Demo)</div>
+<h1>📦 transportal API Dashboard</h1>
+<div class="subtitle">Batch tracking analytics & monitoring</div>
 
-<!-- API Key Selector -->
+<!-- API KEY SELECTOR -->
 <div class="section">
-  <label>Select Demo Client</label>
+  <label><strong>Select Client API Key:</strong></label>
   <select id="apiKeySelect">
-    <option value="demo-key-123">Demo Client 1</option>
-    <option value="demo-key-456">Demo Client 2</option>
+    <option value="demo-key-123">demo-key-123</option>
+    <option value="demo-key-456">demo-key-456</option>
   </select>
 </div>
 
-<!-- Upload Batch -->
+<!-- ANALYTICS SECTION -->
 <div class="section">
-  <h3>Upload Batch</h3>
-
-  <label>Tracking File (CSV or XLSX)</label>
-  <input type="file" id="fileInput" />
-
-  <label style="margin-top:12px;">Output Format</label>
-  <select id="exportFormat">
-    <option value="json">JSON</option>
-    <option value="csv">CSV</option>
-    <option value="xlsx">XLSX</option>
-  </select>
-
-  <br><br>
-  <button onclick="uploadBatch()">Submit Batch</button>
-
-  <div id="uploadStatus" class="small" style="margin-top:10px;"></div>
+  <h2>Analytics</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3>Total Batches</h3>
+      <div class="value" id="totalBatches">–</div>
+    </div>
+    <div class="card">
+      <h3>Total Shipments</h3>
+      <div class="value" id="totalShipments">–</div>
+    </div>
+    <div class="card">
+      <h3>Delivered</h3>
+      <div class="value" id="deliveredCount">–</div>
+    </div>
+    <div class="card">
+      <h3>Pending</h3>
+      <div class="value" id="pendingCount">–</div>
+    </div>
+    <div class="card">
+      <h3>Errors</h3>
+      <div class="value" id="errorCount">–</div>
+    </div>
+    <div class="card">
+      <h3>Success Rate</h3>
+      <div class="value" id="successRate">–</div>
+    </div>
+  </div>
 </div>
 
-<!-- Batch List -->
+<!-- RECENT BATCHES -->
 <div class="section">
-  <h3>Recent Batches</h3>
-
-  <button onclick="loadBatches()">Refresh</button>
-
+  <h2>Recent Batches</h2>
   <table>
     <thead>
       <tr>
         <th>Batch ID</th>
         <th>Status</th>
+        <th>Shipments</th>
         <th>Created</th>
-        <th>Summary</th>
-        <th>Result</th>
+        <th>Completed</th>
       </tr>
     </thead>
     <tbody id="batchTable">
@@ -128,108 +185,88 @@ th { background:#f9fafb; text-align:left; }
   </table>
 </div>
 
+<div class="footer">
+  powered by <span class="brand">transportal</span>
+</div>
+
 <script>
+async function loadDashboard() {
+  const apiKey = document.getElementById('apiKeySelect').value;
 
-const API_BASE = "https://api.transportal.gr/webhook";
+  try {
+    const res = await fetch(
+      'https://api.transportal.gr/webhook/api/v1/batches',
+      {
+        headers: { 'x-api-key': apiKey }
+      }
+    );
 
-function getApiKey() {
-  return document.getElementById("apiKeySelect").value;
-}
+    const raw = await res.json();
+    const batches = Array.isArray(raw) ? raw : [];
 
-async function uploadBatch() {
-  const fileInput = document.getElementById("fileInput");
-  const exportFormat = document.getElementById("exportFormat").value;
+    document.getElementById('totalBatches').textContent = batches.length;
 
-  if (!fileInput.files.length) {
-    alert("Please select a file");
-    return;
-  }
+    let totalShipments = 0;
+    let delivered = 0;
+    let pending = 0;
+    let errors = 0;
 
-  const formData = new FormData();
-  formData.append("file", fileInput.files[0]);
-  formData.append("response_mode", exportFormat === "json" ? "json" : "file");
-  formData.append("export_format", exportFormat);
+    const tbody = document.getElementById('batchTable');
+    tbody.innerHTML = '';
 
-  document.getElementById("uploadStatus").textContent = "Uploading...";
+    batches.forEach(b => {
+      let summary = {};
+      try {
+        summary = typeof b.summary === 'string'
+          ? JSON.parse(b.summary)
+          : (b.summary || {});
+      } catch {}
 
-  const res = await fetch(`${API_BASE}/api/v1/track-batch`, {
-    method:"POST",
-    headers:{ "x-api-key": getApiKey() },
-    body:formData
-  });
+      totalShipments += summary.total || 0;
+      delivered += summary.delivered || 0;
+      pending += summary.pending || 0;
+      errors += summary.error || 0;
 
-  const data = await res.json();
+      const tr = document.createElement('tr');
 
-  document.getElementById("uploadStatus").textContent =
-    "Batch created: " + data.request_id;
+      tr.innerHTML = `
+        <td>${b.request_id}</td>
+        <td>
+          <span class="badge ${b.status}">
+            ${b.status}
+          </span>
+        </td>
+        <td>${summary.total || 0}</td>
+        <td>${b.created_at || '-'}</td>
+        <td>${b.completed_at || '-'}</td>
+      `;
 
-  loadBatches();
-}
+      tbody.appendChild(tr);
+    });
 
-async function loadBatches() {
-  const tbody = document.getElementById("batchTable");
-  tbody.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
+    document.getElementById('totalShipments').textContent = totalShipments;
+    document.getElementById('deliveredCount').textContent = delivered;
+    document.getElementById('pendingCount').textContent = pending;
+    document.getElementById('errorCount').textContent = errors;
 
-  const res = await fetch(`${API_BASE}/api/v1/batches`, {
-    headers:{ "x-api-key": getApiKey() }
-  });
+    const success =
+      totalShipments > 0
+        ? Math.round((delivered / totalShipments) * 100)
+        : 0;
 
-  const data = await res.json();
-  const rows = Array.isArray(data) ? data : [];
+    document.getElementById('successRate').textContent = success + '%';
 
-  tbody.innerHTML = "";
-
-  if (!rows.length) {
-    tbody.innerHTML = "<tr><td colspan='5'>No batches yet</td></tr>";
-    return;
-  }
-
-  rows.forEach(r => {
-    const tr = document.createElement("tr");
-
-    const badgeClass =
-      r.status === "completed" ? "completed" :
-      r.status === "processing" ? "processing" :
-      "failed";
-
-    const summary = r.summary
-      ? `${r.summary.total ?? 0} shipments`
-      : "-";
-
-    const resultBtn =
-      r.status === "completed"
-        ? `<button onclick="viewBatch('${r.request_id}', '${r.result_format}')">Open</button>`
-        : "-";
-
-    tr.innerHTML = `
-      <td>${r.request_id}</td>
-      <td><span class="badge ${badgeClass}">${r.status}</span></td>
-      <td>${r.created_at ?? "-"}</td>
-      <td>${summary}</td>
-      <td>${resultBtn}</td>
-    `;
-
-    tbody.appendChild(tr);
-  });
-}
-
-async function viewBatch(batchId, format) {
-  const res = await fetch(`${API_BASE}/api/v1/track-batch/${batchId}`, {
-    headers:{ "x-api-key": getApiKey() }
-  });
-
-  if (format === "json") {
-    const data = await res.json();
-    alert(JSON.stringify(data, null, 2));
-  } else {
-    const blob = await res.blob();
-    const url = window.URL.createObjectURL(blob);
-    window.open(url);
+  } catch (err) {
+    console.error(err);
+    alert('Failed to load dashboard data');
   }
 }
 
-loadBatches();
+document.getElementById('apiKeySelect')
+  .addEventListener('change', loadDashboard);
 
+loadDashboard();
+setInterval(loadDashboard, 15000); // auto refresh every 15 sec
 </script>
 
 </body>
