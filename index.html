@@ -193,134 +193,223 @@ th {
 
 <script>
 const BASE_POST = "https://api.transportal.gr/webhook/api/v1";
-const BASE_GET = "https://api.transportal.gr/webhook/51df26b4-d41e-4654-a11b-e668573d6ca5/api/v1";
+const BASE_GET  = "https://api.transportal.gr/webhook/51df26b4-d41e-4654-a11b-e668573d6ca5/api/v1";
 
+/* =========================
+   UPLOAD BATCH
+========================= */
 async function uploadBatch() {
   const file = document.getElementById('fileInput').files[0];
   const apiKey = document.getElementById('apiKeySelect').value;
+  const statusEl = document.getElementById("uploadStatus");
 
-  if (!file) return alert("Select a file first");
+  if (!file) {
+    alert("Select a file first");
+    return;
+  }
 
   const formData = new FormData();
   formData.append("file", file);
   formData.append("response_mode", "file");
   formData.append("export_format", "xlsx");
 
-  document.getElementById("uploadStatus").innerText = "Uploading...";
+  statusEl.innerText = "Uploading...";
 
-  const res = await fetch(`${BASE_POST}/track-batch`, {
-    method: "POST",
-    headers: { "x-api-key": apiKey },
-    body: formData
-  });
+  try {
+    const res = await fetch(`${BASE_POST}/track-batch`, {
+      method: "POST",
+      headers: { "x-api-key": apiKey },
+      body: formData
+    });
 
-  const data = await res.json();
+    if (!res.ok) {
+      statusEl.innerText = "Upload failed";
+      return;
+    }
 
-  document.getElementById("uploadStatus").innerText =
-    "Batch accepted: " + data.request_id;
+    const data = await res.json();
 
-  loadDashboard();
+    if (!data.request_id) {
+      statusEl.innerText = "Upload failed";
+      return;
+    }
+
+    statusEl.innerText = "Batch accepted: " + data.request_id;
+
+    // Immediately refresh dashboard
+    loadDashboard();
+
+  } catch (err) {
+    console.error(err);
+    statusEl.innerText = "Upload failed";
+  }
 }
 
+
+/* =========================
+   LOAD DASHBOARD
+========================= */
 async function loadDashboard() {
   const apiKey = document.getElementById('apiKeySelect').value;
 
-  const res = await fetch(
-    `${BASE_POST}/batches?ts=${Date.now()}`,
-    {
-      headers: { 'x-api-key': apiKey },
-      cache: "no-store"
-    }
-  );
-
-  const batches = await res.json();
   const tbody = document.getElementById("batchTable");
-  tbody.innerHTML = "";
 
-  let totalShipments = 0, delivered = 0, pending = 0, errors = 0;
+  // 🔥 Reset UI immediately (fixes isolation issue)
+  tbody.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
 
-  batches.forEach(b => {
-    let summary = b.summary || {};
-    if (typeof summary === "string") {
-      try { summary = JSON.parse(summary); } catch {}
+  document.getElementById("totalBatches").innerText = "-";
+  document.getElementById("totalShipments").innerText = "-";
+  document.getElementById("deliveredCount").innerText = "-";
+  document.getElementById("pendingCount").innerText = "-";
+  document.getElementById("errorCount").innerText = "-";
+  document.getElementById("successRate").innerText = "-";
+
+  try {
+    const res = await fetch(
+      `${BASE_POST}/batches?ts=${Date.now()}`,
+      {
+        headers: { 'x-api-key': apiKey },
+        cache: "no-store"
+      }
+    );
+
+    if (!res.ok) {
+      tbody.innerHTML = "<tr><td colspan='6'>Failed to load data</td></tr>";
+      return;
     }
 
-    totalShipments += summary.total || 0;
-    delivered += summary.delivered || 0;
-    pending += summary.pending || 0;
-    errors += summary.error || 0;
+    const batches = await res.json();
 
-    const percent = summary.total
-      ? Math.round(((summary.delivered + summary.error) / summary.total) * 100)
+    if (!Array.isArray(batches) || batches.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='6'>No batches found</td></tr>";
+      return;
+    }
+
+    tbody.innerHTML = "";
+
+    let totalShipments = 0;
+    let delivered = 0;
+    let pending = 0;
+    let errors = 0;
+
+    batches.forEach(b => {
+
+      let summary = b.summary || {};
+
+      if (typeof summary === "string") {
+        try { summary = JSON.parse(summary); } catch { summary = {}; }
+      }
+
+      totalShipments += summary.total || 0;
+      delivered += summary.delivered || 0;
+      pending += summary.pending || 0;
+      errors += summary.error || 0;
+
+      // Better progress logic
+      const percent = summary.total
+        ? Math.round((summary.delivered / summary.total) * 100)
+        : 0;
+
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${b.request_id}</td>
+        <td><span class="badge ${b.status}">${b.status}</span></td>
+        <td>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:${percent}%"></div>
+          </div>
+          ${percent}%
+        </td>
+        <td>${b.created_at || "-"}</td>
+        <td>${b.completed_at || "-"}</td>
+        <td>
+          ${b.status === "completed"
+            ? `<button class="download-btn" onclick="downloadBatch('${b.request_id}')">Download</button>`
+            : "-"}
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("totalBatches").innerText = batches.length;
+    document.getElementById("totalShipments").innerText = totalShipments;
+    document.getElementById("deliveredCount").innerText = delivered;
+    document.getElementById("pendingCount").innerText = pending;
+    document.getElementById("errorCount").innerText = errors;
+
+    const success = totalShipments
+      ? Math.round((delivered / totalShipments) * 100)
       : 0;
 
-    const tr = document.createElement("tr");
+    document.getElementById("successRate").innerText = success + "%";
 
-    tr.innerHTML = `
-      <td>${b.request_id}</td>
-      <td><span class="badge ${b.status}">${b.status}</span></td>
-      <td>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:${percent}%"></div>
-        </div>
-        ${percent}%
-      </td>
-      <td>${b.created_at || "-"}</td>
-      <td>${b.completed_at || "-"}</td>
-      <td>
-        ${b.status === "completed"
-          ? `<button class="download-btn" onclick="downloadBatch('${b.request_id}')">Download</button>`
-          : "-"}
-      </td>
-    `;
-
-    tbody.appendChild(tr);
-  });
-
-  document.getElementById("totalBatches").innerText = batches.length;
-  document.getElementById("totalShipments").innerText = totalShipments;
-  document.getElementById("deliveredCount").innerText = delivered;
-  document.getElementById("pendingCount").innerText = pending;
-  document.getElementById("errorCount").innerText = errors;
-
-  const success = totalShipments
-    ? Math.round((delivered / totalShipments) * 100)
-    : 0;
-
-  document.getElementById("successRate").innerText = success + "%";
+  } catch (err) {
+    console.error(err);
+    tbody.innerHTML = "<tr><td colspan='6'>Error loading dashboard</td></tr>";
+  }
 }
 
+
+/* =========================
+   DOWNLOAD BATCH
+========================= */
 async function downloadBatch(batchId) {
   const apiKey = document.getElementById('apiKeySelect').value;
 
-  const res = await fetch(
-    `${BASE_GET}/track-batch/${batchId}?ts=${Date.now()}`,
-    {
-      headers: { 'x-api-key': apiKey }
+  try {
+    const res = await fetch(
+      `${BASE_GET}/track-batch/${batchId}?ts=${Date.now()}`,
+      {
+        headers: { 'x-api-key': apiKey },
+        cache: "no-store"
+      }
+    );
+
+    if (!res.ok) {
+      alert("Download failed");
+      return;
     }
-  );
 
-  if (!res.ok) {
+    const blob = await res.blob();
+
+    if (!blob || blob.size === 0) {
+      alert("Download failed");
+      return;
+    }
+
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${batchId}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+
+  } catch (err) {
+    console.error(err);
     alert("Download failed");
-    return;
   }
-
-  const blob = await res.blob();
-  const url = window.URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${batchId}.xlsx`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
 }
 
+
+/* =========================
+   EVENTS
+========================= */
 document.getElementById('apiKeySelect')
   .addEventListener('change', loadDashboard);
 
+// Initial load
 loadDashboard();
+
+// Auto-refresh every 15 seconds
 setInterval(loadDashboard, 15000);
+
 </script>
+
 </body>
 </html>
