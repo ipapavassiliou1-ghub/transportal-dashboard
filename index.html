@@ -192,7 +192,8 @@ th {
 </div>
 
 <script>
-const BASE = "https://api.transportal.gr/webhook/api/v1";
+const BASE_POST = "https://api.transportal.gr/webhook/api/v1";
+const BASE_GET = "https://api.transportal.gr/webhook/51df26b4-d41e-4654-a11b-e668573d6ca5/api/v1";
 
 async function uploadBatch() {
   const file = document.getElementById('fileInput').files[0];
@@ -207,13 +208,14 @@ async function uploadBatch() {
 
   document.getElementById("uploadStatus").innerText = "Uploading...";
 
-  const res = await fetch(`${BASE}/track-batch`, {
+  const res = await fetch(`${BASE_POST}/track-batch`, {
     method: "POST",
     headers: { "x-api-key": apiKey },
     body: formData
   });
 
   const data = await res.json();
+
   document.getElementById("uploadStatus").innerText =
     "Batch accepted: " + data.request_id;
 
@@ -224,7 +226,7 @@ async function loadDashboard() {
   const apiKey = document.getElementById('apiKeySelect').value;
 
   const res = await fetch(
-    `${BASE}/batches?ts=${Date.now()}`,
+    `${BASE_POST}/batches?ts=${Date.now()}`,
     {
       headers: { 'x-api-key': apiKey },
       cache: "no-store"
@@ -239,7 +241,9 @@ async function loadDashboard() {
 
   batches.forEach(b => {
     let summary = b.summary || {};
-    if (typeof summary === "string") summary = JSON.parse(summary);
+    if (typeof summary === "string") {
+      try { summary = JSON.parse(summary); } catch {}
+    }
 
     totalShipments += summary.total || 0;
     delivered += summary.delivered || 0;
@@ -286,12 +290,30 @@ async function loadDashboard() {
   document.getElementById("successRate").innerText = success + "%";
 }
 
-function downloadBatch(batchId) {
+async function downloadBatch(batchId) {
   const apiKey = document.getElementById('apiKeySelect').value;
-  window.open(
-    `${BASE}/track-batch/${batchId}?ts=${Date.now()}`,
-    "_blank"
+
+  const res = await fetch(
+    `${BASE_GET}/track-batch/${batchId}?ts=${Date.now()}`,
+    {
+      headers: { 'x-api-key': apiKey }
+    }
   );
+
+  if (!res.ok) {
+    alert("Download failed");
+    return;
+  }
+
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${batchId}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }
 
 document.getElementById('apiKeySelect')
@@ -300,6 +322,5 @@ document.getElementById('apiKeySelect')
 loadDashboard();
 setInterval(loadDashboard, 15000);
 </script>
-
 </body>
 </html>
