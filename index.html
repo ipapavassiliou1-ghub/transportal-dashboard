@@ -203,7 +203,7 @@ async function uploadBatch() {
 
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("response_mode", "json");
+  formData.append("response_mode", "file");
   formData.append("export_format", "xlsx");
 
   document.getElementById("uploadStatus").innerText = "Uploading...";
