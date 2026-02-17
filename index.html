@@ -195,6 +195,8 @@ th {
 const BASE_POST = "https://api.transportal.gr/webhook/api/v1";
 const BASE_GET  = "https://api.transportal.gr/webhook/51df26b4-d41e-4654-a11b-e668573d6ca5/api/v1";
 
+let pollingInterval = null;
+
 /* =========================
    UPLOAD BATCH
 ========================= */
@@ -222,11 +224,6 @@ async function uploadBatch() {
       body: formData
     });
 
-    if (!res.ok) {
-      statusEl.innerText = "Upload failed";
-      return;
-    }
-
     const data = await res.json();
 
     if (!data.request_id) {
@@ -236,8 +233,7 @@ async function uploadBatch() {
 
     statusEl.innerText = "Batch accepted: " + data.request_id;
 
-    // Immediately refresh dashboard
-    loadDashboard();
+    loadDashboard(true); // force polling after upload
 
   } catch (err) {
     console.error(err);
@@ -249,20 +245,11 @@ async function uploadBatch() {
 /* =========================
    LOAD DASHBOARD
 ========================= */
-async function loadDashboard() {
+async function loadDashboard(forcePoll = false) {
   const apiKey = document.getElementById('apiKeySelect').value;
-
   const tbody = document.getElementById("batchTable");
 
-  // 🔥 Reset UI immediately (fixes isolation issue)
   tbody.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
-
-  document.getElementById("totalBatches").innerText = "-";
-  document.getElementById("totalShipments").innerText = "-";
-  document.getElementById("deliveredCount").innerText = "-";
-  document.getElementById("pendingCount").innerText = "-";
-  document.getElementById("errorCount").innerText = "-";
-  document.getElementById("successRate").innerText = "-";
 
   try {
     const res = await fetch(
@@ -272,11 +259,6 @@ async function loadDashboard() {
         cache: "no-store"
       }
     );
-
-    if (!res.ok) {
-      tbody.innerHTML = "<tr><td colspan='6'>Failed to load data</td></tr>";
-      return;
-    }
 
     const batches = await res.json();
 
@@ -291,11 +273,11 @@ async function loadDashboard() {
     let delivered = 0;
     let pending = 0;
     let errors = 0;
+    let hasProcessing = false;
 
     batches.forEach(b => {
 
       let summary = b.summary || {};
-
       if (typeof summary === "string") {
         try { summary = JSON.parse(summary); } catch { summary = {}; }
       }
@@ -305,15 +287,23 @@ async function loadDashboard() {
       pending += summary.pending || 0;
       errors += summary.error || 0;
 
-      // Better progress logic
+      const processed = (summary.delivered || 0) + (summary.error || 0);
       const percent = summary.total
-        ? Math.round((summary.delivered / summary.total) * 100)
+        ? Math.round((processed / summary.total) * 100)
         : 0;
+
+      if (b.status === "processing") {
+        hasProcessing = true;
+      }
 
       const tr = document.createElement("tr");
 
       tr.innerHTML = `
-        <td>${b.request_id}</td>
+        <td>
+          <a href="#" onclick="viewBatch('${b.request_id}'); return false;">
+            ${b.request_id}
+          </a>
+        </td>
         <td><span class="badge ${b.status}">${b.status}</span></td>
         <td>
           <div class="progress-bar">
@@ -339,15 +329,34 @@ async function loadDashboard() {
     document.getElementById("pendingCount").innerText = pending;
     document.getElementById("errorCount").innerText = errors;
 
-    const success = totalShipments
-      ? Math.round((delivered / totalShipments) * 100)
+    const success = (delivered + errors) > 0
+      ? Math.round((delivered / (delivered + errors)) * 100)
       : 0;
 
     document.getElementById("successRate").innerText = success + "%";
 
+    handlePolling(hasProcessing || forcePoll);
+
   } catch (err) {
     console.error(err);
     tbody.innerHTML = "<tr><td colspan='6'>Error loading dashboard</td></tr>";
+  }
+}
+
+
+/* =========================
+   SMART POLLING
+========================= */
+function handlePolling(shouldPoll) {
+  if (shouldPoll) {
+    if (!pollingInterval) {
+      pollingInterval = setInterval(() => loadDashboard(), 5000);
+    }
+  } else {
+    if (pollingInterval) {
+      clearInterval(pollingInterval);
+      pollingInterval = null;
+    }
   }
 }
 
@@ -373,12 +382,6 @@ async function downloadBatch(batchId) {
     }
 
     const blob = await res.blob();
-
-    if (!blob || blob.size === 0) {
-      alert("Download failed");
-      return;
-    }
-
     const url = window.URL.createObjectURL(blob);
 
     const a = document.createElement("a");
@@ -398,17 +401,50 @@ async function downloadBatch(batchId) {
 
 
 /* =========================
+   BATCH DETAIL VIEWER
+========================= */
+async function viewBatch(batchId) {
+  const apiKey = document.getElementById('apiKeySelect').value;
+
+  try {
+    const res = await fetch(
+      `${BASE_GET}/track-batch/${batchId}?ts=${Date.now()}`,
+      {
+        headers: { 'x-api-key': apiKey }
+      }
+    );
+
+    const data = await res.json();
+
+    if (!data.results) {
+      alert("No detailed results available");
+      return;
+    }
+
+    const lines = data.results.map(r =>
+      `${r.tracking} | ${r.carrier} | ${r.status}`
+    ).join("\n");
+
+    alert(`Batch ${batchId}\n\n` + lines);
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load batch details");
+  }
+}
+
+
+/* =========================
    EVENTS
 ========================= */
 document.getElementById('apiKeySelect')
-  .addEventListener('change', loadDashboard);
+  .addEventListener('change', () => {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+    loadDashboard();
+  });
 
-// Initial load
 loadDashboard();
-
-// Auto-refresh every 15 seconds
-setInterval(loadDashboard, 15000);
-
 </script>
 
 </body>
