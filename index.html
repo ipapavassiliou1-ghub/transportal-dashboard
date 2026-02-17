@@ -1,18 +1,3 @@
-Got it — I don’t need anything else from you. The last “interrupted” version I gave you dropped the whole upload section + its styles + its handlers, and also mixed “download as blob” with your API’s two different GET base URLs. Let’s fix everything in one single copy-paste HTML that:
-	•	✅ Keeps UPLOAD (file + response_mode + export_format)
-	•	✅ Shows upload status and immediately inserts the new batch row
-	•	✅ Polls only when needed (when there are processing batches), so the page does not look broken
-	•	✅ Batch list refresh is diff-based (no “whole page reload” vibe)
-	•	✅ Adds View details modal (shipment drill-down)
-	•	✅ Adds Download button for completed batches
-	•	✅ Fixes success rate and progress
-	•	✅ Fixes isolation when switching API key (hard reset + cancels stale polling)
-
-Below is the full correct code. Paste it as-is.
-
-⸻
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
