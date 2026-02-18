@@ -711,7 +711,7 @@ function renderTable(){
     const tr=document.createElement("tr");
     tr.innerHTML=`
       <td class="mono linkLike" onclick="viewBatch('${b.request_id}')">${escapeHtml(b.request_id)}</td>
-      <td><span class="badge ${b.status}">${b.status}</span></td>
+      <td><span class="badge ${["completed","processing","error"].includes(b.status) ? b.status : "not_found"}">${escapeHtml(b.status||"unknown")}</span></td>
       <td>
         <div class="progressRow ${b.status==='processing'?'isProcessing':''}">
           <div class="progressBar">
