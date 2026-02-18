@@ -777,35 +777,52 @@ function renderKpis(){
 /* =========================================================
    CARRIER SPLIT
 ========================================================= */
+let carrierCacheKey = null;
+
 async function renderCarrierSplit(token){
-  const container=document.getElementById("carrierKpis");
-  container.innerHTML="";
+  const container = document.getElementById("carrierKpis");
 
-  const completed=allBatches.filter(b=>b.status==="completed").slice(0,2);
-  const agg={};
+  // Build a simple cache key from completed batch IDs
+  const completed = allBatches
+    .filter(b => b.status === "completed")
+    .map(b => b.request_id)
+    .join("|");
 
-  for(const b of completed){
-    const d=await fetchDetails(b.request_id,token);
-    if(!d||!d.results) continue;
+  // If nothing changed → skip re-render
+  if (carrierCacheKey === completed) return;
+
+  carrierCacheKey = completed;
+
+  container.style.opacity = "0.6"; // subtle loading state
+
+  const agg = {};
+
+  for (const b of allBatches.filter(b => b.status === "completed").slice(0,2)) {
+    const d = await fetchDetails(b.request_id, token);
+    if (!d || !d.results) continue;
 
     d.results.forEach(r=>{
-      const c=r.carrier||"UNKNOWN";
-      if(!agg[c]) agg[c]={total:0,del:0};
+      const c = r.carrier || "UNKNOWN";
+      if(!agg[c]) agg[c] = { total:0, del:0 };
       agg[c].total++;
       if((r.status||"").toLowerCase()==="delivered") agg[c].del++;
     });
   }
 
+  container.innerHTML = "";
+
   Object.entries(agg).forEach(([name,val])=>{
-    const pct=val.total?Math.round((val.del/val.total)*100):0;
-    const div=document.createElement("div");
-    div.className="carrierCard";
-    div.innerHTML=`
+    const pct = val.total ? Math.round((val.del/val.total)*100) : 0;
+    const div = document.createElement("div");
+    div.className = "carrierCard";
+    div.innerHTML = `
       <div class="carrierTop">
         <div class="carrierName">${escapeHtml(name)}</div>
         <div class="carrierCount">${val.total}</div>
       </div>
-      <div class="miniBar"><div class="miniFill" style="width:${pct}%"></div></div>
+      <div class="miniBar">
+        <div class="miniFill" style="width:${pct}%"></div>
+      </div>
       <div class="carrierMeta">
         <span>${val.del} delivered</span>
         <span>${pct}%</span>
@@ -813,6 +830,8 @@ async function renderCarrierSplit(token){
     `;
     container.appendChild(div);
   });
+
+  container.style.opacity = "1";
 }
 
 /* =========================================================
