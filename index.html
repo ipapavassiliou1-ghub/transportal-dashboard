@@ -684,7 +684,7 @@ function computeProgress(b){
   const error = Number(s.error||0);
 
   if(!total) return 0;
-  if(b.status==="completed") return 100;
+  if(b.status==="completed" || b.status==="error") return 100;
 
   return Math.min(100, Math.round(((delivered+error)/total)*100));
 }
