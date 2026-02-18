@@ -622,10 +622,25 @@ async function fetchBatches(token){
   });
 
   if(token!==activeLoadToken) return null;
-  if(!res.ok) throw new Error("Load failed");
 
-  const json = await res.json();
-  return Array.isArray(json)?json:[];
+  if(!res.ok){
+    const text = await res.text().catch(()=> "");
+    throw new Error("Load failed: " + text);
+  }
+
+  const text = await res.text();
+
+  if(!text || !text.trim()){
+    return []; // empty response = no batches
+  }
+
+  try{
+    const json = JSON.parse(text);
+    return Array.isArray(json) ? json : [];
+  }catch(e){
+    console.error("Invalid JSON from /batches:", text);
+    return [];
+  }
 }
 
 /* =========================================================
