@@ -824,9 +824,10 @@ function renderTable(){
           <div class="progressText">${percent}%</div>
         </div>
       </td>
-      <td>${s.total||0}</td>
-      <td>${escapeHtml(b.created_at||"-")}</td>
-      <td>${escapeHtml(b.completed_at||"-")}</td>
+    <td>${s.total||0}</td>
+    <td>${calculateDaysOpen(b.created_at, b.completed_at)}</td>
+    <td>${escapeHtml(b.created_at||"-")}</td>
+    <td>${escapeHtml(b.completed_at||"-")}</td>
       <td>
         ${b.status==="completed"
           ?`<button class="btnBlue" onclick="downloadBatch('${b.request_id}')">Download</button>`
