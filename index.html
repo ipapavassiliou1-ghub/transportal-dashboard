@@ -716,21 +716,31 @@ async function fetchBatches(token){
    FETCH DETAILS
 ========================================================= */
 async function fetchDetails(batchId, token){
-  const res = await fetch(`${BASE_GET}/track-batch/${batchId}?ts=${Date.now()}`,{
-    headers:{ "x-api-key": getApiKey() },
-    cache:"no-store"
-  });
 
-  if(token!==activeLoadToken) return null;
+  const res = await fetch(
+    `${BASE_GET}/track-batch/${batchId}?ts=${Date.now()}`,
+    {
+      headers:{ "x-api-key": getApiKey() },
+      cache:"no-store"
+    }
+  );
+
+  if(token !== activeLoadToken) return null;
   if(!res.ok) throw new Error("Details failed");
 
-  const ctype = (res.headers.get("content-type")||"").toLowerCase();
+  // Try to parse JSON regardless of content-type
+  const text = await res.text();
 
-  if(ctype.includes("application/json")){
-    return await res.json();
+  if(!text || !text.trim()){
+    return null;
   }
 
-  return { note:"File-based batch. Use Download." };
+  try{
+    return JSON.parse(text);
+  } catch(e){
+    // Not JSON → it's file-based
+    return { note:"File-based batch. Use Download." };
+  }
 }
 
 /* =========================================================
