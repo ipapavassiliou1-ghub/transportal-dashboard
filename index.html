@@ -989,55 +989,118 @@ async function renderCarrierSplit(token){
 /* =========================================================
    VIEW MODAL
 ========================================================= */
+/* =========================================================
+   VIEW MODAL (Drill-Down Safe Version)
+========================================================= */
 async function viewBatch(batchId){
-  const token=++activeLoadToken;
-  const data=await fetchDetails(batchId,token);
-  if(!data) return;
 
-  if(data.note){
-    openModal(batchId, `<p>${data.note}</p>`);
-    return;
+  try{
+
+    const res = await fetch(
+      `${BASE_GET}/track-batch/${batchId}?ts=${Date.now()}`,
+      {
+        headers:{ "x-api-key": getApiKey() },
+        cache:"no-store"
+      }
+    );
+
+    if(!res.ok){
+      showToast("Failed to load batch details");
+      return;
+    }
+
+    const text = await res.text();
+
+    if(!text || !text.trim()){
+      openModal(batchId, "<p>No data returned.</p>");
+      return;
+    }
+
+    let data;
+
+    try{
+      data = JSON.parse(text);
+    }catch(e){
+      // Not JSON → file export
+      openModal(batchId, "<p>File-based batch. Use Download.</p>");
+      return;
+    }
+
+    if(!data.results || !Array.isArray(data.results)){
+      openModal(batchId, "<p>No shipment results available.</p>");
+      return;
+    }
+
+    const rows = data.results.map(r => `
+      <tr>
+        <td>${escapeHtml(r.tracking)}</td>
+        <td>${escapeHtml(r.reference || "-")}</td>
+        <td>${escapeHtml(r.carrier || "-")}</td>
+        <td>${escapeHtml(r.status || "-")}</td>
+        <td>${escapeHtml(r.error || "")}</td>
+      </tr>
+    `).join("");
+
+    openModal(batchId, `
+      <table>
+        <thead>
+          <tr>
+            <th>Tracking</th>
+            <th>Reference</th>
+            <th>Carrier</th>
+            <th>Status</th>
+            <th>Error</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows || "<tr><td colspan='5'>No data</td></tr>"}
+        </tbody>
+      </table>
+    `);
+
+  }catch(e){
+    console.error(e);
+    showToast("Error loading details");
   }
-
-  const rows=(data.results||[]).map(r=>`
-    <tr>
-      <td>${escapeHtml(r.tracking)}</td>
-      <td>${escapeHtml(r.reference||"-")}</td>
-      <td>${escapeHtml(r.carrier)}</td>
-      <td>${escapeHtml(r.status)}</td>
-      <td>${escapeHtml(r.error||"")}</td>
-    </tr>
-  `).join("");
-
-  openModal(batchId,`
-    <table>
-      <thead>
-        <tr><th>Tracking</th><th>Reference</th><th>Carrier</th><th>Status</th><th>Error</th></tr>
-      </thead>
-      <tbody>${rows||"<tr><td colspan='5'>No data</td></tr>"}</tbody>
-    </table>
-  `);
 }
 
-function openModal(title,html){
+
+/* =========================================================
+   MODAL RENDERING
+========================================================= */
+function openModal(title, html){
+
   closeModal();
-  const overlay=document.createElement("div");
-  overlay.className="modalOverlay";
-  overlay.innerHTML=`
+
+  const overlay = document.createElement("div");
+  overlay.className = "modalOverlay";
+
+  overlay.innerHTML = `
     <div class="modal">
-      <div style="display:flex;justify-content:space-between;">
-        <h3>${escapeHtml(title)}</h3>
-        <button onclick="closeModal()">✕</button>
+      <div class="modalHeader">
+        <div>
+          <h3 class="modalTitle">${escapeHtml(title)}</h3>
+          <div class="modalSub">Shipment-level drill-down</div>
+        </div>
+        <button class="xBtn" onclick="closeModal()">Close</button>
       </div>
-      ${html}
+      <div class="modalBody">
+        ${html}
+      </div>
     </div>
   `;
-  overlay.onclick=e=>{ if(e.target===overlay) closeModal(); };
+
+  overlay.addEventListener("click", e => {
+    if(e.target === overlay){
+      closeModal();
+    }
+  });
+
   document.body.appendChild(overlay);
 }
 
 function closeModal(){
-  const el=document.querySelector(".modalOverlay");
+  const el = document.querySelector(".modalOverlay");
   if(el) el.remove();
 }
 
