@@ -601,6 +601,21 @@ function showToast(msg){
   el._t = setTimeout(()=>el.classList.remove("show"),3500);
 }
 
+function calculateDaysOpen(created_at, completed_at) {
+
+  if (!created_at) return "-";
+
+  const start = new Date(created_at.replace(" ", "T")).getTime();
+  const end = completed_at
+    ? new Date(completed_at.replace(" ", "T")).getTime()
+    : Date.now();
+
+  if (!start || isNaN(start)) return "-";
+
+  const diff = end - start;
+  return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+}
+  
 /* =========================================================
    LIVE INDICATOR
 ========================================================= */
