@@ -711,7 +711,7 @@ function applyFilters(){
   const q = getSearchText();
   pageSize = Number(document.getElementById("pageSize").value);
 
-  filtered = allBatches.slice();
+  filtered = scopedBatches.slice();
 
   if(status!=="all"){
     filtered = filtered.filter(b=> (b.status||"").toLowerCase()===status);
