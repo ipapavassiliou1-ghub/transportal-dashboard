@@ -354,6 +354,8 @@
 <!-- Controls -->
 <div class="section">
   <div class="controlsRow">
+
+    <!-- Client -->
     <div class="control">
       <label>Client</label>
       <select id="apiKeySelect">
@@ -362,6 +364,19 @@
       </select>
     </div>
 
+    <!-- Time Scope (created_at based) -->
+    <div class="control">
+      <label>Time Scope</label>
+      <select id="timeScope">
+        <option value="7" selected>Last 7 days</option>
+        <option value="14">Last 14 days</option>
+        <option value="30">Last 30 days</option>
+        <option value="90">Last 90 days</option>
+        <option value="all">All time</option>
+      </select>
+    </div>
+
+    <!-- Status -->
     <div class="control">
       <label>Status</label>
       <select id="statusFilter">
@@ -372,11 +387,13 @@
       </select>
     </div>
 
+    <!-- Search -->
     <div class="control">
       <label>Search</label>
       <input id="searchInput" type="text" placeholder="Batch ID… (paste request_id)" />
     </div>
 
+    <!-- Rows -->
     <div class="control">
       <label>Rows</label>
       <select id="pageSize">
@@ -386,7 +403,9 @@
       </select>
     </div>
 
+    <!-- Refresh -->
     <button class="btnGhost" id="refreshBtn">Refresh</button>
+
   </div>
 </div>
 
