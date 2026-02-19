@@ -961,6 +961,7 @@ async function loadDashboard(force){
     allBatches=await fetchBatches(token);
     if(!allBatches) return;
 
+    applyTimeScope();
     applyFilters();
     renderKpis();
     renderTable();
