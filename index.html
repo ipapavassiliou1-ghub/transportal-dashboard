@@ -843,24 +843,32 @@ function renderTable(){
    KPI
 ========================================================= */
 function renderKpis(){
-  let total=0,del=0,pen=0,err=0;
 
-  filtered.forEach(b=>{
-    const s=safeJsonParse(b.summary);
-    total+=Number(s.total||0);
-    del+=Number(s.delivered||0);
-    pen+=Number(s.pending||0);
-    err+=Number(s.error||0);
+  let total = 0;
+  let delivered = 0;
+  let pending = 0;
+  let errors = 0;
+
+  scopedBatches.forEach(b => {
+    const summary = safeJsonParse(b.summary);
+
+    total += Number(summary.total || 0);
+    delivered += Number(summary.delivered || 0);
+    pending += Number(summary.pending || 0);
+    errors += Number(summary.error || 0);
   });
 
-  document.getElementById("totalBatches").textContent=filtered.length;
-  document.getElementById("totalShipments").textContent=total;
-  document.getElementById("deliveredCount").textContent=del;
-  document.getElementById("pendingCount").textContent=pen;
-  document.getElementById("errorCount").textContent=err;
+  document.getElementById("totalBatches").textContent = scopedBatches.length;
+  document.getElementById("totalShipments").textContent = total;
+  document.getElementById("deliveredCount").textContent = delivered;
+  document.getElementById("pendingCount").textContent = pending;
+  document.getElementById("errorCount").textContent = errors;
 
-  const success = total?Math.round((del/total)*100):0;
-  document.getElementById("successRate").textContent=success+"%";
+  const successRate = total
+    ? Math.round((delivered / total) * 100)
+    : 0;
+
+  document.getElementById("successRate").textContent = successRate + "%";
 }
 
 /* =========================================================
