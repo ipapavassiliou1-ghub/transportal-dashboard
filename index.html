@@ -687,6 +687,25 @@ async function fetchDetails(batchId, token){
 /* =========================================================
    FILTER + PAGINATION
 ========================================================= */
+function applyTimeScope() {
+  const scope = document.getElementById("timeScope").value;
+
+  if (scope === "all") {
+    scopedBatches = allBatches.slice();
+    return;
+  }
+
+  const days = Number(scope);
+  const cutoff = Date.now() - (days * 24 * 60 * 60 * 1000);
+
+  scopedBatches = allBatches.filter(b => {
+    if (!b.created_at) return false;
+
+    const created = new Date(b.created_at.replace(" ", "T")).getTime();
+    return created >= cutoff;
+  });
+}
+  
 function applyFilters(){
   const status = getStatusFilter();
   const q = getSearchText();
