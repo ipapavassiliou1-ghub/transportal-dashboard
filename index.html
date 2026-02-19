@@ -1008,6 +1008,14 @@ document.getElementById("nextBtn").addEventListener("click",()=>{
   renderTable();
 });
 
+document.getElementById("timeScope").addEventListener("change", () => {
+  page = 1;
+  applyTimeScope();
+  applyFilters();
+  renderKpis();
+  renderTable();
+});
+  
 /* INITIAL LOAD */
 loadDashboard(true);
 </script>
