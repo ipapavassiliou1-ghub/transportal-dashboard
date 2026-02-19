@@ -1055,29 +1055,20 @@ async function downloadBatch(batchId){
 /* =========================================================
    MAIN LOAD
 ========================================================= */
-aasync function loadDashboard(force) {
+async function loadDashboard(force){
   const token = ++activeLoadToken;
 
-  if (force) setLive("polling");
+  if(force) setLive("polling");
 
-  try {
-    // Fetch all batches
+  try{
     allBatches = await fetchBatches(token);
-    if (!allBatches) return;
+    if(!allBatches) return;
 
-    // Apply Control Tower scope (created_at based)
     applyTimeScope();
-
-    // Apply table-level filters (status/search)
     applyFilters();
 
-    // Render scoped KPIs
     renderKpis();
-
-    // Render scoped exceptions
     renderExceptions();
-
-    // Render table (scoped + filtered)
     renderTable();
 
     // Update processing chip (table-level)
@@ -1086,29 +1077,26 @@ aasync function loadDashboard(force) {
         (b.status || "").toLowerCase() === "processing"
       ).length + " processing";
 
-    // Update carrier KPI (throttled internally)
     renderCarrierSplit(token);
 
-    // Determine if polling is needed (table-level processing)
     const hasProcessing = filtered.some(b =>
       (b.status || "").toLowerCase() === "processing"
     );
 
-    if (hasProcessing) {
-      if (!pollTimer) {
+    if(hasProcessing){
+      if(!pollTimer){
         setLive("polling");
-        pollTimer = setInterval(() => loadDashboard(false), 4000);
+        pollTimer = setInterval(()=>loadDashboard(false),4000);
       }
     } else {
-      if (pollTimer) clearInterval(pollTimer);
+      if(pollTimer) clearInterval(pollTimer);
       pollTimer = null;
       setLive("idle");
     }
 
-  } catch (e) {
+  } catch(e){
     console.error(e);
-
-    if (pollTimer) clearInterval(pollTimer);
+    if(pollTimer) clearInterval(pollTimer);
     pollTimer = null;
     setLive("idle");
   }
