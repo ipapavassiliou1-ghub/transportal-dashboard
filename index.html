@@ -1180,17 +1180,38 @@ function closeModal(){
    DOWNLOAD
 ========================================================= */
 async function downloadBatch(batchId){
-  const res=await fetch(`${BASE_GET}/track-batch/${batchId}?ts=${Date.now()}`,{
-    headers:{ "x-api-key": getApiKey() }
-  });
 
-  if(!res.ok){ showToast("Download failed"); return; }
+  const res = await fetch(
+    `${BASE_GET}/track-batch/${batchId}?ts=${Date.now()}`,
+    {
+      headers:{ "x-api-key": getApiKey() }
+    }
+  );
 
-  const blob=await res.blob();
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;
-  a.download=batchId+".xlsx";
+  if(!res.ok){
+    showToast("Download failed");
+    return;
+  }
+
+  const blob = await res.blob();
+
+  // Detect file type
+  const contentType = res.headers.get("content-type") || "";
+
+  let extension = "xlsx"; // default fallback
+
+  if(contentType.includes("text/csv")){
+    extension = "csv";
+  }else if(contentType.includes("application/json")){
+    extension = "json";
+  }else if(contentType.includes("spreadsheet") || contentType.includes("excel")){
+    extension = "xlsx";
+  }
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = batchId + "." + extension;
   document.body.appendChild(a);
   a.click();
   a.remove();
