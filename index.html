@@ -650,12 +650,12 @@ async function uploadBatch(){
   const formData = new FormData();
   formData.append("file", file);
 
-  if(exportFormat==="json"){
-    formData.append("response_mode","json");
-    formData.append("export_format","csv");
+  if(exportFormat === "json"){
+    formData.append("response_mode", "json");
+    formData.append("export_format", "json");
   }else{
-    formData.append("response_mode","file");
-    formData.append("export_format",exportFormat);
+    formData.append("response_mode", "file");
+    formData.append("export_format", exportFormat);
   }
 
   try{
