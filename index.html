@@ -807,13 +807,13 @@ function computeProgress(b){
 ========================================================= */
 function renderTable(){
   const tbody = document.getElementById("batchTable");
-  tbody.innerHTML="";
+  tbody.innerHTML = "";
 
-  const start=(page-1)*pageSize;
-  const slice=filtered.slice(start,start+pageSize);
+  const start = (page - 1) * pageSize;
+  const slice = filtered.slice(start, start + pageSize);
 
   if(!slice.length){
-    tbody.innerHTML="<tr><td colspan='8'>No batches</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='8'>No batches</td></tr>";
     return;
   }
 
@@ -821,12 +821,20 @@ function renderTable(){
     const percent = computeProgress(b);
     const s = safeJsonParse(b.summary);
 
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td class="mono linkLike" onclick="viewBatch('${b.request_id}')">${escapeHtml(b.request_id)}</td>
-      <td><span class="badge ${["completed","processing","error"].includes(b.status) ? b.status : "not_found"}">${escapeHtml(b.status||"unknown")}</span></td>
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="mono linkLike" data-batchid="${escapeHtml(b.request_id)}">
+        ${escapeHtml(b.request_id)}
+      </td>
+
       <td>
-        <div class="progressRow ${b.status==='processing'?'isProcessing':''}">
+        <span class="badge ${
+          ["completed","processing","error"].includes(b.status) ? b.status : "not_found"
+        }">${escapeHtml(b.status || "unknown")}</span>
+      </td>
+
+      <td>
+        <div class="progressRow ${b.status==='processing' ? 'isProcessing' : ''}">
           <div class="progressBar">
             <div class="progressFill" style="width:${percent}%"></div>
             <div class="progressPulse"></div>
@@ -834,21 +842,23 @@ function renderTable(){
           <div class="progressText">${percent}%</div>
         </div>
       </td>
-    <td>${s.total||0}</td>
-    <td>${calculateDaysOpen(b.created_at, b.completed_at)}</td>
-    <td>${escapeHtml(b.created_at||"-")}</td>
-    <td>${escapeHtml(b.completed_at||"-")}</td>
+
+      <td>${s.total || 0}</td>
+      <td>${calculateDaysOpen(b.created_at, b.completed_at)}</td>
+      <td>${escapeHtml(b.created_at || "-")}</td>
+      <td>${escapeHtml(b.completed_at || "-")}</td>
+
       <td>
         ${b.status==="completed"
-          ?`<button class="btnBlue" onclick="downloadBatch('${b.request_id}')">Download</button>`
-          :""}
-        <button class="btnGhost" onclick="viewBatch('${b.request_id}')">View</button>
+          ? `<button class="btnBlue" data-download="${escapeHtml(b.request_id)}">Download</button>`
+          : ""
+        }
+        <button class="btnGhost" data-view="${escapeHtml(b.request_id)}">View</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
 }
-
 /* =========================================================
    KPI
 ========================================================= */
