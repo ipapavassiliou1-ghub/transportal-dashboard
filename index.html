@@ -1000,48 +1000,76 @@ async function renderCarrierSplit(token){
    VIEW MODAL
 ========================================================= */
 /* =========================================================
-   VIEW MODAL (Drill-Down Safe Version)
+   TABLE CLICK HANDLER (event delegation)
 ========================================================= */
-async function viewBatch(batchId){
+(function bindBatchTableClicks(){
+  const tbody = document.getElementById("batchTable");
+  if (!tbody || tbody._boundClicks) return;
+  tbody._boundClicks = true;
 
-  try{
-
-    const res = await fetch(
-      `${BASE_GET}/track-batch/${batchId}?ts=${Date.now()}`,
-      {
-        headers:{ "x-api-key": getApiKey() },
-        cache:"no-store"
-      }
-    );
-
-    if(!res.ok){
-      showToast("Failed to load batch details");
+  tbody.addEventListener("click", (e) => {
+    const batchCell = e.target.closest("[data-batchid]");
+    if (batchCell) {
+      const id = batchCell.getAttribute("data-batchid");
+      viewBatch(id);
       return;
     }
 
-    const text = await res.text();
+    const viewBtn = e.target.closest("[data-view]");
+    if (viewBtn) {
+      const id = viewBtn.getAttribute("data-view");
+      viewBatch(id);
+      return;
+    }
 
-    if(!text || !text.trim()){
-      openModal(batchId, "<p>No data returned.</p>");
+    const dlBtn = e.target.closest("[data-download]");
+    if (dlBtn) {
+      const id = dlBtn.getAttribute("data-download");
+      downloadBatch(id);
+      return;
+    }
+  });
+})();
+
+
+/* =========================================================
+   VIEW MODAL (robust JSON/file handling)
+========================================================= */
+async function viewBatch(batchId){
+  try{
+    // IMPORTANT: we don't use activeLoadToken here — polling won't cancel this request
+    const res = await fetch(
+      `${BASE_GET}/track-batch/${encodeURIComponent(batchId)}?ts=${Date.now()}`,
+      { headers: { "x-api-key": getApiKey() }, cache: "no-store" }
+    );
+
+    if(!res.ok){
+      openModal(batchId, `<p>Failed to load details (${res.status}).</p>`);
+      return;
+    }
+
+    // Parse as text first (works even if server returns file/html)
+    const raw = await res.text();
+    if(!raw || !raw.trim()){
+      openModal(batchId, `<p>No data returned.</p>`);
       return;
     }
 
     let data;
-
     try{
-      data = JSON.parse(text);
-    }catch(e){
-      // Not JSON → file export
-      openModal(batchId, "<p>File-based batch. Use Download.</p>");
+      data = JSON.parse(raw);
+    }catch{
+      openModal(batchId, `<p>File-based batch. Use <b>Download</b>.</p>`);
       return;
     }
 
-    if(!data.results || !Array.isArray(data.results)){
-      openModal(batchId, "<p>No shipment results available.</p>");
+    const results = Array.isArray(data.results) ? data.results : [];
+    if(!results.length){
+      openModal(batchId, `<p>No shipment results available.</p>`);
       return;
     }
 
-    const rows = data.results.map(r => `
+    const rows = results.map(r => `
       <tr>
         <td>${escapeHtml(r.tracking)}</td>
         <td>${escapeHtml(r.reference || "-")}</td>
@@ -1063,15 +1091,49 @@ async function viewBatch(batchId){
           </tr>
         </thead>
         <tbody>
-          ${rows || "<tr><td colspan='5'>No data</td></tr>"}
+          ${rows}
         </tbody>
       </table>
     `);
 
-  }catch(e){
-    console.error(e);
-    showToast("Error loading details");
+  }catch(err){
+    console.error(err);
+    openModal(batchId, `<p>Error loading details.</p>`);
   }
+}
+
+
+function openModal(title, html){
+  closeModal();
+
+  const overlay = document.createElement("div");
+  overlay.className = "modalOverlay";
+
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modalHeader">
+        <div>
+          <h3 class="modalTitle">${escapeHtml(title)}</h3>
+          <div class="modalSub">Shipment-level drill-down</div>
+        </div>
+        <button class="xBtn" onclick="closeModal()">Close</button>
+      </div>
+      <div class="modalBody">
+        ${html}
+      </div>
+    </div>
+  `;
+
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  document.body.appendChild(overlay);
+}
+
+function closeModal(){
+  const el = document.querySelector(".modalOverlay");
+  if(el) el.remove();
 }
 
 
