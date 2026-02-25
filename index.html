@@ -1424,6 +1424,17 @@ document.getElementById("timeScope").addEventListener("change", () => {
   renderExceptions();
   renderTable();
 });
+
+document.getElementById("shipmentPrevBtn").addEventListener("click", ()=>{
+  shipmentPage = Math.max(1, shipmentPage - 1);
+  renderShipmentMonitor();
+});
+
+document.getElementById("shipmentNextBtn").addEventListener("click", ()=>{
+  const max = Math.ceil(scopedShipments.length / shipmentPageSize);
+  shipmentPage = Math.min(max, shipmentPage + 1);
+  renderShipmentMonitor();
+});
   
 /* INITIAL LOAD */
 loadDashboard(true);
