@@ -588,6 +588,9 @@ const BASE_GET  = "https://api.transportal.gr/webhook/51df26b4-d41e-4654-a11b-e6
 /* =========================================================
    STATE
 ========================================================= */
+let scopedShipments = [];
+let shipmentPage = 1;
+let shipmentPageSize = 25;
 let allBatches = [];
 let filtered = [];
 let scopedBatches = []; // created_at filtered dataset
