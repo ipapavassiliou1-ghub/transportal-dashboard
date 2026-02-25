@@ -885,6 +885,38 @@ function renderTable(){
 }
 
 /* =========================================================
+   RENDER SHIPMENT MONITOR
+========================================================= */
+function renderShipmentMonitor(){
+
+  const tbody = document.getElementById("shipmentTable");
+  if(!tbody) return;
+
+  tbody.innerHTML = "";
+
+  if(!scopedShipments.length){
+    tbody.innerHTML = "<tr><td colspan='6'>No shipments</td></tr>";
+    return;
+  }
+
+  scopedShipments.forEach(s=>{
+
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td class="mono">${escapeHtml(s.tracking)}</td>
+      <td>${escapeHtml(s.reference)}</td>
+      <td>${escapeHtml(s.carrier)}</td>
+      <td>${escapeHtml(s.status)}</td>
+      <td>${calculateDaysOpen(s.created_at, s.completed_at)}</td>
+      <td class="mono">${escapeHtml(s.batch_id)}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+  
+/* =========================================================
    BUILD SHIPMENT DATASET (Completed batches only)
 ========================================================= */
 async function buildShipmentDataset(token){
