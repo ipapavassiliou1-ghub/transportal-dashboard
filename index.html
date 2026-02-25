@@ -1342,9 +1342,12 @@ async function loadDashboard(force){
     applyTimeScope();
     applyFilters();
 
+    await buildShipmentDataset(token);
+
     renderKpis();
     renderExceptions();
     renderTable();
+    renderShipmentMonitor();
 
     // Update processing chip (table-level)
     document.getElementById("processingChip").textContent =
