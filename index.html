@@ -519,18 +519,33 @@
   <h2 class="sectionTitle">Shipment Monitor</h2>
 
   <div class="tableWrap">
-    <div class="tableToolbar">
-  <div>
-    <span class="chip" id="shipmentDatasetChip">0 shipments</span>
-  </div>
 
-  <div class="pager">
-    <button class="btnGhost" id="shipmentPrevBtn">Prev</button>
-    <span class="chip" id="shipmentPageChip">Page 1</span>
-    <button class="btnGhost" id="shipmentNextBtn">Next</button>
-  </div>
-</div>
-    
+    <!-- Toolbar -->
+    <div class="tableToolbar">
+
+      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <span class="chip" id="shipmentDatasetChip">0 shipments</span>
+
+        <div class="control" style="box-shadow:none; border:none; padding:0;">
+          <label style="margin-right:6px;">Rows</label>
+          <select id="shipmentPageSize">
+            <option value="10">10</option>
+            <option value="25" selected>25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pager">
+        <button class="btnGhost" id="shipmentPrevBtn">Prev</button>
+        <span class="chip" id="shipmentPageChip">Page 1</span>
+        <button class="btnGhost" id="shipmentNextBtn">Next</button>
+      </div>
+
+    </div>
+
+    <!-- Table -->
     <table>
       <thead>
         <tr>
@@ -543,9 +558,12 @@
         </tr>
       </thead>
       <tbody id="shipmentTable">
-        <tr><td colspan="6">Loading…</td></tr>
+        <tr>
+          <td colspan="6">Loading…</td>
+        </tr>
       </tbody>
     </table>
+
   </div>
 </div>
   
