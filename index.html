@@ -1464,6 +1464,12 @@ document.getElementById("shipmentNextBtn").addEventListener("click", ()=>{
   shipmentPage = Math.min(max, shipmentPage + 1);
   renderShipmentMonitor();
 });
+
+document.getElementById("shipmentPageSize").addEventListener("change", (e)=>{
+  shipmentPageSize = Number(e.target.value);
+  shipmentPage = 1;
+  renderShipmentMonitor();
+});
   
 /* INITIAL LOAD */
 loadDashboard(true);
