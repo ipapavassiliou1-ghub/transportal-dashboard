@@ -499,16 +499,43 @@
 
   <div class="tableWrap">
     <div class="tableToolbar">
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <span class="chip" id="datasetChip">0 batches</span>
-        <span class="chip" id="processingChip">0 processing</span>
-      </div>
-      <div class="pager">
-        <button class="btnGhost" id="prevBtn">Prev</button>
-        <span class="chip" id="pageChip">Page 1</span>
-        <button class="btnGhost" id="nextBtn">Next</button>
-      </div>
+  <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+
+    <span class="chip" id="datasetChip">0 batches</span>
+    <span class="chip" id="processingChip">0 processing</span>
+
+    <div class="control" style="box-shadow:none; border:none; padding:0;">
+      <label>Status</label>
+      <select id="statusFilter">
+        <option value="all" selected>All</option>
+        <option value="processing">processing</option>
+        <option value="completed">completed</option>
+        <option value="error">error</option>
+      </select>
     </div>
+
+    <div class="control" style="box-shadow:none; border:none; padding:0;">
+      <label>Search</label>
+      <input id="searchInput" type="text" placeholder="Batch ID..." />
+    </div>
+
+    <div class="control" style="box-shadow:none; border:none; padding:0;">
+      <label>Rows</label>
+      <select id="pageSize">
+        <option value="10">10</option>
+        <option value="25" selected>25</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
+  </div>
+
+  <div class="pager">
+    <button class="btnGhost" id="prevBtn">Prev</button>
+    <span class="chip" id="pageChip">Page 1</span>
+    <button class="btnGhost" id="nextBtn">Next</button>
+  </div>
+</div>
 
     <table>
       <thead>
