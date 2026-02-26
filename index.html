@@ -523,49 +523,43 @@
 </div>
 
 <!-- Shipment Monitor -->
-<div class="section">
-  <h2 class="sectionTitle">Shipment Monitor</h2>
+<div class="tableToolbar">
 
-  <div class="tableWrap">
+  <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
 
-    <!-- Toolbar -->
-    <div class="tableToolbar">
-
-  <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-
-    <span class="chip" id="datasetChip">0 batches</span>
-    <span class="chip" id="processingChip">0 processing</span>
+    <span class="chip" id="shipmentDatasetChip">0 shipments</span>
 
     <div class="control" style="box-shadow:none; border:none; padding:0;">
       <label>Status</label>
-      <select id="batchStatusFilter">
+      <select id="shipmentStatusFilter">
         <option value="all">All</option>
-        <option value="processing">processing</option>
-        <option value="completed">completed</option>
-        <option value="error">error</option>
+        <option value="delivered">Delivered</option>
+        <option value="pending">Pending</option>
+        <option value="error">Error</option>
       </select>
     </div>
 
     <div class="control" style="box-shadow:none; border:none; padding:0;">
       <label>Search</label>
-      <input id="batchSearchInput" type="text" placeholder="Batch ID..." />
+      <input id="shipmentSearchInput" type="text" placeholder="Tracking / Reference..." />
     </div>
 
     <div class="control" style="box-shadow:none; border:none; padding:0;">
       <label>Rows</label>
-      <select id="batchPageSize">
+      <select id="shipmentPageSize">
         <option value="10">10</option>
         <option value="25" selected>25</option>
         <option value="50">50</option>
+        <option value="100">100</option>
       </select>
     </div>
 
   </div>
 
   <div class="pager">
-    <button class="btnGhost" id="prevBtn">Prev</button>
-    <span class="chip" id="pageChip">Page 1</span>
-    <button class="btnGhost" id="nextBtn">Next</button>
+    <button class="btnGhost" id="shipmentPrevBtn">Prev</button>
+    <span class="chip" id="shipmentPageChip">Page 1</span>
+    <button class="btnGhost" id="shipmentNextBtn">Next</button>
   </div>
 
 </div>
