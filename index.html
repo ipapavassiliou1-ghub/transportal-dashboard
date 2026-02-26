@@ -1502,6 +1502,16 @@ document.getElementById("shipmentPageSize").addEventListener("change", (e)=>{
   shipmentPage = 1;
   renderShipmentMonitor();
 });
+
+  document.getElementById("shipmentStatusFilter").addEventListener("change", ()=>{
+  shipmentPage = 1;
+  renderShipmentMonitor();
+});
+
+document.getElementById("shipmentSearchInput").addEventListener("input", ()=>{
+  shipmentPage = 1;
+  renderShipmentMonitor();
+});
   
 /* INITIAL LOAD */
 loadDashboard(true);
