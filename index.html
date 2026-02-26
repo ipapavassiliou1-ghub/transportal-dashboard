@@ -355,6 +355,29 @@
 <div class="section">
   <div class="controlsRow">
 
+  <div class="control">
+    <label>Client</label>
+    <select id="apiKeySelect">
+      <option value="demo-key-123">demo-key-123</option>
+      <option value="demo-key-456">demo-key-456</option>
+    </select>
+  </div>
+
+  <div class="control">
+    <label>Time Scope</label>
+    <select id="timeScope">
+      <option value="7">Last 7 days</option>
+      <option value="14">Last 14 days</option>
+      <option value="30">Last 30 days</option>
+      <option value="90">Last 90 days</option>
+      <option value="all" selected>All time</option>
+    </select>
+  </div>
+
+  <button class="btnGhost" id="refreshBtn">Refresh</button>
+
+</div>
+
     <!-- Client -->
     <div class="control">
       <label>Client</label>
@@ -387,21 +410,6 @@
       </select>
     </div>
 
-    <!-- Search -->
-    <div class="control">
-      <label>Search</label>
-      <input id="searchInput" type="text" placeholder="Batch ID… (paste request_id)" />
-    </div>
-
-    <!-- Rows -->
-    <div class="control">
-      <label>Rows</label>
-      <select id="pageSize">
-        <option value="10">10</option>
-        <option value="25" selected>25</option>
-        <option value="50">50</option>
-      </select>
-    </div>
 
     <!-- Refresh -->
     <button class="btnGhost" id="refreshBtn">Refresh</button>
