@@ -355,30 +355,6 @@
 <div class="section">
   <div class="controlsRow">
 
-  <div class="control">
-    <label>Client</label>
-    <select id="apiKeySelect">
-      <option value="demo-key-123">demo-key-123</option>
-      <option value="demo-key-456">demo-key-456</option>
-    </select>
-  </div>
-
-  <div class="control">
-    <label>Time Scope</label>
-    <select id="timeScope">
-      <option value="7">Last 7 days</option>
-      <option value="14">Last 14 days</option>
-      <option value="30">Last 30 days</option>
-      <option value="90">Last 90 days</option>
-      <option value="all" selected>All time</option>
-    </select>
-  </div>
-
-  <button class="btnGhost" id="refreshBtn">Refresh</button>
-
-</div>
-
-    <!-- Client -->
     <div class="control">
       <label>Client</label>
       <select id="apiKeySelect">
@@ -387,28 +363,21 @@
       </select>
     </div>
 
-    <!-- Time Scope (created_at based) -->
     <div class="control">
       <label>Time Scope</label>
       <select id="timeScope">
-        <option value="7" selected>Last 7 days</option>
+        <option value="7">Last 7 days</option>
         <option value="14">Last 14 days</option>
         <option value="30">Last 30 days</option>
         <option value="90">Last 90 days</option>
-        <option value="all">All time</option>
+        <option value="all" selected>All time</option>
       </select>
     </div>
 
-    <!-- Status -->
-    <div class="control">
-      <label>Status</label>
-      <select id="statusFilter">
-        <option value="all">All</option>
-        <option value="processing">processing</option>
-        <option value="completed">completed</option>
-        <option value="error">error</option>
-      </select>
-    </div>
+    <button class="btnGhost" id="refreshBtn">Refresh</button>
+
+  </div>
+</div>
 
 
     <!-- Refresh -->
