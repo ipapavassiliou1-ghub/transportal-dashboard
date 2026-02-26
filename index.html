@@ -935,13 +935,34 @@ function renderShipmentMonitor(){
   const tbody = document.getElementById("shipmentTable");
   tbody.innerHTML = "";
 
-  const total = scopedShipments.length;
+  const statusFilter = document.getElementById("shipmentStatusFilter").value;
+  const searchText = (document.getElementById("shipmentSearchInput").value || "")
+                      .toLowerCase()
+                      .trim();
+
+  // Apply filtering
+  let filteredShipments = scopedShipments.slice();
+
+  if(statusFilter !== "all"){
+    filteredShipments = filteredShipments.filter(s =>
+      (s.status || "").toLowerCase() === statusFilter
+    );
+  }
+
+  if(searchText){
+    filteredShipments = filteredShipments.filter(s =>
+      String(s.tracking).toLowerCase().includes(searchText) ||
+      String(s.reference || "").toLowerCase().includes(searchText)
+    );
+  }
+
+  const total = filteredShipments.length;
 
   const maxPage = Math.max(1, Math.ceil(total / shipmentPageSize));
   if (shipmentPage > maxPage) shipmentPage = maxPage;
 
   const start = (shipmentPage - 1) * shipmentPageSize;
-  const slice = scopedShipments.slice(start, start + shipmentPageSize);
+  const slice = filteredShipments.slice(start, start + shipmentPageSize);
 
   document.getElementById("shipmentDatasetChip").textContent =
     total + " shipments";
