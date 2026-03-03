@@ -867,17 +867,21 @@ function computeProgress(b){
 
   if (!total) return 0;
 
-  // 🔥 If live progress exists, use it
+  // 🔥 FIRST: If completed → always 100%
+  if (
+    b.status === "completed" ||
+    b.status === "completed_with_errors" ||
+    b.status === "error"
+  ) {
+    return 100;
+  }
+
+  // 🔥 SECOND: If live progress exists → use processed
   if (processed > 0 && processed <= total) {
     return Math.min(100, Math.round((processed / total) * 100));
   }
 
-  // If completed, force 100%
-  if (b.status === "completed" || b.status === "completed_with_errors") {
-    return 100;
-  }
-
-  // Fallback to old behavior (final summary case)
+  // Fallback logic
   return Math.min(100, Math.round(((delivered + error) / total) * 100));
 }
 
