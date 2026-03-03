@@ -859,14 +859,26 @@ function applyFilters(){
 ========================================================= */
 function computeProgress(b){
   const s = safeJsonParse(b.summary);
-  const total = Number(s.total||0);
-  const delivered = Number(s.delivered||0);
-  const error = Number(s.error||0);
 
-  if(!total) return 0;
-  if(b.status==="completed" || b.status==="error") return 100;
+  const total = Number(s.total || 0);
+  const processed = Number(s.processed || 0);
+  const delivered = Number(s.delivered || 0);
+  const error = Number(s.error || 0);
 
-  return Math.min(100, Math.round(((delivered+error)/total)*100));
+  if (!total) return 0;
+
+  // 🔥 If live progress exists, use it
+  if (processed > 0 && processed <= total) {
+    return Math.min(100, Math.round((processed / total) * 100));
+  }
+
+  // If completed, force 100%
+  if (b.status === "completed" || b.status === "completed_with_errors") {
+    return 100;
+  }
+
+  // Fallback to old behavior (final summary case)
+  return Math.min(100, Math.round(((delivered + error) / total) * 100));
 }
 
 /* =========================================================
