@@ -1537,6 +1537,9 @@ document.getElementById("shipmentPageSize").addEventListener("change", (e)=>{
   renderShipmentMonitor();
 });
 
+  /* force initial sync with dropdown */
+shipmentPageSize = Number(document.getElementById("shipmentPageSize").value);
+  
   document.getElementById("shipmentStatusFilter").addEventListener("change", ()=>{
   shipmentPage = 1;
   renderShipmentMonitor();
