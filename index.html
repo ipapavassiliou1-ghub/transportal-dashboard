@@ -1262,11 +1262,29 @@ async function viewBatch(batchId){
       return;
     }
 
-    const results = Array.isArray(data.results) ? data.results : [];
-    if(!results.length){
-      openModal(batchId, `<p>No shipment results available.</p>`);
-      return;
+    let results = [];
+
+    if (Array.isArray(data.results)) {
+      results = data.results;
+    } 
+    else if (data.result_data) {
+      try {
+      const parsed = typeof data.result_data === "string"
+        ? JSON.parse(data.result_data)
+        : data.result_data;
+
+      if (Array.isArray(parsed.results)) {
+        results = parsed.results;
+      }
+    } catch (e) {
+      console.warn("Failed to parse result_data", e);
     }
+}
+
+  if(!results.length){
+    openModal(batchId, `<p>No shipment results available.</p>`);
+    return;
+}
 
     const rows = results.map(r => `
       <tr>
