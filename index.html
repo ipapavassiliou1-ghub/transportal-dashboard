@@ -724,7 +724,7 @@ async function uploadBatch(){
   }
 
   try{
-    const res = await fetch(`${BASE_POST}/track-batch`,{
+    const res = await fetch(`${BASE_API}/track-batch`,{
       method:"POST",
       headers:{ "x-api-key": apiKey },
       body:formData
@@ -750,7 +750,7 @@ async function uploadBatch(){
    FETCH BATCH LIST
 ========================================================= */
 async function fetchBatches(token){
-  const res = await fetch(`${BASE_POST}/batches?ts=${Date.now()}`,{
+  const res = await fetch(`${BASE_API}/batches?ts=${Date.now()}`,{
     headers:{ "x-api-key": getApiKey() },
     cache:"no-store"
   });
