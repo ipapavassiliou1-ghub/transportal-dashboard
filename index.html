@@ -724,7 +724,7 @@ async function uploadBatch(){
   }
 
   try{
-    const res = await fetch(`${BASE_API}/track-batch`,{
+    const res = await fetch(`${BASE_API}/track-batch-dashboard`,{
       method:"POST",
       headers:{ "x-api-key": apiKey },
       body:formData
@@ -783,7 +783,7 @@ async function fetchBatches(token){
 async function fetchDetails(batchId, token){
 
   const res = await fetch(
-    `${BASE_API}/track-batch/${batchId}?ts=${Date.now()}`,
+    `${BASE_API}/track-batch-dashboard/${batchId}?ts=${Date.now()}`,
     {
       headers:{ "x-api-key": getApiKey() },
       cache:"no-store"
@@ -1018,7 +1018,7 @@ async function buildShipmentDataset(token){
   for(const b of completedBatches){
 
     const res = await fetch(
-      `${BASE_API}/track-batch/${encodeURIComponent(b.request_id)}?ts=${Date.now()}`,
+      `${BASE_API}/track-batch-dashboard/${encodeURIComponent(b.request_id)}?ts=${Date.now()}`,
       {
         headers:{ "x-api-key": getApiKey() },
         cache:"no-store"
@@ -1236,7 +1236,7 @@ async function viewBatch(batchId){
   try{
     // IMPORTANT: we don't use activeLoadToken here — polling won't cancel this request
     const res = await fetch(
-      `${BASE_API}/track-batch/${encodeURIComponent(batchId)}?ts=${Date.now()}`,
+      `${BASE_API}/track-batch-dashboard/${encodeURIComponent(batchId)}?ts=${Date.now()}`,
       { headers: { "x-api-key": getApiKey() }, cache: "no-store" }
     );
 
@@ -1398,7 +1398,7 @@ function closeModal(){
 async function downloadBatch(batchId){
 
   const res = await fetch(
-    `${BASE_API}/track-batch/${batchId}?ts=${Date.now()}`,
+    `${BASE_API}/track-batch-dashboard/${batchId}?ts=${Date.now()}`,
     {
       headers:{ "x-api-key": getApiKey() }
     }
