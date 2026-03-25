@@ -629,22 +629,26 @@
     return;
   }
 
-  const res = await fetch("https://dashboard.transportal.gr/api/verify", {
+  const res = await fetch("https://api.transportal.gr/api/verify", {
     method: "POST",
     headers: {
       Authorization: "Bearer " + token,
     },
   });
 
-  const data = await res.json();
+  let data = null;
+  try {
+    data = await res.json();
+  } catch (e) {
+    console.error("Invalid verify response");
+  }
 
-  if (!data.success) {
+  if (!data || !data.success) {
     localStorage.removeItem("token");
     window.location.href = "/login.html";
     return;
   }
 
-  // ✅ Continue execution AFTER auth
 })();
 
   
