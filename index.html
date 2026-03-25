@@ -658,7 +658,7 @@ const WEBHOOK_API = "https://api.transportal.gr/webhook"; // new system
 function apiFetch(url, options = {}) {
   const token = localStorage.getItem("token");
 
-  return fetch(BASE_API + url, {
+  return fetch(API_V1 + url, {
     ...options,
     headers: {
       ...(options.headers || {}),
@@ -768,7 +768,7 @@ async function uploadBatch(){
   }
 
   try{
-    const res = await fetch(`${BASE_API}/track-batch-dashboard`,{
+    const res = await fetch(`${API_V1}/track-batch-dashboard`,{
       method:"POST",
       headers:{ "x-api-key": apiKey },
       body:formData
@@ -794,7 +794,7 @@ async function uploadBatch(){
    FETCH BATCH LIST
 ========================================================= */
 async function fetchBatches(token){
-  const res = await fetch(`${BASE_API}/batches?ts=${Date.now()}`,{
+  const res = await fetch(`${API_V1}/batches?ts=${Date.now()}`,{
     headers:{ "x-api-key": getApiKey() },
     cache:"no-store"
   });
@@ -827,7 +827,7 @@ async function fetchBatches(token){
 async function fetchDetails(batchId, token){
 
   const res = await fetch(
-    `${BASE_API}/track-batch/${batchId}?ts=${Date.now()}`,
+    `${API_V1}/track-batch/${batchId}?ts=${Date.now()}`,
     {
       headers:{ "x-api-key": getApiKey() },
       cache:"no-store"
@@ -1062,7 +1062,7 @@ async function buildShipmentDataset(token){
   for(const b of completedBatches){
 
     const res = await fetch(
-      `${BASE_API}/track-batch/${encodeURIComponent(b.request_id)}?ts=${Date.now()}`,
+      `${API_V1}/track-batch/${encodeURIComponent(b.request_id)}?ts=${Date.now()}`,
       {
         headers:{ "x-api-key": getApiKey() },
         cache:"no-store"
@@ -1280,7 +1280,7 @@ async function viewBatch(batchId){
   try{
     // IMPORTANT: we don't use activeLoadToken here — polling won't cancel this request
     const res = await fetch(
-      `${BASE_API}/track-batch/${encodeURIComponent(batchId)}?ts=${Date.now()}`,
+      `${API_V1}/track-batch/${encodeURIComponent(batchId)}?ts=${Date.now()}`,
       { headers: { "x-api-key": getApiKey() }, cache: "no-store" }
     );
 
@@ -1442,7 +1442,7 @@ function closeModal(){
 async function downloadBatch(batchId){
 
   const res = await fetch(
-    `${BASE_API}/track-batch/${batchId}?ts=${Date.now()}`,
+    `${API_V1}/track-batch/${batchId}?ts=${Date.now()}`,
     {
       headers:{ "x-api-key": getApiKey() }
     }
