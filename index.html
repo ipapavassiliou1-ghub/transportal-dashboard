@@ -620,50 +620,23 @@
 
 <script>
 
-// 🔐 AUTH CHECK + VERIFY
-(async () => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    window.location.href = "/login.html";
-    return;
-  }
-
-  const res = await fetch("https://api.transportal.gr/api/verify", {
-    method: "POST",
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  });
-
-  let data = null;
-  try {
-    data = await res.json();
-  } catch (e) {
-    console.error("Invalid verify response");
-  }
-
-  if (!data || !data.success) {
-    localStorage.removeItem("token");
-    window.location.href = "/login.html";
-    return;
-  }
-
-})();
-
-  
 /* =========================================================
-   CONFIG
+   CONFIG (MUST BE FIRST)
 ========================================================= */
 const API_V1 = "https://api.transportal.gr/api/v1";      // old system
 const WEBHOOK_API = "https://api.transportal.gr/webhook"; // new system
 
-// 🔐 OLD API (keep for batches etc.)
+
+/* =========================================================
+   HELPERS (MUST BE BEFORE USAGE)
+========================================================= */
+
+// OLD API (keep for batches etc.)
 function apiFetch(url, options = {}) {
   return fetch(API_V1 + url, options);
 }
 
-// 🔐 NEW SECURE API (JWT)
+// NEW SECURE API (JWT)
 function authFetch(url, options = {}) {
   const token = localStorage.getItem("token");
 
@@ -675,6 +648,47 @@ function authFetch(url, options = {}) {
     }
   });
 }
+
+
+/* =========================================================
+   AUTH CHECK + VERIFY
+========================================================= */
+(async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = "/login.html";
+      return;
+    }
+
+    const res = await fetch("https://api.transportal.gr/api/verify", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+
+    let data = null;
+
+    try {
+      data = await res.json();
+    } catch (e) {
+      console.error("Invalid verify response");
+    }
+
+    if (!data || !data.success) {
+      localStorage.removeItem("token");
+      window.location.href = "/login.html";
+      return;
+    }
+
+  } catch (err) {
+    console.error("Auth check failed:", err);
+    localStorage.removeItem("token");
+    window.location.href = "/login.html";
+  }
+})();
 
   
 /* =========================================================
