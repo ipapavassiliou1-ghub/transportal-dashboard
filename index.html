@@ -651,11 +651,10 @@
 /* =========================================================
    CONFIG
 ========================================================= */
-/* const BASE_API = "https://api.transportal.gr/api/v1"; [deactivated]
+const API_V1 = "https://api.transportal.gr/api/v1";      // old system
+const WEBHOOK_API = "https://api.transportal.gr/webhook"; // new system
 
-const BASE_API = "https://api.transportal.gr/webhook";
-
-// 🔐 API helper (ADD THIS ONCE)
+// 🔐 API helper (once)
 function apiFetch(url, options = {}) {
   const token = localStorage.getItem("token");
 
