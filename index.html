@@ -658,11 +658,16 @@
 const API_V1 = "https://api.transportal.gr/api/v1";      // old system
 const WEBHOOK_API = "https://api.transportal.gr/webhook"; // new system
 
-// 🔐 API helper (once)
+// 🔐 OLD API (keep for batches etc.)
 function apiFetch(url, options = {}) {
+  return fetch(API_V1 + url, options);
+}
+
+// 🔐 NEW SECURE API (JWT)
+function authFetch(url, options = {}) {
   const token = localStorage.getItem("token");
 
-  return fetch(API_V1 + url, {
+  return fetch(WEBHOOK_API + url, {
     ...options,
     headers: {
       ...(options.headers || {}),
