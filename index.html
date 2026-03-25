@@ -651,8 +651,24 @@
 /* =========================================================
    CONFIG
 ========================================================= */
-const BASE_API = "https://api.transportal.gr/api/v1";
+/* const BASE_API = "https://api.transportal.gr/api/v1"; [deactivated]
 
+const BASE_API = "https://api.transportal.gr/webhook";
+
+// 🔐 API helper (ADD THIS ONCE)
+function apiFetch(url, options = {}) {
+  const token = localStorage.getItem("token");
+
+  return fetch(BASE_API + url, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      Authorization: "Bearer " + token
+    }
+  });
+}
+
+  
 /* =========================================================
    STATE
 ========================================================= */
