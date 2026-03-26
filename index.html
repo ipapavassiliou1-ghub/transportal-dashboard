@@ -1114,8 +1114,8 @@ async function buildShipmentDataset(token){
 if (Array.isArray(data)) {
   // multiple batches
   data.forEach(batch => {
-    if (batch.parsed_results) {
-      shipments.push(...batch.parsed_results.map(r => ({
+    if (batch.results) {
+      shipments.push(...batch.results.map(r => ({
         ...r,
         batch_id: batch.id,
         created_at: batch.created_at,
@@ -1125,7 +1125,7 @@ if (Array.isArray(data)) {
   });
 } else {
   // single batch (current case)
-  shipments = (data.parsed_results || []).map(r => ({
+  shipments = (data.results || []).map(r => ({
     ...r,
     batch_id: data.id,
     created_at: data.created_at,
