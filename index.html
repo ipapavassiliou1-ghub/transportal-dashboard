@@ -1107,14 +1107,14 @@ async function buildShipmentDataset(token){
   if(!Array.isArray(data)) return;
 
   scopedShipments = data.map(r => ({
-    tracking: r.tracking,
-    reference: r.reference || "-",
-    carrier: r.carrier || "-",
-    status: r.status || "-",
-    batch_id: r.batch_id,
-    created_at: r.created_at,
-    completed_at: r.completed_at
-  }));
+  tracking: r.tracking || r.request_id || "-",   // 👈 fallback
+  reference: r.reference || "-",
+  carrier: r.detected_carrier || r.requested_carrier || "-",
+  status: r.status || "-",
+  batch_id: r.id,
+  created_at: r.created_at,
+  completed_at: r.completed_at
+}));
 }
   
 /* =========================================================
