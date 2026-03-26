@@ -1098,23 +1098,37 @@ async function buildShipmentDataset(token){
 
   try {
     const text = await res.text();
+    console.log("RAW SHIPMENTS:", text);   // 👈 DEBUG 1
+
     data = text ? JSON.parse(text) : [];
   } catch (e) {
     console.error("Invalid shipments JSON", e);
     return;
   }
 
+  console.log("SHIPMENTS COUNT:", data.length); // 👈 DEBUG 2
+
   if(!Array.isArray(data)) return;
 
   scopedShipments = data.map(r => ({
-  tracking: r.tracking || r.request_id || "-",   // 👈 fallback
-  reference: r.reference || "-",
-  carrier: r.detected_carrier || r.requested_carrier || "-",
-  status: r.status || "-",
-  batch_id: r.id,
-  created_at: r.created_at,
-  completed_at: r.completed_at
-}));
+    tracking: r.tracking || r.request_id || "-",   // fallback
+    reference: r.reference || "-",
+    carrier: r.detected_carrier || r.requested_carrier || "-",
+    status: r.status || "-",
+    batch_id: r.id,
+    created_at: r.created_at,
+    completed_at: r.completed_at
+  }));
+
+  console.log("SCOPED:", scopedShipments.length); // 👈 DEBUG 3
+
+  // 🔥 CRITICAL FIX (THIS WAS MISSING)
+  filteredShipments = scopedShipments;
+
+  console.log("FILTERED:", filteredShipments.length); // 👈 DEBUG 4
+
+  // 🔥 FORCE UI UPDATE
+  renderShipmentTable();
 }
   
 /* =========================================================
