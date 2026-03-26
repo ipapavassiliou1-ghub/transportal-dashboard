@@ -1108,8 +1108,30 @@ async function buildShipmentDataset(token){
 
   if(!data) return;
 
-  // 🔥 CORRECT EXTRACTION (this is the key fix)
-  const shipments = data.parsed_results || [];
+  // 🔥 CORRECT EXTRACTION (this is the key fix) - NB: changed to bring all shipments
+  let shipments = [];
+
+if (Array.isArray(data)) {
+  // multiple batches
+  data.forEach(batch => {
+    if (batch.parsed_results) {
+      shipments.push(...batch.parsed_results.map(r => ({
+        ...r,
+        batch_id: batch.id,
+        created_at: batch.created_at,
+        completed_at: batch.completed_at
+      })));
+    }
+  });
+} else {
+  // single batch (current case)
+  shipments = (data.parsed_results || []).map(r => ({
+    ...r,
+    batch_id: data.id,
+    created_at: data.created_at,
+    completed_at: data.completed_at
+  }));
+}
 
   console.log("SHIPMENTS COUNT:", shipments.length);
 
