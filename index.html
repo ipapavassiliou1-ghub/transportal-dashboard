@@ -1094,43 +1094,46 @@ async function buildShipmentDataset(token){
 
   if(!res.ok) return;
 
-  let data = [];
+  let data = null;
 
   try {
     const text = await res.text();
-    console.log("RAW SHIPMENTS:", text);   // 👈 DEBUG 1
+    console.log("RAW SHIPMENTS:", text);
 
-    data = text ? JSON.parse(text) : [];
+    data = text ? JSON.parse(text) : null;
   } catch (e) {
     console.error("Invalid shipments JSON", e);
     return;
   }
 
-  console.log("SHIPMENTS COUNT:", data.length); // 👈 DEBUG 2
+  if(!data) return;
 
-  const shipments = Array.isArray(data)
-  ? data
-  : (data.parsed_results || []);
+  // 🔥 CORRECT EXTRACTION (this is the key fix)
+  const shipments = data.parsed_results || [];
 
-  scopedShipments = data.map(r => ({
-    tracking: r.tracking || r.request_id || "-",   // fallback
+  console.log("SHIPMENTS COUNT:", shipments.length);
+
+  scopedShipments = shipments.map(r => ({
+    tracking: r.tracking || "-",
     reference: r.reference || "-",
-    carrier: r.detected_carrier || r.requested_carrier || "-",
+    carrier: r.carrier || "-",
     status: r.status || "-",
-    batch_id: r.id,
-    created_at: r.created_at,
-    completed_at: r.completed_at
+    batch_id: data.id,
+    created_at: data.created_at,
+    completed_at: data.completed_at
   }));
 
-  console.log("SCOPED:", scopedShipments.length); // 👈 DEBUG 3
+  console.log("SCOPED:", scopedShipments.length);
 
-  // 🔥 CRITICAL FIX (THIS WAS MISSING)
+  // 🔥 CONNECT TO UI
   filteredShipments = scopedShipments;
 
-  console.log("FILTERED:", filteredShipments.length); // 👈 DEBUG 4
+  console.log("FILTERED:", filteredShipments.length);
 
-  // 🔥 FORCE UI UPDATE
-  renderShipmentTable();
+  // 🔥 FORCE RENDER
+  if (typeof renderShipmentTable === "function") {
+    renderShipmentTable();
+  }
 }
   
 /* =========================================================
