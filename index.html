@@ -1108,7 +1108,9 @@ async function buildShipmentDataset(token){
 
   console.log("SHIPMENTS COUNT:", data.length); // 👈 DEBUG 2
 
-  if(!Array.isArray(data)) return;
+  const shipments = Array.isArray(data)
+  ? data
+  : (data.parsed_results || []);
 
   scopedShipments = data.map(r => ({
     tracking: r.tracking || r.request_id || "-",   // fallback
