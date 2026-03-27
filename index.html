@@ -715,9 +715,7 @@ function authFetch(url, options = {}) {
       return;
     }
 
-// DISPLAY client name
-    (function () {
-  try {
+    // ✅ DISPLAY CLIENT INFO
     const userEmail = localStorage.getItem("user_email") || "Unknown";
 
     const userEl = document.getElementById("userInfo");
@@ -727,12 +725,11 @@ function authFetch(url, options = {}) {
     if (clientEl) clientEl.textContent = userEmail;
 
   } catch (err) {
-    console.error("Auth display failed:", err);
+    console.error("Auth check failed:", err);
     localStorage.removeItem("token");
     window.location.href = "/login.html";
   }
 })();
-
   
 /* =========================================================
    STATE
