@@ -857,7 +857,7 @@ async function uploadBatch(){
 ========================================================= */
 async function fetchBatches(token){
   const res = await fetch(`${API_V1}/batches?ts=${Date.now()}`,{
-    headers:{ "x-api-key": "demo-key-123" },
+    headers:{ "x-api-key": getApiKey() },
     cache:"no-store"
   });
 
@@ -891,7 +891,7 @@ async function fetchDetails(batchId, token){
   const res = await fetch(
     `${API_V1}/track-batch/${batchId}?ts=${Date.now()}`,
     {
-      headers:{ "x-api-key": "demo-key-123" },
+      headers:{ "x-api-key": getApiKey() },
       cache:"no-store"
     }
   );
