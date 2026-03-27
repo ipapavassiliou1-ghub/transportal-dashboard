@@ -78,6 +78,7 @@
       if (data.success) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("client_key", data.user.client_key);
+        localStorage.setItem("user_email", data.user.email);
         window.location.href = "/dashboard.html";
       } else {
         alert("Login failed");
