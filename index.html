@@ -710,6 +710,15 @@ function authFetch(url, options = {}) {
       return;
     }
 
+// ✅ TEMP DISPLAY (to verify UI works)
+    const demoEmail = "demo@client.com";
+
+    const userEl = document.getElementById("userInfo");
+    if (userEl) userEl.textContent = "👤 " + demoEmail;
+
+    const clientEl = document.getElementById("clientDisplay");
+    if (clientEl) clientEl.textContent = demoEmail;
+    
   } catch (err) {
     console.error("Auth check failed:", err);
     localStorage.removeItem("token");
