@@ -715,17 +715,19 @@ function authFetch(url, options = {}) {
       return;
     }
 
-// ✅ TEMP DISPLAY (to verify UI works)
-    const demoEmail = "demo@client.com";
+// DISPLAY client name
+    (function () {
+  try {
+    const userEmail = localStorage.getItem("user_email") || "Unknown";
 
     const userEl = document.getElementById("userInfo");
-    if (userEl) userEl.textContent = "👤 " + demoEmail;
+    if (userEl) userEl.textContent = "👤 " + userEmail;
 
     const clientEl = document.getElementById("clientDisplay");
-    if (clientEl) clientEl.textContent = demoEmail;
-    
+    if (clientEl) clientEl.textContent = userEmail;
+
   } catch (err) {
-    console.error("Auth check failed:", err);
+    console.error("Auth display failed:", err);
     localStorage.removeItem("token");
     window.location.href = "/login.html";
   }
