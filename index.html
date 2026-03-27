@@ -666,12 +666,14 @@ function apiFetch(url, options = {}) {
 // NEW SECURE API (JWT)
 function authFetch(url, options = {}) {
   const token = localStorage.getItem("token");
+  const clientKey = localStorage.getItem("client_key");
 
   return fetch(WEBHOOK_API + url, {
     ...options,
     headers: {
       ...(options.headers || {}),
-      Authorization: "Bearer " + token
+      Authorization: "Bearer " + token,
+      "x-api-key": clientKey
     }
   });
 }
