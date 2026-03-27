@@ -1674,6 +1674,16 @@ document.getElementById("shipmentSearchInput").addEventListener("input", ()=>{
   
 /* INITIAL LOAD */
 loadDashboard(true);
+
+/* LOGOUT */
+  function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("client_key");
+  localStorage.removeItem("user_email");
+
+  window.location.href = "/login.html";
+}
+
 </script>
 
 </body>
