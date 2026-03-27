@@ -1160,7 +1160,7 @@ if (Array.isArray(data)) {
   }));
 }
 
-  //console.log("SHIPMENTS COUNT:", shipments.length);
+  console.log("SHIPMENTS COUNT:", shipments.length);
 
   scopedShipments = shipments.map(r => ({
     tracking: r.tracking || "-",
@@ -1172,12 +1172,12 @@ if (Array.isArray(data)) {
     completed_at: data.completed_at
   }));
 
-  //console.log("SCOPED:", scopedShipments.length);
+  console.log("SCOPED:", scopedShipments.length);
 
   // 🔥 CONNECT TO UI
   filteredShipments = scopedShipments;
 
-  //console.log("FILTERED:", filteredShipments.length);
+  console.log("FILTERED:", filteredShipments.length);
 
   // 🔥 FORCE RENDER
   if (typeof renderShipmentTable === "function") {
