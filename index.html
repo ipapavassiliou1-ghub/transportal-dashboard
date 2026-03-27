@@ -655,11 +655,13 @@ const WEBHOOK_API = "https://api.transportal.gr/webhook"; // new system
 //}
 
 function apiFetch(url, options = {}) {
+  const apiKey = localStorage.getItem("client_key");
+
   return fetch(API_V1 + url, {
     ...options,
     headers: {
       ...(options.headers || {}),
-      "x-api-key": "demo-key-123"
+      "x-api-key": apiKey
     }
   });
 }
