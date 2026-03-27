@@ -759,7 +759,7 @@ function escapeHtml(str){
   }[m]));
 }
 
-function getApiKey(){ return document.getElementById("apiKeySelect").value; }
+function getApiKey(){ return localStorage.getItem("client_key"); }
 function getStatusFilter(){ return document.getElementById("statusFilter").value; }
 function getSearchText(){ return (document.getElementById("searchInput").value||"").toLowerCase().trim(); }
 
@@ -1620,14 +1620,7 @@ async function loadDashboard(force){
 ========================================================= */
 document.getElementById("uploadBtn").addEventListener("click",uploadBatch);
 document.getElementById("refreshBtn").addEventListener("click",()=>loadDashboard(true));
-document.getElementById("apiKeySelect").addEventListener("change",()=>{
-  clearInterval(pollTimer);
-  pollTimer=null;
-  page=1;
-  allBatches=[];
-  filtered=[];
-  loadDashboard(true);
-});
+
 document.getElementById("statusFilter").addEventListener("change",()=>{page=1;applyFilters();renderKpis();renderTable();});
 document.getElementById("searchInput").addEventListener("input",()=>{page=1;applyFilters();renderKpis();renderTable();});
 document.getElementById("pageSize").addEventListener("change",()=>{page=1;applyFilters();renderKpis();renderTable();});
