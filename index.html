@@ -719,7 +719,8 @@ function authFetch(url, options = {}) {
     if (userEl) userEl.textContent = "👤 " + userEmail;
 
     const clientEl = document.getElementById("clientDisplay");
-    if (clientEl) clientEl.textContent = userEmail;
+    const displayName = localStorage.getItem("display_name") || "Client";
+    if (clientEl) clientEl.textContent = displayName;
 
   } catch (err) {
     console.error("Auth check failed:", err);
