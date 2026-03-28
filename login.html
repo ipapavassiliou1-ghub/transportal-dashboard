@@ -1,47 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login - Transportal</title>
+  <title>Transportal Login</title>
+
   <style>
     body {
-      font-family: Arial;
-      background: #0f172a;
-      color: white;
-      display: flex;
+      margin: 0;
+      font-family: Arial, sans-serif;
       height: 100vh;
-      justify-content: center;
+      display: flex;
       align-items: center;
+      justify-content: center;
+
+      /* 🔥 background like your main page */
+      background: linear-gradient(
+          rgba(15, 23, 42, 0.85),
+          rgba(15, 23, 42, 0.95)
+        ),
+        url("https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1974&auto=format&fit=crop");
+      background-size: cover;
+      background-position: center;
+      color: white;
     }
 
-    .login-box {
-      background: #1e293b;
-      padding: 30px;
-      border-radius: 10px;
-      width: 300px;
+    .login-card {
+      background: white;
+      color: #0f172a;
+      padding: 40px 32px;
+      border-radius: 12px;
+      width: 320px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 25px;
     }
 
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-top: 10px;
-      border-radius: 5px;
-      border: none;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 14px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #2563eb;
     }
 
     button {
       margin-top: 15px;
       width: 100%;
-      padding: 10px;
-      background: #3b82f6;
+      padding: 12px;
+      background: #2563eb;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
+      font-weight: bold;
       cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .error {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #dc2626;
+      display: none;
     }
 
     .footer {
-      margin-top: 15px;
-      text-align: center;
+      margin-top: 18px;
       font-size: 12px;
       color: #94a3b8;
     }
@@ -49,41 +97,88 @@
 </head>
 
 <body>
-  <div class="login-box">
-    <h2>Login</h2>
 
-    <input id="email" placeholder="Email" />
+  <div class="login-card">
+
+    <div class="logo">transportal</div>
+    <div class="subtitle">Operations Control Tower</div>
+
+    <input id="email" placeholder="Email address" />
     <input id="password" type="password" placeholder="Password" />
 
-    <button onclick="login()">Login</button>
+    <button id="loginBtn" onclick="login()">Login</button>
 
-    <div class="footer">powered by transportal</div>
+    <div id="errorMsg" class="error"></div>
+
+    <div class="footer">
+      Secure access for logistics clients
+    </div>
+
   </div>
 
   <script>
     async function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const btn = document.getElementById("loginBtn");
+      const errorEl = document.getElementById("errorMsg");
 
-      const res = await fetch("https://api.transportal.gr/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
+      // reset error
+      errorEl.style.display = "none";
+      errorEl.textContent = "";
 
-      const data = await res.json();
-
-      if (data.success) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("client_key", data.user.client_key);
-        localStorage.setItem("user_email", data.user.email);
-        window.location.href = "/dashboard.html";
-      } else {
-        alert("Login failed");
+      if (!email || !password) {
+        errorEl.textContent = "Please enter email and password";
+        errorEl.style.display = "block";
+        return;
       }
+
+      // 🔄 loading state
+      btn.disabled = true;
+      btn.textContent = "Logging in...";
+
+      try {
+        const res = await fetch("https://api.transportal.gr/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        let data = null;
+
+        try {
+          data = await res.json();
+        } catch (e) {
+          throw new Error("Invalid server response");
+        }
+
+        if (data.success) {
+          // ✅ STORE SESSION
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("client_key", data.user.client_key);
+          localStorage.setItem("user_email", data.user.email);
+
+          // redirect
+          window.location.href = "/dashboard.html";
+
+        } else {
+          errorEl.textContent = "Invalid email or password";
+          errorEl.style.display = "block";
+        }
+
+      } catch (err) {
+        console.error(err);
+        errorEl.textContent = "Connection error. Please try again.";
+        errorEl.style.display = "block";
+      }
+
+      // 🔁 reset button
+      btn.disabled = false;
+      btn.textContent = "Login";
     }
   </script>
+
 </body>
 </html>
