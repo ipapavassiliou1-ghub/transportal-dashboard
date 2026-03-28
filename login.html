@@ -14,10 +14,10 @@
 
       /* 🔥 background like your main page */
       background: linear-gradient(
-          rgba(15, 23, 42, 0.85),
-          rgba(15, 23, 42, 0.95)
-        ),
-        url("https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1974&auto=format&fit=crop");
+      rgba(255,255,255,0.75),
+      rgba(255,255,255,0.85)
+      ),
+url("https://images.unsplash.com/photo-1581093458791-9d09c1c8c7a8?q=80&w=1974&auto=format&fit=crop");
       background-size: cover;
       background-position: center;
       color: white;
@@ -52,6 +52,7 @@
       border-radius: 8px;
       border: 1px solid #cbd5e1;
       font-size: 14px;
+      box-sizing: border-box;
     }
 
     input:focus {
@@ -65,12 +66,13 @@
       padding: 12px;
       background: #2563eb;
       color: white;
-      border: none;
+      border: 1px solid transparent; /* 🔥 THIS FIXES ALIGNMENT */
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.2s;
-    }
+     transition: 0.2s;
+     box-sizing: border-box; /* 🔥 IMPORTANT */
+   }
 
     button:hover {
       background: #1d4ed8;
