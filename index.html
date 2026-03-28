@@ -407,32 +407,7 @@
   </div>
 </div>
 
-
-<!-- Upload -->
-<div class="section">
-  <h2 class="sectionTitle">Upload New Batch</h2>
-  <div class="controlsRow">
-    <div class="control">
-      <label>File</label>
-      <input type="file" id="fileInput" />
-    </div>
-
-    <div class="control">
-      <label>Export</label>
-      <select id="exportFormat">
-        <option value="xlsx" selected>xlsx</option>
-        <option value="csv">csv</option>
-        <option value="json">json</option>
-      </select>
-    </div>
-
-    <button class="btnPrimary" id="uploadBtn">Upload</button>
-    <span class="toastInline" id="uploadStatus"></span>
-  </div>
-  <div class="mutedSmall" style="margin-top:10px;">
-    Upload a CSV/XLSX with tracking numbers (optional: reference, carrier).
-  </div>
-</div>
+<div class="section controlTower">
 
 <!-- Exceptions -->
 <div class="section">
@@ -577,9 +552,39 @@
 
   </div>
 </div>
+
+</div> <!-- END CONTROL TOWER -->
+
+  <!-- Upload -->
+<div class="section">
+  <h2 class="sectionTitle">Upload New Batch</h2>
+  <div class="controlsRow">
+    <div class="control">
+      <label>File</label>
+      <input type="file" id="fileInput" />
+    </div>
+
+    <div class="control">
+      <label>Export</label>
+      <select id="exportFormat">
+        <option value="xlsx" selected>xlsx</option>
+        <option value="csv">csv</option>
+        <option value="json">json</option>
+      </select>
+    </div>
+
+    <button class="btnPrimary" id="uploadBtn">Upload</button>
+    <span class="toastInline" id="uploadStatus"></span>
+  </div>
+  <div class="mutedSmall" style="margin-top:10px;">
+    Upload a CSV/XLSX with tracking numbers (optional: reference, carrier).
+  </div>
+</div>
+
+
   
 <!-- Batches -->
-<div class="section">
+<div class="section operations">
   <h2 class="sectionTitle">Recent Batches</h2>
 
   <div class="tableWrap">
