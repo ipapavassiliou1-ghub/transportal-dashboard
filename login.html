@@ -3,26 +3,20 @@
 <head>
   <title>Transportal Login</title>
 
+  <!-- ✅ MOBILE SUPPORT -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
 
-      body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-
-        /* 🔥 background like your main page */
-       background: linear-gradient(
-       background: linear-gradient(
-       rgba(255,255,255,0.75),
-       rgba(255,255,255,0.85)
-       ),
-       url("https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1974&auto=format&fit=crop"); ✅
+      /* Background */
+      background: linear-gradient(
+        rgba(255,255,255,0.75),
+        rgba(255,255,255,0.85)
+      ),
+      url("https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1974&auto=format&fit=crop");
 
       background-size: cover;
       background-position: center;
@@ -30,29 +24,35 @@
       color: #0f172a;
 
       display: flex;
-      height: 100vh;
+      flex-direction: column;
       justify-content: center;
-     align-items: center;
-  }
+      align-items: center;
+
+      min-height: 100vh;
+    }
 
     .login-card {
-      background: white;
-      color: #0f172a;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(6px);
+
       padding: 40px 32px;
       border-radius: 12px;
+
       width: 320px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      max-width: 90%;
+
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
       text-align: center;
     }
 
     .logo {
-      font-size: 26px;
+      font-size: 28px;
       font-weight: bold;
       margin-bottom: 6px;
     }
 
     .subtitle {
-      font-size: 13px;
+      font-size: 14px;
       color: #64748b;
       margin-bottom: 25px;
     }
@@ -61,8 +61,10 @@
       width: 100%;
       padding: 12px;
       margin-top: 10px;
+
       border-radius: 8px;
       border: 1px solid #cbd5e1;
+
       font-size: 14px;
       box-sizing: border-box;
     }
@@ -76,18 +78,22 @@
       margin-top: 15px;
       width: 100%;
       padding: 12px;
-      background: #2563eb;
+
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
       color: white;
-      border: 1px solid transparent; /* 🔥 THIS FIXES ALIGNMENT */
+
+      border: 1px solid transparent;
       border-radius: 8px;
+
       font-weight: bold;
       cursor: pointer;
-     transition: 0.2s;
-     box-sizing: border-box; /* 🔥 IMPORTANT */
-   }
+
+      transition: 0.2s;
+      box-sizing: border-box;
+    }
 
     button:hover {
-      background: #1d4ed8;
+      opacity: 0.9;
     }
 
     button:disabled {
@@ -102,10 +108,28 @@
       display: none;
     }
 
-    .footer {
-      margin-top: 18px;
-      font-size: 12px;
-      color: #94a3b8;
+    /* 🔥 FOOTER (matches your app style) */
+    .powered {
+      position: fixed;
+      bottom: 20px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .powered span {
+      color: #6d28d9;
+      font-weight: bold;
+    }
+
+    /* ✅ MOBILE TWEAKS */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 30px 20px;
+      }
+
+      .logo {
+        font-size: 24px;
+      }
     }
   </style>
 </head>
@@ -124,10 +148,15 @@
 
     <div id="errorMsg" class="error"></div>
 
-    <div class="footer">
+    <div class="subtitle" style="margin-top:20px;">
       Secure access for logistics clients
     </div>
 
+  </div>
+
+  <!-- 🔥 BOTTOM FOOTER -->
+  <div class="powered">
+    powered by <span>transportal</span>
   </div>
 
   <script>
@@ -137,7 +166,6 @@
       const btn = document.getElementById("loginBtn");
       const errorEl = document.getElementById("errorMsg");
 
-      // reset error
       errorEl.style.display = "none";
       errorEl.textContent = "";
 
@@ -147,7 +175,6 @@
         return;
       }
 
-      // 🔄 loading state
       btn.disabled = true;
       btn.textContent = "Logging in...";
 
@@ -169,14 +196,11 @@
         }
 
         if (data.success) {
-          // ✅ STORE SESSION
           localStorage.setItem("token", data.token);
           localStorage.setItem("client_key", data.user.client_key);
           localStorage.setItem("user_email", data.user.email);
 
-          // redirect
           window.location.href = "/dashboard.html";
-
         } else {
           errorEl.textContent = "Invalid email or password";
           errorEl.style.display = "block";
@@ -188,7 +212,6 @@
         errorEl.style.display = "block";
       }
 
-      // 🔁 reset button
       btn.disabled = false;
       btn.textContent = "Login";
     }
