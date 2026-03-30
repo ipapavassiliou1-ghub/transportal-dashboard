@@ -198,7 +198,7 @@
 
         if (data.success) {
           localStorage.setItem("token", data.token);
-          localStorage.setItem("client_key", "demo-key-123");
+          localStorage.setItem("client_key", data.user.client_key);
           localStorage.setItem("user_email", data.user.email);
           localStorage.setItem("display_name", data.user.display_name);
 
