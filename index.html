@@ -1203,16 +1203,24 @@ async function buildShipmentDataset(token){
   let data = null;
 
   try {
-    const text = await res.text();
-    console.log("RAW SHIPMENTS:", text);
+  const text = await res.text();
+  console.log("RAW SHIPMENTS:", text);
 
-    data = text ? JSON.parse(text) : null;
-  } catch (e) {
-    console.error("Invalid shipments JSON", e);
-    return;
+  let fixedText = text.trim();
+
+  // 🔥 FIX invalid JSON (missing array wrapper)
+  if (fixedText && !fixedText.startsWith("[")) {
+    fixedText = `[${fixedText}]`;
   }
 
-  if(!data) return;
+  data = fixedText ? JSON.parse(fixedText) : null;
+
+} catch (e) {
+  console.error("Invalid shipments JSON", e);
+  return;
+}
+
+if (!data) return;
 
   // 🔥 NEW LOGIC (flat shipments array)
 let shipments = [];
