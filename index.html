@@ -1243,38 +1243,29 @@ if (Array.isArray(data)) {
 
 console.log("SHIPMENTS COUNT:", shipments.length);
 
-/// 🔥 Build tracking → batch map (FINAL FIX)
-const trackingToBatch = {};
+// 🔥 Build reference → batch map (FINAL SIMPLE FIX)
+const referenceToBatch = {};
 
+// build map from batches
 if (Array.isArray(window.dashboardBatches)) {
   window.dashboardBatches.forEach(b => {
-    let results = [];
-
     try {
-      const parsed = JSON.parse(b.result_data || "{}");
+      const raw = b.result_data || "";
 
-      // 🔥 handle ALL real structures
-      if (Array.isArray(parsed)) {
-        results = parsed;
-      } else if (Array.isArray(parsed.results)) {
-        results = parsed.results;
-      } else if (parsed.data && Array.isArray(parsed.data.results)) {
-        results = parsed.data.results;
-      }
+      // 🔥 extract ORDER-* references directly
+      const matches = raw.match(/ORDER-\d+/g) || [];
+
+      matches.forEach(ref => {
+        referenceToBatch[ref] = b.id;
+      });
 
     } catch (e) {
       console.warn("Batch parse failed", b.id);
     }
-
-    results.forEach(r => {
-      if (r && r.tracking) {
-        trackingToBatch[r.tracking] = b.id;
-      }
-    });
   });
 }
 
-console.log("TRACKING MAP SIZE:", Object.keys(trackingToBatch).length);
+console.log("REFERENCE MAP SIZE:", Object.keys(referenceToBatch).length);
 
 console.log("BATCHES DEBUG:", window.dashboardBatches);
   
