@@ -1180,14 +1180,22 @@ async function buildShipmentDataset(token){
   if(!data) return;
 
   // 🔥 NEW LOGIC (flat shipments array)
-let shipments = Array.isArray(data) ? data : [];
+let shipments = [];
+
+if (Array.isArray(data)) {
+  shipments = data;
+} else if (Array.isArray(data.data)) {
+  shipments = data.data;
+} else {
+  shipments = [];
+}
 
 console.log("SHIPMENTS COUNT:", shipments.length);
 
 // 🔥 Build tracking → batch map
 const trackingToBatch = {};
 
-if (Array.isArray(window.batches)) {
+if (Array.isArray(batches)) {
   window.batches.forEach(b => {
     try {
       const parsed = JSON.parse(b.result_data || "{}");
@@ -1201,7 +1209,7 @@ if (Array.isArray(window.batches)) {
     }
   });
 }
-
+console.log("BATCHES DEBUG:", batches);
 console.log("TRACKING MAP SIZE:", Object.keys(trackingToBatch).length);
   
 scopedShipments = shipments.map(r => ({
