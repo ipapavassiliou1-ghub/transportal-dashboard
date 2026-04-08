@@ -1276,7 +1276,7 @@ scopedShipments = shipments.map(r => ({
   reference: r.reference || "-",
   carrier: r.carrier || "-",
   status: r.status || "-",
-  batch_id: trackingToBatch[r.tracking] || "-",
+  batch_id: referenceToBatch[r.reference] || "-"
   created_at: null,
   completed_at: null
 }));
