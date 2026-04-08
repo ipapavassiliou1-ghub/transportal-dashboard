@@ -1184,12 +1184,32 @@ let shipments = Array.isArray(data) ? data : [];
 
 console.log("SHIPMENTS COUNT:", shipments.length);
 
+// 🔥 Build tracking → batch map
+const trackingToBatch = {};
+
+if (Array.isArray(window.batches)) {
+  window.batches.forEach(b => {
+    try {
+      const parsed = JSON.parse(b.result_data || "{}");
+
+      (parsed.results || []).forEach(r => {
+        trackingToBatch[r.tracking] = b.id;
+      });
+
+    } catch (e) {
+      console.warn("Batch parse failed", b.id);
+    }
+  });
+}
+
+console.log("TRACKING MAP SIZE:", Object.keys(trackingToBatch).length);
+  
 scopedShipments = shipments.map(r => ({
   tracking: r.tracking || "-",
   reference: r.reference || "-",
   carrier: r.carrier || "-",
   status: r.status || "-",
-  batch_id: "-",          // temporary (we fix next)
+  batch_id: trackingToBatch[r.tracking] || "-",
   created_at: null,
   completed_at: null
 }));
