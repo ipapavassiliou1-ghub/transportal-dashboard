@@ -926,7 +926,42 @@ async function fetchBatches(token){
     return [];
   }
 }
+async function fetchBatches(token){
+  const res = await fetch(`${API_V1}/batches?ts=${Date.now()}`,{
+    headers:{ "x-api-key": getApiKey() },
+    cache:"no-store"
+  });
 
+  if(token!==activeLoadToken) return null;
+
+  if(!res.ok){
+    const text = await res.text().catch(()=> "");
+    throw new Error("Load failed: " + text);
+  }
+
+  const text = await res.text();
+
+  if(!text || !text.trim()){
+    window.dashboardBatches = [];
+    return [];
+  }
+
+  try{
+    const json = JSON.parse(text);
+
+    const batches = Array.isArray(json) ? json : [];
+
+    // 🔥 CRITICAL LINE
+    window.dashboardBatches = batches;
+
+    return batches;
+
+  }catch(e){
+    console.error("Invalid JSON from /batches:", text);
+    window.dashboardBatches = [];
+    return [];
+  }
+}
 /* =========================================================
    FETCH DETAILS
 ========================================================= */
