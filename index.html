@@ -1230,8 +1230,8 @@ console.log("SHIPMENTS COUNT:", shipments.length);
 // 🔥 Build tracking → batch map
 const trackingToBatch = {};
 
-if (Array.isArray(batches)) {
-  window.batches.forEach(b => {
+if (Array.isArray(window.dashboardBatches)) {
+  window.dashboardBatches.forEach(b => {
     try {
       const parsed = JSON.parse(b.result_data || "{}");
 
@@ -1244,7 +1244,9 @@ if (Array.isArray(batches)) {
     }
   });
 }
-console.log("BATCHES DEBUG:", batches);
+
+console.log("BATCHES DEBUG:", window.dashboardBatches);
+  
 console.log("TRACKING MAP SIZE:", Object.keys(trackingToBatch).length);
   
 scopedShipments = shipments.map(r => ({
