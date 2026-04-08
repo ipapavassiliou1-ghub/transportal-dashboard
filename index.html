@@ -1206,21 +1206,29 @@ async function buildShipmentDataset(token){
   const text = await res.text();
   console.log("RAW SHIPMENTS:", text);
 
-  let fixedText = text.trim();
+  // 🔥 SPLIT objects safely
+  const items = text
+    .split(/\}\s*,\s*\{/)
+    .map((item, index, arr) => {
+      if (index === 0) return item + "}";
+      if (index === arr.length - 1) return "{" + item;
+      return "{" + item + "}";
+    });
 
-  // 🔥 FIX invalid JSON (missing array wrapper)
-  if (fixedText && !fixedText.startsWith("[")) {
-    fixedText = `[${fixedText}]`;
-  }
-
-  data = fixedText ? JSON.parse(fixedText) : null;
+  data = items.map(i => {
+    try {
+      return JSON.parse(i);
+    } catch {
+      return null;
+    }
+  }).filter(Boolean);
 
 } catch (e) {
   console.error("Invalid shipments JSON", e);
   return;
 }
 
-if (!data) return;
+if (!data || !Array.isArray(data)) return;
 
   // 🔥 NEW LOGIC (flat shipments array)
 let shipments = [];
