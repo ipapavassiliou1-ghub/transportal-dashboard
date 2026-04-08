@@ -1179,11 +1179,10 @@ async function buildShipmentDataset(token){
 
   if(!data) return;
 
-  // 🔥 CORRECT EXTRACTION (this is the key fix) - NB: changed to bring all shipments
-  let shipments = [];
+  // 🔥 CORRECT EXTRACTION ...
+let shipments = [];
 
 if (Array.isArray(data)) {
-  // multiple batches
   data.forEach(batch => {
     if (batch.results) {
       shipments.push(...batch.results.map(r => ({
@@ -1195,7 +1194,6 @@ if (Array.isArray(data)) {
     }
   });
 } else {
-  // single batch (current case)
   shipments = (data.results || []).map(r => ({
     ...r,
     batch_id: data.id,
@@ -1204,17 +1202,17 @@ if (Array.isArray(data)) {
   }));
 }
 
-  console.log("SHIPMENTS COUNT:", shipments.length);
+console.log("SHIPMENTS COUNT:", shipments.length);
 
-  scopedShipments = shipments.map(r => ({
-    tracking: r.tracking || "-",
-    reference: r.reference || "-",
-    carrier: r.carrier || "-",
-    status: r.status || "-",
-    batch_id: data.id,
-    created_at: data.created_at,
-    completed_at: data.completed_at
-  }));
+scopedShipments = shipments.map(r => ({
+  tracking: r.tracking || "-",
+  reference: r.reference || "-",
+  carrier: r.carrier || "-",
+  status: r.status || "-",
+  batch_id: data.id,
+  created_at: data.created_at,
+  completed_at: data.completed_at
+}));
 
   console.log("SCOPED:", scopedShipments.length);
 
