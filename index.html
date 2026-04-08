@@ -1161,7 +1161,7 @@ async function buildShipmentDataset(token){
 
   scopedShipments = [];
 
-  const res = await authFetch("/batches");
+  const res = await authFetch("/dashboard/shipments");
 
   if(!res.ok) return;
 
