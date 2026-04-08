@@ -1243,50 +1243,29 @@ if (Array.isArray(data)) {
 
 console.log("SHIPMENTS COUNT:", shipments.length);
 
-// 🔥 Build tracking → batch map (robust version)
+/// 🔥 Build tracking → batch map (FINAL FIX)
 const trackingToBatch = {};
 
 if (Array.isArray(window.dashboardBatches)) {
   window.dashboardBatches.forEach(b => {
     let results = [];
 
-    // 1️⃣ Try normal JSON (expected case)
     try {
       const parsed = JSON.parse(b.result_data || "{}");
 
-      if (Array.isArray(parsed.results)) {
-        results = parsed.results;
-      } else if (Array.isArray(parsed)) {
+      // 🔥 handle ALL real structures
+      if (Array.isArray(parsed)) {
         results = parsed;
+      } else if (Array.isArray(parsed.results)) {
+        results = parsed.results;
+      } else if (parsed.data && Array.isArray(parsed.data.results)) {
+        results = parsed.data.results;
       }
 
     } catch (e) {
-      // 2️⃣ Fallback: broken JSON like {...},{...}
-      try {
-        const raw = (b.result_data || "").trim();
-
-        if (raw) {
-          const items = raw
-            .split(/\}\s*,\s*\{/)
-            .map((item, index, arr) => {
-              if (index === 0) return item + "}";
-              if (index === arr.length - 1) return "{" + item;
-              return "{" + item + "}";
-            });
-
-          results = items
-            .map(i => {
-              try { return JSON.parse(i); } catch { return null; }
-            })
-            .filter(Boolean);
-        }
-
-      } catch (err) {
-        console.warn("Batch parse failed completely", b.id);
-      }
+      console.warn("Batch parse failed", b.id);
     }
 
-    // 3️⃣ Build map
     results.forEach(r => {
       if (r && r.tracking) {
         trackingToBatch[r.tracking] = b.id;
