@@ -1179,28 +1179,8 @@ async function buildShipmentDataset(token){
 
   if(!data) return;
 
-  // 🔥 CORRECT EXTRACTION ...
-let shipments = [];
-
-if (Array.isArray(data)) {
-  data.forEach(batch => {
-    if (batch.results) {
-      shipments.push(...batch.results.map(r => ({
-        ...r,
-        batch_id: batch.id,
-        created_at: batch.created_at,
-        completed_at: batch.completed_at
-      })));
-    }
-  });
-} else {
-  shipments = (data.results || []).map(r => ({
-    ...r,
-    batch_id: data.id,
-    created_at: data.created_at,
-    completed_at: data.completed_at
-  }));
-}
+  // 🔥 NEW LOGIC (flat shipments array)
+let shipments = Array.isArray(data) ? data : [];
 
 console.log("SHIPMENTS COUNT:", shipments.length);
 
@@ -1209,11 +1189,10 @@ scopedShipments = shipments.map(r => ({
   reference: r.reference || "-",
   carrier: r.carrier || "-",
   status: r.status || "-",
-  batch_id: data.id,
-  created_at: data.created_at,
-  completed_at: data.completed_at
+  batch_id: "-",          // temporary (we fix next)
+  created_at: null,
+  completed_at: null
 }));
-
   console.log("SCOPED:", scopedShipments.length);
 
   // 🔥 CONNECT TO UI
