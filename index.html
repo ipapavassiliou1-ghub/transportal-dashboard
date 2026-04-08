@@ -1243,23 +1243,59 @@ if (Array.isArray(data)) {
 
 console.log("SHIPMENTS COUNT:", shipments.length);
 
-// 🔥 Build tracking → batch map
+// 🔥 Build tracking → batch map (robust version)
 const trackingToBatch = {};
 
 if (Array.isArray(window.dashboardBatches)) {
   window.dashboardBatches.forEach(b => {
+    let results = [];
+
+    // 1️⃣ Try normal JSON (expected case)
     try {
       const parsed = JSON.parse(b.result_data || "{}");
 
-      (parsed.results || []).forEach(r => {
-        trackingToBatch[r.tracking] = b.id;
-      });
+      if (Array.isArray(parsed.results)) {
+        results = parsed.results;
+      } else if (Array.isArray(parsed)) {
+        results = parsed;
+      }
 
     } catch (e) {
-      console.warn("Batch parse failed", b.id);
+      // 2️⃣ Fallback: broken JSON like {...},{...}
+      try {
+        const raw = (b.result_data || "").trim();
+
+        if (raw) {
+          const items = raw
+            .split(/\}\s*,\s*\{/)
+            .map((item, index, arr) => {
+              if (index === 0) return item + "}";
+              if (index === arr.length - 1) return "{" + item;
+              return "{" + item + "}";
+            });
+
+          results = items
+            .map(i => {
+              try { return JSON.parse(i); } catch { return null; }
+            })
+            .filter(Boolean);
+        }
+
+      } catch (err) {
+        console.warn("Batch parse failed completely", b.id);
+      }
     }
+
+    // 3️⃣ Build map
+    results.forEach(r => {
+      if (r && r.tracking) {
+        trackingToBatch[r.tracking] = b.id;
+      }
+    });
   });
 }
+
+console.log("TRACKING MAP SIZE:", Object.keys(trackingToBatch).length);
 
 console.log("BATCHES DEBUG:", window.dashboardBatches);
   
