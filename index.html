@@ -1197,89 +1197,58 @@ async function buildShipmentDataset(token){
   scopedShipments = [];
 
   const res = await authFetch("/dashboard/shipments");
-
-  if(!res.ok) return;
+  if (!res.ok) return;
 
   let data = null;
 
   try {
-  const text = await res.text();
-  console.log("RAW SHIPMENTS:", text);
+    const text = await res.text();
+    console.log("RAW SHIPMENTS:", text);
 
-  // 🔥 SPLIT objects safely
-  const items = text
-    .split(/\}\s*,\s*\{/)
-    .map((item, index, arr) => {
-      if (index === 0) return item + "}";
-      if (index === arr.length - 1) return "{" + item;
-      return "{" + item + "}";
-    });
-
-  data = items.map(i => {
-    try {
-      return JSON.parse(i);
-    } catch {
-      return null;
-    }
-  }).filter(Boolean);
-
-} catch (e) {
-  console.error("Invalid shipments JSON", e);
-  return;
-}
-
-if (!data || !Array.isArray(data)) return;
-
-  // 🔥 NEW LOGIC (flat shipments array)
-let shipments = [];
-
-if (Array.isArray(data)) {
-  shipments = data;
-} else if (Array.isArray(data.data)) {
-  shipments = data.data;
-} else {
-  shipments = [];
-}
-
-console.log("SHIPMENTS COUNT:", shipments.length);
-
-// 🔥 Build reference → batch map (FINAL SIMPLE FIX)
-const referenceToBatch = {};
-
-// build map from batches
-if (Array.isArray(window.dashboardBatches)) {
-  window.dashboardBatches.forEach(b => {
-    try {
-      const raw = b.result_data || "";
-
-      // 🔥 extract ORDER-* references directly
-      const matches = raw.match(/ORDER-\d+/g) || [];
-
-      matches.forEach(ref => {
-        referenceToBatch[ref] = b.id;
+    // 🔥 Robust parsing for malformed JSON (n8n output)
+    const items = text
+      .split(/\}\s*,\s*\{/)
+      .map((item, index, arr) => {
+        if (index === 0) return item + "}";
+        if (index === arr.length - 1) return "{" + item;
+        return "{" + item + "}";
       });
 
-    } catch (e) {
-      console.warn("Batch parse failed", b.id);
-    }
-  });
-}
+    data = items
+      .map(i => {
+        try {
+          return JSON.parse(i);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
 
-console.log("REFERENCE MAP SIZE:", Object.keys(referenceToBatch).length);
+  } catch (e) {
+    console.error("Invalid shipments JSON", e);
+    return;
+  }
 
-console.log("BATCHES DEBUG:", window.dashboardBatches);
-  
-console.log("TRACKING MAP SIZE:", Object.keys(trackingToBatch).length);
-  
-scopedShipments = shipments.map(r => ({
-  tracking: r.tracking || "-",
-  reference: r.reference || "-",
-  carrier: r.carrier || "-",
-  status: r.status || "-",
-  batch_id: "-",          // 🔥 intentionally empty
-  created_at: null,
-  completed_at: null
-}));
+  if (!data || !Array.isArray(data)) return;
+
+  // 🔥 Flat shipments array
+  const shipments = Array.isArray(data) ? data : [];
+
+  console.log("SHIPMENTS COUNT:", shipments.length);
+
+  // ❌ IMPORTANT: NO mapping here (was breaking everything)
+  // We will handle batch linkage later in backend properly
+
+  scopedShipments = shipments.map(r => ({
+    tracking: r.tracking || "-",
+    reference: r.reference || "-",
+    carrier: r.carrier || "-",
+    status: r.status || "-",
+    batch_id: "-",          // 🔥 intentionally empty for now
+    created_at: null,
+    completed_at: null
+  }));
+
   console.log("SCOPED:", scopedShipments.length);
 
   // 🔥 CONNECT TO UI
