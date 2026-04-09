@@ -1190,7 +1190,7 @@ async function buildShipmentDataset(token){
 
   scopedShipments = [];
 
-  const res = await authFetch("/api/v1/shipments");
+  const res = await authFetch("/shipments");
   if (!res.ok) return;
 
   let data = null;
