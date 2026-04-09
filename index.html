@@ -1183,8 +1183,8 @@ function renderShipmentMonitor(){
   });
 }
   
-/* =========================================================
-   BUILD SHIPMENT DATASET (Completed batches only)
+//* =========================================================
+   BUILD SHIPMENT DATASET (DB-based)
 ========================================================= */
 async function buildShipmentDataset(token){
 
@@ -1196,50 +1196,26 @@ async function buildShipmentDataset(token){
   let data = null;
 
   try {
-    const text = await res.text();
-    console.log("RAW SHIPMENTS:", text);
-
-    // 🔥 Robust parsing for malformed JSON (n8n output)
-    const items = text
-      .split(/\}\s*,\s*\{/)
-      .map((item, index, arr) => {
-        if (index === 0) return item + "}";
-        if (index === arr.length - 1) return "{" + item;
-        return "{" + item + "}";
-      });
-
-    data = items
-      .map(i => {
-        try {
-          return JSON.parse(i);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
-
+    data = await res.json(); // ✅ CLEAN JSON now
+    console.log("RAW SHIPMENTS:", data);
   } catch (e) {
     console.error("Invalid shipments JSON", e);
     return;
   }
 
-  if (!data || !Array.isArray(data)) return;
+  if (!Array.isArray(data)) return;
 
-  // 🔥 Flat shipments array
-  const shipments = Array.isArray(data) ? data : [];
+  const shipments = data;
 
   console.log("SHIPMENTS COUNT:", shipments.length);
-
-  // ❌ IMPORTANT: NO mapping here (was breaking everything)
-  // We will handle batch linkage later in backend properly
 
   scopedShipments = shipments.map(r => ({
     tracking: r.tracking || "-",
     reference: r.reference || "-",
     carrier: r.carrier || "-",
     status: r.status || "-",
-    batch_id: "-",          // 🔥 intentionally empty for now
-    created_at: null,
+    batch_id: r.batch_id || "-",     // ✅ NOW REAL
+    created_at: r.created_at || null,
     completed_at: null
   }));
 
