@@ -684,17 +684,11 @@
    CONFIG (MUST BE FIRST)
 ========================================================= */
 const API_V1 = "https://api.transportal.gr/api/v1";      // old system
-/*const WEBHOOK_API = "https://api.transportal.gr/webhook"; // new system
 
 
 /* =========================================================
    HELPERS (MUST BE BEFORE USAGE)
 ========================================================= */
-
-// OLD API (keep for batches etc.)
-//function apiFetch(url, options = {}) {
-//  return fetch(API_V1 + url, options);
-//}
 
 function apiFetch(url, options = {}) {
   const apiKey = localStorage.getItem("client_key");
