@@ -1150,24 +1150,22 @@ function renderShipmentMonitor(){
                       .toLowerCase()
                       .trim();
 
-  // Apply filtering
   let filteredShipments = scopedShipments.slice();
 
-  if(statusFilter !== "all"){
+  if (statusFilter !== "all") {
     filteredShipments = filteredShipments.filter(s =>
-      (s.status || "").toLowerCase() === statusFilter
+      String(s.status || "").toLowerCase() === statusFilter
     );
   }
 
-  if(searchText){
+  if (searchText) {
     filteredShipments = filteredShipments.filter(s =>
-      String(s.tracking).toLowerCase().includes(searchText) ||
+      String(s.tracking || "").toLowerCase().includes(searchText) ||
       String(s.reference || "").toLowerCase().includes(searchText)
     );
   }
 
   const total = filteredShipments.length;
-
   const maxPage = Math.max(1, Math.ceil(total / shipmentPageSize));
   if (shipmentPage > maxPage) shipmentPage = maxPage;
 
@@ -1180,28 +1178,38 @@ function renderShipmentMonitor(){
   document.getElementById("shipmentPageChip").textContent =
     "Page " + shipmentPage + " / " + maxPage;
 
-  if(!slice.length){
-    tbody.innerHTML =
-      "<tr><td colspan='6'>No shipments</td></tr>";
+  if (!slice.length) {
+    tbody.innerHTML = "<tr><td colspan='8'>No shipments</td></tr>";
     return;
   }
 
-  slice.forEach(s=>{
+  slice.forEach(s => {
     const tr = document.createElement("tr");
+
+    const delayedLabel = s.is_delayed ? "Yes" : "No";
+    const delayedClass = s.is_delayed ? "error" : "completed";
+
     tr.innerHTML = `
       <td>${escapeHtml(s.tracking)}</td>
       <td>${escapeHtml(s.reference)}</td>
       <td>${escapeHtml(s.carrier)}</td>
       <td>${escapeHtml(s.status)}</td>
-      <td>${calculateDaysOpen(s.created_at, s.completed_at)}</td>
+      <td>${escapeHtml(s.days_open)}</td>
+      <td>${escapeHtml(s.sla_days)}</td>
+      <td>
+        <span class="badge ${delayedClass}">
+          ${escapeHtml(delayedLabel)}
+        </span>
+      </td>
       <td class="mono">${escapeHtml(s.batch_id)}</td>
     `;
+
     tbody.appendChild(tr);
   });
 }
   
 /* =========================================================
-   BUILD SHIP-MENT DATASET (DB-based)
+   BUILD SHIPMENT DATASET (DB-based)
 ========================================================= */
 async function buildShipmentDataset(token){
 
@@ -1213,7 +1221,7 @@ async function buildShipmentDataset(token){
   let data = null;
 
   try {
-    data = await res.json(); // ✅ CLEAN JSON now
+    data = await res.json();
     console.log("RAW SHIPMENTS:", data);
   } catch (e) {
     console.error("Invalid shipments JSON", e);
@@ -1222,31 +1230,23 @@ async function buildShipmentDataset(token){
 
   if (!Array.isArray(data)) return;
 
-  const shipments = data;
-
-  console.log("SHIPMENTS COUNT:", shipments.length);
-
-  scopedShipments = shipments.map(r => ({
+  scopedShipments = data.map(r => ({
     tracking: r.tracking || "-",
     reference: r.reference || "-",
     carrier: r.carrier || "-",
+    service: r.service || "UNKNOWN",
     status: r.status || "-",
-    batch_id: r.batch_id || "-",     // ✅ NOW REAL
+    normalized_status: r.normalized_status || r.status || "-",
+    raw_status: r.raw_status || null,
+    batch_id: r.batch_id || "-",
     created_at: r.created_at || null,
-    completed_at: null
+    completed_at: null,
+    sla_days: Number(r.sla_days || 0),
+    days_open: Number(r.days_open || 0),
+    is_delayed: Number(r.is_delayed || 0)
   }));
 
   console.log("SCOPED:", scopedShipments.length);
-
-  // 🔥 CONNECT TO UI
-  filteredShipments = scopedShipments;
-
-  console.log("FILTERED:", filteredShipments.length);
-
-  // 🔥 FORCE RENDER
-  if (typeof renderShipmentTable === "function") {
-    renderShipmentTable();
-  }
 }
   
 /* =========================================================
