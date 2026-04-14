@@ -1198,6 +1198,10 @@ function renderShipmentMonitor(){
     const delayedLabel = s.is_delayed ? "Delayed" : "On Time";
     const delayedClass = s.is_delayed ? "error" : "completed";
 
+    const slaText = s.is_delayed
+      ? `${s.sla_days} (+${Math.max(0, s.days_open - s.sla_days)})`
+      : String(s.sla_days);
+    
     tr.innerHTML = `
       <td>${escapeHtml(s.tracking)}</td>
       <td>${escapeHtml(s.reference)}</td>
