@@ -1195,8 +1195,18 @@ function renderShipmentMonitor(){
     const tr = document.createElement("tr");
     if (s.is_delayed) tr.classList.add("rowDelayed");
 
-    const delayedLabel = s.is_delayed ? "Delayed" : "On Time";
-    const delayedClass = s.is_delayed ? "error" : "completed";
+    let delayedLabel = "On Time";
+    let delayedClass = "completed";
+
+    if (s.delay_status === 1) {
+    delayedLabel = "Delayed";
+    delayedClass = "error";
+  }
+
+   if (s.delay_status === 2) {
+   delayedLabel = "Late";
+   delayedClass = "warning";
+  }
 
     const slaText = s.is_delayed
       ? `${s.sla_days} (+${Math.max(0, s.days_open - s.sla_days)})`
