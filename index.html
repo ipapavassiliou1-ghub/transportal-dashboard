@@ -1256,7 +1256,7 @@ async function buildShipmentDataset(token){
     completed_at: null,
     sla_days: Number(r.sla_days || 0),
     days_open: Number(r.days_open || 0),
-    is_delayed: Number(r.is_delayed || 0)
+    delay_status: Number(r.delay_status || 0)
   }));
 
   console.log("SCOPED:", scopedShipments.length);
