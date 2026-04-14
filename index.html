@@ -1185,6 +1185,7 @@ function renderShipmentMonitor(){
 
   slice.forEach(s => {
     const tr = document.createElement("tr");
+    if (s.is_delayed) tr.classList.add("rowDelayed");
 
     const delayedLabel = s.is_delayed ? "Delayed" : "On Time";
     const delayedClass = s.is_delayed ? "error" : "completed";
