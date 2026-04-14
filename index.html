@@ -277,6 +277,11 @@
   background: #fff4e5;
   color: #ad6800;
   }
+
+  .rowLate td {
+  background: #fffbe6 !important;
+  border-left: 4px solid #faad14;
+  }
   
   /* Toolbar */
   .tableToolbar{
@@ -1198,7 +1203,8 @@ function renderShipmentMonitor(){
 
   slice.forEach(s => {
     const tr = document.createElement("tr");
-    if (s.is_delayed) tr.classList.add("rowDelayed");
+    if (s.delay_status === 1) tr.classList.add("rowDelayed");
+    if (s.delay_status === 2) tr.classList.add("rowLate");
 
     let delayedLabel = "On Time";
     let delayedClass = "completed";
