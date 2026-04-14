@@ -1168,7 +1168,7 @@ function renderShipmentMonitor(){
   let filteredShipments = scopedShipments.slice();
 
   if (statusFilter === "delayed") {
-    filteredShipments = filteredShipments.filter(s => Number(s.is_delayed) === 1);
+  filteredShipments = filteredShipments.filter(s => Number(s.delay_status) === 1);
   } else if (statusFilter !== "all") {
     filteredShipments = filteredShipments.filter(s =>
       String(s.status || "").toLowerCase() === statusFilter
