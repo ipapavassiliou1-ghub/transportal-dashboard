@@ -1081,37 +1081,30 @@ function renderTable(){
     const percent = computeProgress(b);
     const s = safeJsonParse(b.summary);
 
+    // ✅ Normalize status for UI
+    const normalizedStatus =
+      b.status === "completed_with_errors"
+        ? "completed"
+        : b.status;
+
+    const statusLabel =
+      b.status === "completed_with_errors"
+        ? "Completed (with errors)"
+        : b.status;
+
     const tr = document.createElement("tr");
+
     tr.innerHTML = `
       <td class="mono linkLike" data-batchid="${escapeHtml(b.request_id)}">
         ${escapeHtml(b.request_id)}
       </td>
 
       <td>
-        const normalizedStatus =
-  b.status === "completed_with_errors"
-    ? "completed"
-    : b.status;
-
-const statusLabel =
-  b.status === "completed_with_errors"
-    ? "Completed (with errors)"
-    : b.status;
-
-tr.innerHTML = `
-  <td class="mono linkLike" data-batchid="${escapeHtml(b.request_id)}">
-    ${escapeHtml(b.request_id)}
-  </td>
-
-  <td>
-    <span class="badge ${
-      ["completed","processing","error"].includes(normalizedStatus)
-        ? normalizedStatus
-        : "not_found"
-    }">${escapeHtml(statusLabel || "unknown")}</span>
-  </td>
-
-        
+        <span class="badge ${
+          ["completed","processing","error"].includes(normalizedStatus)
+            ? normalizedStatus
+            : "not_found"
+        }">${escapeHtml(statusLabel || "unknown")}</span>
       </td>
 
       <td>
@@ -1124,7 +1117,7 @@ tr.innerHTML = `
         </div>
       </td>
 
-      <td>${s.total || 0}</td>
+      <td>${s?.total || 0}</td>
       <td>${calculateDaysOpen(b.created_at, b.completed_at)}</td>
       <td>${escapeHtml(b.created_at || "-")}</td>
       <td>${escapeHtml(b.completed_at || "-")}</td>
@@ -1137,6 +1130,7 @@ tr.innerHTML = `
         <button class="btnGhost" data-view="${escapeHtml(b.request_id)}">View</button>
       </td>
     `;
+
     tbody.appendChild(tr);
   });
 }
