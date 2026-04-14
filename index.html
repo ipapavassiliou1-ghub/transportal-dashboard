@@ -1238,7 +1238,7 @@ function renderShipmentMonitor(){
         String(s.status || "").slice(1).toLowerCase()
       )}</td>
       <td>${escapeHtml(s.days_open)}</td>
-      <td>${escapeHtml(slaText)}</td>
+      <td>${slaText}</td>
       <td>
         <span class="badge ${delayedClass}">
           ${escapeHtml(delayedLabel)}
