@@ -1123,12 +1123,12 @@ function renderTable(){
       <td>${escapeHtml(b.completed_at || "-")}</td>
 
       <td>
-        ${b.status==="completed"
+        ${["completed","completed_with_errors"].includes(b.status)
           ? `<button class="btnBlue" data-download="${escapeHtml(b.request_id)}">Download</button>`
-          : ""
+         : ""
         }
-        <button class="btnGhost" data-view="${escapeHtml(b.request_id)}">View</button>
-      </td>
+       <button class="btnGhost" data-view="${escapeHtml(b.request_id)}">View</button>
+     </td>
     `;
 
     tbody.appendChild(tr);
