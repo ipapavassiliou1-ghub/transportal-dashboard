@@ -1230,7 +1230,10 @@ function renderShipmentMonitor(){
       <td>${escapeHtml(s.tracking)}</td>
       <td>${escapeHtml(s.reference)}</td>
       <td>${escapeHtml(s.carrier)}</td>
-      <td>${escapeHtml(s.status)}</td>
+      <td>${escapeHtml(
+        String(s.status || "").charAt(0).toUpperCase() +
+        String(s.status || "").slice(1).toLowerCase()
+      )}</td>
       <td>${escapeHtml(s.days_open)}</td>
       <td>${escapeHtml(slaText)}</td>
       <td>
