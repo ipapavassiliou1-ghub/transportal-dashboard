@@ -222,6 +222,13 @@
   tr:hover td{ background: rgba(109,40,217,.04); }
   .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace; font-size: 12px; }
 
+  td:last-child {
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
   /* Badges */
   .badge{
     display:inline-flex;
