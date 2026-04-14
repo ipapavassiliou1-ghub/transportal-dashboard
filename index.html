@@ -1224,7 +1224,9 @@ function renderShipmentMonitor(){
 
     const slaText =
       s.delay_status === 2
-        ? `${s.sla_days} (+${Math.max(0, s.days_open - s.sla_days)})`
+        ? `<span title="Exceeded SLA by ${Math.max(0, s.days_open - s.sla_days)} days">
+             ${s.sla_days} (+${Math.max(0, s.days_open - s.sla_days)})
+          </span>`
         : String(s.sla_days);
     
     tr.innerHTML = `
