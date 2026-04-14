@@ -1194,7 +1194,7 @@ function renderShipmentMonitor(){
   const slice = filteredShipments.slice(start, start + shipmentPageSize);
 
   document.getElementById("shipmentDatasetChip").textContent =
-  total + " shipments • " + delayedCount + " delayed • " + lateCount + " late";
+  `${total} shipments • ${lateCount} late • ${delayedCount} delayed`;
 
   document.getElementById("shipmentPageChip").textContent =
     "Page " + shipmentPage + " / " + maxPage;
