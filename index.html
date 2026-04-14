@@ -1173,6 +1173,7 @@ function renderShipmentMonitor(){
   }
 
   const total = filteredShipments.length;
+  const delayedCount = scopedShipments.filter(s => Number(s.is_delayed) === 1).length;
   const maxPage = Math.max(1, Math.ceil(total / shipmentPageSize));
   if (shipmentPage > maxPage) shipmentPage = maxPage;
 
@@ -1180,7 +1181,7 @@ function renderShipmentMonitor(){
   const slice = filteredShipments.slice(start, start + shipmentPageSize);
 
   document.getElementById("shipmentDatasetChip").textContent =
-    total + " shipments";
+    total + " shipments • " + delayedCount + " delayed";
 
   document.getElementById("shipmentPageChip").textContent =
     "Page " + shipmentPage + " / " + maxPage;
