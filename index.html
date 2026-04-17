@@ -1190,20 +1190,40 @@ function renderShipmentMonitor(){
 
   const statusFilter = document.getElementById("shipmentStatusFilter").value;
   const searchText = (document.getElementById("shipmentSearchInput").value || "")
-                      .toLowerCase()
-                      .trim();
+    .toLowerCase()
+    .trim();
 
   let filteredShipments = scopedShipments.slice();
 
-  if (statusFilter === "delayed") {
-  filteredShipments = filteredShipments.filter(s => Number(s.delay_status) === 1);
-  } else if (statusFilter === "late") {
-  filteredShipments = filteredShipments.filter(s => Number(s.delay_status) === 2);  
-  } else if (statusFilter !== "all") {
+  /* 1) dashboard quick filter */
+  if (shipmentQuickFilter === "errors") {
     filteredShipments = filteredShipments.filter(s =>
-      String(s.status || "").toLowerCase() === statusFilter
-    );
+    String(s.status || "").toLowerCase() === "error"
+  );
+  } else if (shipmentQuickFilter === "pending") {
+    filteredShipments = filteredShipments.filter(s => {
+      const status = String(s.status || "").toLowerCase();
+      return status === "pending" || status === "in_transit";
+  });
+  } else if (shipmentQuickFilter === "delayed") {
+    filteredShipments = filteredShipments.filter(s => Number(s.delay_status) === 1);
   }
+
+  /* 2) optional batch drill-down */
+  if (batchQuickFilter) {
+    filteredShipments = filteredShipments.filter(s => s.batch_id === batchQuickFilter);
+  }
+
+  /* 3) existing dropdown filter */
+  if (statusFilter === "delayed") {
+    filteredShipments = filteredShipments.filter(s => Number(s.delay_status) === 1);
+  } else if (statusFilter === "late") {
+   filteredShipments = filteredShipments.filter(s => Number(s.delay_status) === 2); 
+  } else if (statusFilter !== "all") {
+   filteredShipments = filteredShipments.filter(s =>
+    String(s.status || "").toLowerCase() === statusFilter
+  );
+ }
 
   if (searchText) {
     filteredShipments = filteredShipments.filter(s =>
