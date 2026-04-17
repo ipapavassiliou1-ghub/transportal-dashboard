@@ -150,6 +150,23 @@
     box-shadow: 0 12px 26px rgba(37,99,235,.18);
   }
 
+  .card.clickable{
+    cursor: pointer;
+    transition: transform .08s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+
+  .card.clickable:hover{
+    transform: translateY(-1px);
+    border-color: rgba(109,40,217,.35);
+    box-shadow: 0 14px 34px rgba(109,40,217,.10);
+  }
+
+  .card.activeFilter{
+    border-color: rgba(109,40,217,.45);
+    box-shadow: 0 14px 34px rgba(109,40,217,.14);
+    background: linear-gradient(180deg, rgba(109,40,217,.05), #fff 45%);
+  }
+  
   /* Inline toast */
   .toastInline{
     display:none;
