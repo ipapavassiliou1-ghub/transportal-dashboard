@@ -1258,12 +1258,16 @@ function renderShipmentMonitor(){
     const priority = (s) => {
       const status = String(s.status || "").toLowerCase();
       if (status === "error") return 0;
-      if (Number(s.delay_status) === 2) return 1; // late
-      if (Number(s.delay_status) === 1) return 2; // delayed
+      if (Number(s.delay_status) === 2) return 1;
+      if (Number(s.delay_status) === 1) return 2;
       return 3;
-    };
+   };
 
-    return priority(a) - priority(b);
+   const pDiff = priority(a) - priority(b);
+   if (pDiff !== 0) return pDiff;
+
+   // 👉 secondary sort (within same group)
+   return Number(b.days_open) - Number(a.days_open);
   });
   
   const total = filteredShipments.length;
