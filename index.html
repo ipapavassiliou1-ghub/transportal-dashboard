@@ -1774,6 +1774,61 @@ async function loadDashboard(force){
   }
 }
 
+function setActiveDashboardCard() {
+  document.querySelectorAll("#cardProcessing24h, #cardShipmentErrors, #cardPendingShipments")
+    .forEach(el => {
+      el.classList.remove("activeFilter", "clickable");
+      el.classList.add("clickable");
+    });
+
+  if (shipmentQuickFilter === "errors") {
+    document.getElementById("cardShipmentErrors")?.classList.add("activeFilter");
+  } else if (shipmentQuickFilter === "pending") {
+    document.getElementById("cardPendingShipments")?.classList.add("activeFilter");
+  } else if (shipmentQuickFilter === "delayed") {
+    document.getElementById("cardProcessing24h")?.classList.add("activeFilter");
+  }
+}
+
+function clearShipmentQuickFilters() {
+  shipmentQuickFilter = "all";
+  batchQuickFilter = null;
+  shipmentPage = 1;
+  setActiveDashboardCard();
+  renderShipmentMonitor();
+}
+
+function applyShipmentQuickFilter(type) {
+  shipmentQuickFilter = type;
+  batchQuickFilter = null;
+  shipmentPage = 1;
+
+  /* optional: sync dropdown visually */
+  if (type === "delayed") {
+    document.getElementById("shipmentStatusFilter").value = "delayed";
+  } else if (type === "pending") {
+    document.getElementById("shipmentStatusFilter").value = "pending";
+  } else {
+    document.getElementById("shipmentStatusFilter").value = "all";
+  }
+
+  setActiveDashboardCard();
+  renderShipmentMonitor();
+
+  document.querySelector(".sectionTitle")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function applyBatchQuickFilter(batchId) {
+  batchQuickFilter = batchId;
+  shipmentQuickFilter = "all";
+  shipmentPage = 1;
+  setActiveDashboardCard();
+  renderShipmentMonitor();
+}
+  
 /* =========================================================
    EVENTS
 ========================================================= */
