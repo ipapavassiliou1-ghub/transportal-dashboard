@@ -1819,9 +1819,12 @@ document.getElementById("shipmentPageSize").addEventListener("change", (e)=>{
 shipmentPageSize = Number(document.getElementById("shipmentPageSize").value);
   
   document.getElementById("shipmentStatusFilter").addEventListener("change", ()=>{
-  shipmentPage = 1;
-  renderShipmentMonitor();
-});
+    shipmentQuickFilter = "all";
+    batchQuickFilter = null;
+    shipmentPage = 1;
+    setActiveDashboardCard();
+    renderShipmentMonitor();
+  });
 
 document.getElementById("shipmentSearchInput").addEventListener("input", ()=>{
   shipmentPage = 1;
