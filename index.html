@@ -1967,19 +1967,23 @@ document.getElementById("cardProcessing24h")?.addEventListener("click", () => {
 });
 
 /* Focus Mode toggle */
-document.getElementById("focusModeToggleWrap").addEventListener("click", () => {
-  focusMode = !focusMode;
-
+document.addEventListener("DOMContentLoaded", () => {
   const el = document.getElementById("focusModeToggleWrap");
 
-  if (focusMode) {
-    el.classList.add("active");
-  } else {
-    el.classList.remove("active");
-  }
+  if (!el) return; // safety
 
-  shipmentPage = 1;
-  renderShipmentMonitor();
+  el.addEventListener("click", () => {
+    focusMode = !focusMode;
+
+    if (focusMode) {
+      el.classList.add("active");
+    } else {
+      el.classList.remove("active");
+    }
+
+    shipmentPage = 1;
+    renderShipmentMonitor();
+  });
 });
   
 /* INITIAL LOAD */
