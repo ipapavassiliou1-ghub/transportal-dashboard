@@ -1282,6 +1282,19 @@ function renderShipmentMonitor(){
       return 3;
    };
 
+   /* 5) focus mode filter */
+   if (focusMode) {
+     filteredShipments = filteredShipments.filter(s => {
+       const status = String(s.status || "").toLowerCase();
+
+       return (
+         status === "error" ||
+         Number(s.delay_status) === 2 || // late
+         Number(s.delay_status) === 1    // delayed
+       );
+     });
+   }
+    
    const pDiff = priority(a) - priority(b);
    if (pDiff !== 0) return pDiff;
 
