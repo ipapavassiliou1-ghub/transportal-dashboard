@@ -1741,7 +1741,8 @@ async function loadDashboard(force){
     renderExceptions();
     renderTable();
     renderShipmentMonitor();
-
+    setActiveDashboardCard();
+    
     // Update processing chip (table-level)
     document.getElementById("processingChip").textContent =
       filtered.filter(b =>
