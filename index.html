@@ -1292,9 +1292,9 @@ function renderShipmentMonitor(){
           ${escapeHtml(delayedLabel)}
         </span>
       </td>
-      <td class="mono" title="${escapeHtml(s.batch_id)}">
+      <td class="mono linkLike" title="${escapeHtml(s.batch_id)}" onclick="applyBatchQuickFilter('${escapeHtml(s.batch_id)}')">
         ${escapeHtml(s.batch_id)}
-      </td>
+     </td>
     `;
 
     tbody.appendChild(tr);
