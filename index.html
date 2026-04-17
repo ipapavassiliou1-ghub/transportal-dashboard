@@ -1254,8 +1254,18 @@ function renderShipmentMonitor(){
 
   slice.forEach(s => {
     const tr = document.createElement("tr");
-    if (s.delay_status === 1) tr.classList.add("rowDelayed");
-    if (s.delay_status === 2) tr.classList.add("rowLate");
+    const status = String(s.status || "").toLowerCase();
+    const isError = status === "error";
+    const isDelayed = Number(s.delay_status) === 1;
+    const isLate = Number(s.delay_status) === 2;
+
+   if (isError) {
+     tr.classList.add("row-error");
+   } else if (isLate) {
+     tr.classList.add("row-late");
+   } else if (isDelayed) {
+     tr.classList.add("row-delayed");
+   }
 
     let delayedLabel = "On Time";
     let delayedClass = "completed";
