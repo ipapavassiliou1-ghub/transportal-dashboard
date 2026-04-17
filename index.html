@@ -1830,6 +1830,18 @@ document.getElementById("shipmentSearchInput").addEventListener("input", ()=>{
   shipmentPage = 1;
   renderShipmentMonitor();
 });
+
+document.getElementById("cardShipmentErrors")?.addEventListener("click", () => {
+  applyShipmentQuickFilter("errors");
+});
+
+document.getElementById("cardPendingShipments")?.addEventListener("click", () => {
+  applyShipmentQuickFilter("pending");
+});
+
+document.getElementById("cardProcessing24h")?.addEventListener("click", () => {
+  applyShipmentQuickFilter("delayed");
+});
   
 /* INITIAL LOAD */
 loadDashboard(true);
