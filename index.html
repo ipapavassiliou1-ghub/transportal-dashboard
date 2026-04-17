@@ -1284,15 +1284,16 @@ function renderShipmentMonitor(){
     let delayedLabel = "On Time";
     let delayedClass = "completed";
 
-    if (s.delay_status === 1) {
-    delayedLabel = "Delayed";
-    delayedClass = "error";
-  }
-
-   if (s.delay_status === 2) {
-   delayedLabel = "Late";
-   delayedClass = "warning";
-  }
+   if (isError) {
+     delayedLabel = "Error";
+     delayedClass = "error";
+   } else if (isLate) {
+     delayedLabel = "Late";
+     delayedClass = "warning";
+   } else if (isDelayed) {
+     delayedLabel = "Delayed";
+     delayedClass = "error";
+   }
 
     const slaText =
       s.delay_status === 2
