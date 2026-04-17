@@ -167,6 +167,20 @@
     background: linear-gradient(180deg, rgba(109,40,217,.05), #fff 45%);
   }
 
+  /* Focus mode clickable chip */
+  .chip.clickable {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+  }
+
+  /* Active state */
+  .chip.clickable.active {
+    background: #6d28d9;   /* same purple as your UI */
+    color: white;
+    border: 1px solid #6d28d9;
+  }
+  
   /* ===== Row highlighting ===== */
 
   .row-error {
