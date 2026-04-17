@@ -1951,6 +1951,22 @@ document.getElementById("cardPendingShipments")?.addEventListener("click", () =>
 document.getElementById("cardProcessing24h")?.addEventListener("click", () => {
   applyShipmentQuickFilter("delayed");
 });
+
+/* Focus Mode toggle */
+document.getElementById("focusModeToggleWrap").addEventListener("click", () => {
+  focusMode = !focusMode;
+
+  const el = document.getElementById("focusModeToggleWrap");
+
+  if (focusMode) {
+    el.classList.add("active");
+  } else {
+    el.classList.remove("active");
+  }
+
+  shipmentPage = 1;
+  renderShipmentMonitor();
+});
   
 /* INITIAL LOAD */
 loadDashboard(true);
