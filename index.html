@@ -1339,6 +1339,46 @@ async function buildShipmentDataset(token){
     delay_status: Number(r.delay_status || 0)
   }));
 
+/* ================================
+     MOCK DATA FOR TESTING - start
+  ================================ */
+
+  scopedShipments.push({
+    tracking: "TEST-ERROR-1",
+    reference: "ORDER-ERROR",
+    carrier: "UPS",
+    service: "UNKNOWN",
+    status: "error",
+    normalized_status: "error",
+    raw_status: null,
+    batch_id: "test-batch-error",
+    created_at: null,
+    completed_at: null,
+    sla_days: 3,
+    days_open: 2,
+    delay_status: 0
+  });
+
+  scopedShipments.push({
+    tracking: "TEST-PENDING-1",
+    reference: "ORDER-PENDING",
+    carrier: "UPS",
+    service: "UNKNOWN",
+    status: "pending",
+    normalized_status: "pending",
+    raw_status: null,
+    batch_id: "test-batch-pending",
+    created_at: null,
+    completed_at: null,
+    sla_days: 3,
+    days_open: 1,
+    delay_status: 0
+  });
+
+  /* ================================
+     MOCK DATA FOR TESTING - end
+  ================================ */
+  
   console.log("SCOPED:", scopedShipments.length);
 }
   
