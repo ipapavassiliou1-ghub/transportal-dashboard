@@ -1275,6 +1275,12 @@ function renderShipmentMonitor(){
     return 3;
   };
 
+  const pDiff = priority(a) - priority(b);
+  if (pDiff !== 0) return pDiff;
+
+  return Number(b.days_open) - Number(a.days_open);
+  });
+    
    /* 5) focus mode filter */
    if (focusMode) {
      filteredShipments = filteredShipments.filter(s =>
