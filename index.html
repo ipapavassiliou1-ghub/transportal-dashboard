@@ -198,6 +198,19 @@
     background: transparent;
   }
 
+  .activeFilter {
+    border: 2px solid #7c3aed;
+    background: rgba(124, 58, 237, 0.08);
+  }
+
+  #shipmentTable tr {
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+
+  #shipmentTable tr:hover {
+    transform: scale(1.005);
+  }
+  
   r:hover {
     background: rgba(0, 0, 0, 0.02);
   }
