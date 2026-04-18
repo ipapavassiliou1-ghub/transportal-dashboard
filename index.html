@@ -1323,7 +1323,7 @@ function renderShipmentMonitor(){
 
   document.getElementById("shipmentDatasetChip").textContent =
   ` ${total} shipments • ${lateCount} late • ${delayedCount} delayed` +
-   (shipmentQuickFilter !== "all" ? ` • filter: ${shipmentQuickFilter}` : "");
+   (shipmentQuickFilter !== "all" ? ` • Showing: ${shipmentQuickFilter}` : "");
 
   document.getElementById("shipmentPageChip").textContent =
     "Page " + shipmentPage + " / " + maxPage;
