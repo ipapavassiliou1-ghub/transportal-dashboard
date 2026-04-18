@@ -1882,15 +1882,13 @@ function applyShipmentQuickFilter(type) {
   batchQuickFilter = null;
   shipmentPage = 1;
 
-  setActiveDashboardCard();
-  renderShipmentMonitor();
-}
-
   /* optional: sync dropdown visually */
-  if (type === "delayed") {
+  if (shipmentQuickFilter === "delayed") {
     document.getElementById("shipmentStatusFilter").value = "delayed";
-  } else if (type === "pending") {
+  } else if (shipmentQuickFilter === "pending") {
     document.getElementById("shipmentStatusFilter").value = "pending";
+  } else if (shipmentQuickFilter === "errors") {
+    document.getElementById("shipmentStatusFilter").value = "error";
   } else {
     document.getElementById("shipmentStatusFilter").value = "all";
   }
@@ -1904,7 +1902,7 @@ function applyShipmentQuickFilter(type) {
   });
 }
 
-function applyBatchQuickFilter(batchId) {
+  function applyBatchQuickFilter(batchId) {
   batchQuickFilter = batchId;
   shipmentQuickFilter = "all";
   shipmentPage = 1;
