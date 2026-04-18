@@ -1847,9 +1847,7 @@ async function loadDashboard(force){
 
 function setActiveDashboardCard() {
   document.querySelectorAll("#cardProcessing24h, #cardShipmentErrors, #cardPendingShipments")
-    .forEach(el => {
-      el.classList.remove("activeFilter");
-    });
+    .forEach(el => el.classList.remove("activeFilter"));
 
   if (shipmentQuickFilter === "errors") {
     document.getElementById("cardShipmentErrors")?.classList.add("activeFilter");
