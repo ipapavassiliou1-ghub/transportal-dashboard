@@ -1474,37 +1474,29 @@ function renderExceptions() {
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  let processingOver24h = 0;
-  let shipmentErrors = 0;
-  let shipmentPending = 0;
-  let completedToday = 0;
+  // 🔥 Shipment-based metrics (aligned with final_status)
+  const processingOver24h = scopedShipments.filter(s =>
+    s.final_status === "delayed"
+  ).length;
 
-  scopedBatches.forEach(b => {
+  const shipmentErrors = scopedShipments.filter(s =>
+    s.final_status === "error"
+  ).length;
 
-    const status = (b.status || "").toLowerCase();
-    const summary = safeJsonParse(b.summary);
+  const shipmentPending = scopedShipments.filter(s =>
+    s.final_status === "pending" ||
+    s.final_status === "in_transit"
+  ).length;
 
-    shipmentErrors += Number(summary.error || 0);
-    shipmentPending += Number(summary.pending || 0);
+  const completedToday = scopedShipments.filter(s => {
+    if (s.final_status !== "delivered") return false;
+    if (!s.created_at) return false;
 
-    if (b.created_at) {
-      const created = new Date(b.created_at.replace(" ", "T"));
-      const ageMs = now - created;
+    const created = new Date(s.created_at);
+    return created >= todayStart;
+  }).length;
 
-      if (status === "processing" && ageMs > 24 * 60 * 60 * 1000) {
-        processingOver24h++;
-      }
-    }
-
-    if (status === "completed" && b.completed_at) {
-      const completed = new Date(b.completed_at.replace(" ", "T"));
-      if (completed >= todayStart) {
-        completedToday++;
-      }
-    }
-
-  });
-
+  // 🔥 Update UI
   document.getElementById("exProcessing").textContent = processingOver24h;
   document.getElementById("exErrors").textContent = shipmentErrors;
   document.getElementById("exPending").textContent = shipmentPending;
