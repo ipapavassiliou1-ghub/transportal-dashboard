@@ -1864,13 +1864,16 @@ function setActiveDashboardCard() {
     });
 
   if (shipmentQuickFilter === "errors") {
-    document.getElementById("cardShipmentErrors")?.classList.add("activeFilter");
+    filteredShipments = filteredShipments.filter(s => s.final_status === "error");
   } else if (shipmentQuickFilter === "pending") {
-    document.getElementById("cardPendingShipments")?.classList.add("activeFilter");
+    filteredShipments = filteredShipments.filter(s =>
+    s.final_status === "pending" || s.final_status === "in_transit"
+  );
   } else if (shipmentQuickFilter === "delayed") {
-    document.getElementById("cardProcessing24h")?.classList.add("activeFilter");
-  }
-}
+   filteredShipments = filteredShipments.filter(s =>
+    s.final_status === "delayed" || s.final_status === "late"
+  );
+ }
 
 function clearShipmentQuickFilters() {
   shipmentQuickFilter = "all";
