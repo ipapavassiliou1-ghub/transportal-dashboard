@@ -1269,12 +1269,11 @@ function renderShipmentMonitor(){
   /* 4) auto-sort problems first */
   filteredShipments.sort((a, b) => {
     const priority = (s) => {
-      const status = String(s.status || "").toLowerCase();
-      if (status === "error") return 0;
-      if (Number(s.delay_status) === 2) return 1;
-      if (Number(s.delay_status) === 1) return 2;
-      return 3;
-   };
+      if (s.final_status === "error") return 0;
+      if (s.final_status === "late") return 1;
+      if (s.final_status === "delayed") return 2;
+    return 3;
+  };
 
    /* 5) focus mode filter */
    if (focusMode) {
