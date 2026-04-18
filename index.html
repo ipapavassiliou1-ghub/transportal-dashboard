@@ -1255,15 +1255,9 @@ function renderShipmentMonitor(){
   }
 
   /* 3) existing dropdown filter */
-  if (statusFilter === "delayed") {
-    filteredShipments = filteredShipments.filter(s => Number(s.delay_status) === 1);
-  } else if (statusFilter === "late") {
-   filteredShipments = filteredShipments.filter(s => Number(s.delay_status) === 2); 
-  } else if (statusFilter !== "all") {
-   filteredShipments = filteredShipments.filter(s =>
-    String(s.status || "").toLowerCase() === statusFilter
-  );
- }
+  if (statusFilter !== "all") {
+    filteredShipments = filteredShipments.filter(s => s.final_status === statusFilter);
+  }
 
   if (searchText) {
     filteredShipments = filteredShipments.filter(s =>
