@@ -1875,9 +1875,20 @@ function clearShipmentQuickFilters() {
 }
 
 function applyShipmentQuickFilter(type) {
-  shipmentQuickFilter = type;
+
+  // 🔁 toggle OFF if clicking same filter
+  if (shipmentQuickFilter === type) {
+    shipmentQuickFilter = "all";
+  } else {
+    shipmentQuickFilter = type;
+  }
+
   batchQuickFilter = null;
   shipmentPage = 1;
+
+  setActiveDashboardCard();
+  renderShipmentMonitor();
+}
 
   /* optional: sync dropdown visually */
   if (type === "delayed") {
