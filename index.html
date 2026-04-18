@@ -1439,33 +1439,33 @@ async function buildShipmentDataset(token){
 ========================================================= */
 function renderKpis(){
 
-  let total = 0;
-  let delivered = 0;
-  let pending = 0;
-  let errors = 0;
+  const total = scopedShipments.length;
 
-  scopedBatches.forEach(b => {
-    const summary = safeJsonParse(b.summary);
+  const delivered = scopedShipments.filter(s =>
+    s.final_status === "delivered"
+  ).length;
 
-    total += Number(summary.total || 0);
-    delivered += Number(summary.delivered || 0);
-    pending += Number(summary.pending || 0);
-    errors += Number(summary.error || 0);
-  });
+  const pending = scopedShipments.filter(s =>
+    s.final_status === "pending" ||
+    s.final_status === "in_transit"
+  ).length;
+
+  const errors = scopedShipments.filter(s =>
+    s.final_status === "error"
+  ).length;
+
+  const successRate = total
+    ? Math.round((delivered / total) * 100)
+    : 0;
 
   document.getElementById("totalBatches").textContent = scopedBatches.length;
   document.getElementById("totalShipments").textContent = total;
   document.getElementById("deliveredCount").textContent = delivered;
   document.getElementById("pendingCount").textContent = pending;
   document.getElementById("errorCount").textContent = errors;
-
-  const successRate = total
-    ? Math.round((delivered / total) * 100)
-    : 0;
-
   document.getElementById("successRate").textContent = successRate + "%";
 }
-
+  
 /* =========================================================
    EXCEPTIONS
 ========================================================= */
