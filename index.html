@@ -1850,21 +1850,20 @@ async function loadDashboard(force){
 function setActiveDashboardCard() {
   document.querySelectorAll("#cardProcessing24h, #cardShipmentErrors, #cardPendingShipments")
     .forEach(el => {
-      el.classList.remove("activeFilter", "clickable");
-      el.classList.add("clickable");
+      el.classList.remove("activeFilter");
     });
 
   if (shipmentQuickFilter === "errors") {
-    filteredShipments = filteredShipments.filter(s => s.final_status === "error");
-  } else if (shipmentQuickFilter === "pending") {
-    filteredShipments = filteredShipments.filter(s =>
-    s.final_status === "pending" || s.final_status === "in_transit"
-  );
-  } else if (shipmentQuickFilter === "delayed") {
-   filteredShipments = filteredShipments.filter(s =>
-    s.final_status === "delayed" || s.final_status === "late"
-  );
- }
+    document.getElementById("cardShipmentErrors")?.classList.add("activeFilter");
+  }
+
+  if (shipmentQuickFilter === "pending") {
+    document.getElementById("cardPendingShipments")?.classList.add("activeFilter");
+  }
+
+  if (shipmentQuickFilter === "delayed") {
+    document.getElementById("cardProcessing24h")?.classList.add("activeFilter");
+  }
 }
   
 function clearShipmentQuickFilters() {
