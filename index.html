@@ -1277,16 +1277,12 @@ function renderShipmentMonitor(){
 
    /* 5) focus mode filter */
    if (focusMode) {
-     filteredShipments = filteredShipments.filter(s => {
-       const status = String(s.status || "").toLowerCase();
-
-       return (
-         status === "error" ||
-         Number(s.delay_status) === 2 || // late
-         Number(s.delay_status) === 1    // delayed
-       );
-     });
-   }
+     filteredShipments = filteredShipments.filter(s =>
+       s.final_status === "error" ||
+       s.final_status === "late" ||
+       s.final_status === "delayed"
+    );
+  }
     
    const pDiff = priority(a) - priority(b);
    if (pDiff !== 0) return pDiff;
