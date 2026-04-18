@@ -1238,16 +1238,19 @@ function renderShipmentMonitor(){
   /* 1) dashboard quick filter */
   if (shipmentQuickFilter === "errors") {
     filteredShipments = filteredShipments.filter(s =>
-    String(s.status || "").toLowerCase() === "error"
+      s.final_status === "error"
   );
+
   } else if (shipmentQuickFilter === "pending") {
-    filteredShipments = filteredShipments.filter(s => {
-      const status = String(s.status || "").toLowerCase();
-      return status === "pending" || status === "in_transit";
-  });
+    filteredShipments = filteredShipments.filter(s =>
+      s.final_status === "pending" || s.final_status === "in_transit"
+  );
+
   } else if (shipmentQuickFilter === "delayed") {
-    filteredShipments = filteredShipments.filter(s => Number(s.delay_status) === 1);
-  }
+    filteredShipments = filteredShipments.filter(s =>
+      s.final_status === "delayed" || s.final_status === "late"
+  );
+}
 
   /* 2) optional batch drill-down */
   if (batchQuickFilter) {
