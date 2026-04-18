@@ -1266,35 +1266,29 @@ function renderShipmentMonitor(){
     );
   }
 
-  /* 4) auto-sort problems first */
+  /* 4) focus mode filter */
+  if (focusMode) {
+    filteredShipments = filteredShipments.filter(s =>
+      s.final_status === "error" ||
+      s.final_status === "late" ||
+      s.final_status === "delayed"
+    );
+  }
+
+  /* 5) auto-sort problems first */
   filteredShipments.sort((a, b) => {
     const priority = (s) => {
       if (s.final_status === "error") return 0;
       if (s.final_status === "late") return 1;
       if (s.final_status === "delayed") return 2;
-    return 3;
-  };
+      return 3;
+    };
 
-  const pDiff = priority(a) - priority(b);
-  if (pDiff !== 0) return pDiff;
+    const pDiff = priority(a) - priority(b);
+    if (pDiff !== 0) return pDiff;
 
-  return Number(b.days_open) - Number(a.days_open);
-  });
-    
-   /* 5) focus mode filter */
-   if (focusMode) {
-     filteredShipments = filteredShipments.filter(s =>
-       s.final_status === "error" ||
-       s.final_status === "late" ||
-       s.final_status === "delayed"
-    );
-  }
-    
-   const pDiff = priority(a) - priority(b);
-   if (pDiff !== 0) return pDiff;
-
-   // 👉 secondary sort (within same group)
-   return Number(b.days_open) - Number(a.days_open);
+    // secondary sort within same priority
+    return Number(b.days_open) - Number(a.days_open);
   });
   
   const total = filteredShipments.length;
