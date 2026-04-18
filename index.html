@@ -1313,33 +1313,32 @@ function renderShipmentMonitor(){
 
   slice.forEach(s => {
     const tr = document.createElement("tr");
-    const status = String(s.status || "").toLowerCase();
-    const isError = status === "error";
-    const isDelayed = Number(s.delay_status) === 1;
-    const isLate = Number(s.delay_status) === 2;
+    
+    // Row highlight
+   if (s.final_status === "error") tr.classList.add("row-error");
+   if (s.final_status === "late") tr.classList.add("row-late");
+   if (s.final_status === "delayed") tr.classList.add("row-delayed");
 
-   if (isError) {
-     tr.classList.add("row-error");
-   } else if (isLate) {
-     tr.classList.add("row-late");
-   } else if (isDelayed) {
-     tr.classList.add("row-delayed");
-   }
+   // Badge
+   let delayedLabel = "On Time";
+   let delayedClass = "completed";
 
-    let delayedLabel = "On Time";
-    let delayedClass = "completed";
-
-   if (isError) {
+   if (s.final_status === "error") {
      delayedLabel = "Error";
      delayedClass = "error";
-   } else if (isLate) {
+   } else if (s.final_status === "late") {
      delayedLabel = "Late";
      delayedClass = "warning";
-   } else if (isDelayed) {
-     delayedLabel = "Delayed";
-     delayedClass = "error";
-   }
-
+   } else if (s.final_status === "delayed") {
+    delayedLabel = "Delayed";
+    delayedClass = "error";
+   } else if (s.final_status === "pending") {
+    delayedLabel = "Pending";
+    delayedClass = "pending";
+   } else if (s.final_status === "in_transit") {
+    delayedLabel = "In Transit";
+    delayedClass = "inprogress";
+  }
     const slaText =
       s.delay_status === 2
         ? `<span title="Exceeded SLA by ${Math.max(0, s.days_open - s.sla_days)} days">
