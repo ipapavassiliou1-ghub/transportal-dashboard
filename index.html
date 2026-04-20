@@ -1341,26 +1341,39 @@ function renderShipmentMonitor(){
    if (s.final_status === "late") tr.classList.add("row-late");
    if (s.final_status === "delayed") tr.classList.add("row-delayed");
 
-   // Badge
+    
+   // Badge (SLA result ONLY)
    let delayedLabel = "On Time";
    let delayedClass = "completed";
 
-   if (s.final_status === "error") {
-     delayedLabel = "Error";
-     delayedClass = "error";
-   } else if (s.final_status === "late") {
+   if (s.delay_label === "late") {
      delayedLabel = "Late";
+     delayedClass = "error";
+   } else if (s.delay_label === "delayed") {
+     delayedLabel = "Delayed";
      delayedClass = "warning";
-   } else if (s.final_status === "delayed") {
-    delayedLabel = "Delayed";
-    delayedClass = "error";
-   } else if (s.final_status === "pending") {
-    delayedLabel = "Pending";
-    delayedClass = "pending";
-   } else if (s.final_status === "in_transit") {
-    delayedLabel = "In Transit";
-    delayedClass = "inprogress";
   }
+    
+   // Badge
+    //let delayedLabel = "On Time";
+   //let delayedClass = "completed";
+
+   //if (s.final_status === "error") {
+     //delayedLabel = "Error";
+     //delayedClass = "error";
+   //} else if (s.final_status === "late") {
+     //delayedLabel = "Late";
+     //delayedClass = "warning";
+   //} else if (s.final_status === "delayed") {
+    //delayedLabel = "Delayed";
+    //delayedClass = "error";
+   //} else if (s.final_status === "pending") {
+    //delayedLabel = "Pending";
+    //delayedClass = "pending";
+   //} else if (s.final_status === "in_transit") {
+    //delayedLabel = "In Transit";
+    //delayedClass = "inprogress";
+  //}
     const slaText =
       s.delay_status === 2
         ? `<span title="Exceeded SLA by ${Math.max(0, s.days_open - s.sla_days)} days">
