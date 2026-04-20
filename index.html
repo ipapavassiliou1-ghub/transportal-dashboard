@@ -1353,7 +1353,7 @@ function renderShipmentMonitor(){
      delayedLabel = "Delayed";
      delayedClass = "warning";
   }
-    
+    console.log("DEBUG DELAY:", s.tracking, s.delay_status, s.delay_label);
   
     const slaText =
       s.delay_status === 2
