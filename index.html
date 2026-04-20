@@ -1266,7 +1266,7 @@ function renderShipmentMonitor(){
 
 } else if (shipmentQuickFilter === "delayed") {
   filteredShipments = filteredShipments.filter(s =>
-    s.final_status === "delayed" || s.final_status === "late"
+    s.delay_status === 1 || s.delay_status === 2
   );
 }
 
