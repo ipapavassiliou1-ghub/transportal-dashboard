@@ -1346,13 +1346,13 @@ function renderShipmentMonitor(){
    let delayedLabel = "On Time";
    let delayedClass = "completed";
 
-   if (s.delay_label === "late") {
+   if (s.delay_status === 2) {
      delayedLabel = "Late";
      delayedClass = "error";
-   } else if (s.delay_label === "delayed") {
+   } else if (s.delay_status === 1) {
      delayedLabel = "Delayed";
      delayedClass = "warning";
-  }
+   }
     console.log("DEBUG DELAY:", s.tracking, s.delay_status, s.delay_label);
   
     const slaText =
