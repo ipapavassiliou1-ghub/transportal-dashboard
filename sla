@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SLA Config</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background: #f4f4f4; }
+  </style>
+</head>
+<body>
+
+<h2>SLA Rules</h2>
+
+<table id="slaTable">
+  <thead>
+    <tr>
+      <th>Carrier</th>
+      <th>Service</th>
+      <th>SLA Days</th>
+      <th>Active</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+async function loadSlaRules() {
+  try {
+    const res = await fetch('/api/v1/sla-rules');
+    const data = await res.json();
+
+    const tbody = document.querySelector("#slaTable tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(r => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${r.carrier}</td>
+        <td>${r.service}</td>
+        <td>${r.sla_days}</td>
+        <td>${r.is_active ? "Yes" : "No"}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("SLA LOAD ERROR:", err);
+  }
+}
+
+loadSlaRules();
+</script>
+
+</body>
+</html>
