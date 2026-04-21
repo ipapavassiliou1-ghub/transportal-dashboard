@@ -4,14 +4,62 @@
   <title>SLA Config</title>
   <style>
     body { font-family: Arial; padding: 20px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; }
-    th { background: #f4f4f4; }
+
+    h2 { margin-bottom: 10px; }
+
+    .form-row {
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 6px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    th {
+      background: #f4f4f4;
+    }
+
+    tr:hover {
+      background: #f9f9f9;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
 <h2>SLA Rules</h2>
+
+<h3>Add / Edit SLA Rule</h3>
+
+<div class="form-row">
+  <input id="slaCarrier" placeholder="Carrier (FEDEX)" />
+  <input id="slaService" placeholder="Service (UNKNOWN)" />
+  <input id="slaDays" type="number" placeholder="Days" />
+
+  <label>
+    Active <input type="checkbox" id="slaActive" checked />
+  </label>
+
+  <button onclick="saveSlaRule()">Save</button>
+  <button onclick="clearForm()">Clear</button>
+</div>
 
 <table id="slaTable">
   <thead>
@@ -28,12 +76,17 @@
 <script>
 const API_BASE = "https://api.transportal.gr";
 
+let editingId = null;
+
+// =======================
+// LOAD + RENDER
+
 async function loadSlaRules() {
   try {
     const res = await fetch(`${API_BASE}/api/v1/sla-rules`);
     const data = await res.json();
 
-    console.log("SLA DATA:", data); // debug
+    console.log("SLA DATA:", data);
 
     const tbody = document.querySelector("#slaTable tbody");
     tbody.innerHTML = "";
@@ -48,6 +101,9 @@ async function loadSlaRules() {
         <td>${r.is_active ? "Yes" : "No"}</td>
       `;
 
+      // 👉 click row to edit
+      tr.onclick = () => editSla(r);
+
       tbody.appendChild(tr);
     });
 
@@ -56,7 +112,77 @@ async function loadSlaRules() {
   }
 }
 
-loadSlaRules();</script>
+// =======================
+// SAVE (CREATE / UPDATE)
+
+async function saveSlaRule() {
+  const payload = {
+    carrier: document.getElementById("slaCarrier").value.trim(),
+    service: document.getElementById("slaService").value.trim() || "UNKNOWN",
+    sla_days: Number(document.getElementById("slaDays").value),
+    is_active: document.getElementById("slaActive").checked ? 1 : 0
+  };
+
+  if (!payload.carrier || !payload.sla_days) {
+    alert("Carrier and SLA days are required");
+    return;
+  }
+
+  const url = editingId
+    ? `${API_BASE}/api/v1/sla-rules/${editingId}`
+    : `${API_BASE}/api/v1/sla-rules`;
+
+  const method = editingId ? "PUT" : "POST";
+
+  try {
+    await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    console.log("SLA SAVED");
+
+    editingId = null;
+    clearForm();
+    loadSlaRules();
+
+  } catch (err) {
+    console.error("SAVE SLA ERROR:", err);
+  }
+}
+
+// =======================
+// EDIT
+
+function editSla(r) {
+  console.log("EDIT:", r);
+
+  editingId = r.id;
+
+  document.getElementById("slaCarrier").value = r.carrier;
+  document.getElementById("slaService").value = r.service;
+  document.getElementById("slaDays").value = r.sla_days;
+  document.getElementById("slaActive").checked = r.is_active == 1;
+}
+
+// =======================
+// CLEAR
+
+function clearForm() {
+  editingId = null;
+
+  document.getElementById("slaCarrier").value = "";
+  document.getElementById("slaService").value = "";
+  document.getElementById("slaDays").value = "";
+  document.getElementById("slaActive").checked = true;
+}
+
+// =======================
+// INIT
+
+loadSlaRules();
+</script>
 
 </body>
 </html>
