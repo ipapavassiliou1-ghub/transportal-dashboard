@@ -19,6 +19,13 @@
     button {
       padding: 6px 12px;
       cursor: pointer;
+      margin-right: 5px;
+    }
+
+    .edit-mode {
+      color: green;
+      margin-bottom: 10px;
+      font-weight: bold;
     }
 
     table {
@@ -38,7 +45,10 @@
 
     tr:hover {
       background: #f9f9f9;
-      cursor: pointer;
+    }
+
+    .inactive {
+      opacity: 0.4;
     }
   </style>
 </head>
@@ -46,7 +56,7 @@
 
 <h2>SLA Rules</h2>
 
-<h3>Add / Edit SLA Rule</h3>
+<div id="editModeLabel" class="edit-mode"></div>
 
 <div class="form-row">
   <input id="slaCarrier" placeholder="Carrier (FEDEX)" />
@@ -68,6 +78,7 @@
       <th>Service</th>
       <th>SLA Days</th>
       <th>Active</th>
+      <th>Action</th>
     </tr>
   </thead>
   <tbody></tbody>
@@ -77,6 +88,7 @@
 const API_BASE = "https://api.transportal.gr";
 
 let editingId = null;
+let slaRules = [];
 
 // =======================
 // LOAD + RENDER
@@ -84,24 +96,30 @@ let editingId = null;
 async function loadSlaRules() {
   try {
     const res = await fetch(`${API_BASE}/api/v1/sla-rules`);
-    const data = await res.json();
-
-    console.log("SLA DATA:", data);
+    slaRules = await res.json();
 
     const tbody = document.querySelector("#slaTable tbody");
     tbody.innerHTML = "";
 
-    data.forEach(r => {
+    slaRules.forEach(r => {
       const tr = document.createElement("tr");
+
+      if (r.is_active == 0) {
+        tr.classList.add("inactive");
+      }
 
       tr.innerHTML = `
         <td>${r.carrier}</td>
         <td>${r.service}</td>
         <td>${r.sla_days}</td>
         <td>${r.is_active ? "Yes" : "No"}</td>
+        <td>
+          <button onclick="event.stopPropagation(); toggleActive(${r.id}, ${r.is_active})">
+            ${r.is_active ? "Deactivate" : "Activate"}
+          </button>
+        </td>
       `;
 
-      // 👉 click row to edit
       tr.onclick = () => editSla(r);
 
       tbody.appendChild(tr);
@@ -116,17 +134,29 @@ async function loadSlaRules() {
 // SAVE (CREATE / UPDATE)
 
 async function saveSlaRule() {
-  const payload = {
-    carrier: document.getElementById("slaCarrier").value.trim(),
-    service: document.getElementById("slaService").value.trim() || "UNKNOWN",
-    sla_days: Number(document.getElementById("slaDays").value),
-    is_active: document.getElementById("slaActive").checked ? 1 : 0
-  };
+  const carrier = document.getElementById("slaCarrier").value.trim().toUpperCase();
+  const service = (document.getElementById("slaService").value.trim() || "UNKNOWN").toUpperCase();
+  const sla_days = Number(document.getElementById("slaDays").value);
+  const is_active = document.getElementById("slaActive").checked ? 1 : 0;
 
-  if (!payload.carrier || !payload.sla_days) {
+  if (!carrier || !sla_days) {
     alert("Carrier and SLA days are required");
     return;
   }
+
+  // 🚫 Prevent duplicates
+  const duplicate = slaRules.find(r =>
+    r.carrier === carrier &&
+    r.service === service &&
+    r.id !== editingId
+  );
+
+  if (duplicate) {
+    alert("Rule already exists for this carrier + service");
+    return;
+  }
+
+  const payload = { carrier, service, sla_days, is_active };
 
   const url = editingId
     ? `${API_BASE}/api/v1/sla-rules/${editingId}`
@@ -141,8 +171,6 @@ async function saveSlaRule() {
       body: JSON.stringify(payload)
     });
 
-    console.log("SLA SAVED");
-
     editingId = null;
     clearForm();
     loadSlaRules();
@@ -156,14 +184,15 @@ async function saveSlaRule() {
 // EDIT
 
 function editSla(r) {
-  console.log("EDIT:", r);
-
   editingId = r.id;
 
   document.getElementById("slaCarrier").value = r.carrier;
   document.getElementById("slaService").value = r.service;
   document.getElementById("slaDays").value = r.sla_days;
   document.getElementById("slaActive").checked = r.is_active == 1;
+
+  document.getElementById("editModeLabel").innerText =
+    `Editing: ${r.carrier} / ${r.service} (ID ${r.id})`;
 }
 
 // =======================
@@ -176,6 +205,38 @@ function clearForm() {
   document.getElementById("slaService").value = "";
   document.getElementById("slaDays").value = "";
   document.getElementById("slaActive").checked = true;
+
+  document.getElementById("editModeLabel").innerText = "";
+}
+
+// =======================
+// ACTIVATE / DEACTIVATE
+
+async function toggleActive(id, current) {
+  const confirmMsg = current
+    ? "Deactivate this rule?"
+    : "Activate this rule?";
+
+  if (!confirm(confirmMsg)) return;
+
+  const rule = slaRules.find(r => r.id === id);
+  if (!rule) return;
+
+  try {
+    await fetch(`${API_BASE}/api/v1/sla-rules/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...rule,
+        is_active: current ? 0 : 1
+      })
+    });
+
+    loadSlaRules();
+
+  } catch (err) {
+    console.error("TOGGLE ERROR:", err);
+  }
 }
 
 // =======================
