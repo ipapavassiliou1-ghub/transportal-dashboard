@@ -2,181 +2,239 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Transportal - Analytics</title>
+<title>Transportal Analytics</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <style>
+/* ✅ REUSE SAME STYLE (copy from dashboard) */
 body {
-  font-family: Arial, sans-serif;
-  background: #f5f7fa;
-  margin: 0;
-  padding: 20px;
+  font-family: system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  background:#f5f7fb;
+  margin:0;
+  padding:28px;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+/* header */
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
 }
 
-.button {
-  padding: 8px 14px;
-  background: #1e88e5;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+h1 { margin:0; font-size:30px; }
+
+.btnBack {
+  background:#2563eb;
+  color:white;
+  padding:10px 14px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
 }
 
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-bottom: 30px;
+/* cards */
+.grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap:16px;
 }
 
 .card {
-  background: white;
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  background:white;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
 }
 
-.card h3 {
-  margin: 0;
-  font-size: 14px;
-  color: #777;
+.value {
+  font-size:28px;
+  font-weight:900;
 }
 
-.card p {
-  font-size: 22px;
-  margin: 5px 0 0;
-  font-weight: bold;
+.sub {
+  font-size:13px;
+  color:#6b7280;
 }
 
-.section {
-  margin-top: 30px;
+/* carriers */
+.carrier {
+  margin-top:20px;
 }
 
 .bar {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
+  height:10px;
+  background:#eee;
+  border-radius:10px;
+  overflow:hidden;
 }
 
-.bar-label {
-  width: 120px;
-}
-
-.bar-fill {
-  height: 10px;
-  background: #1e88e5;
-  border-radius: 6px;
+.fill {
+  height:100%;
+  background:#6d28d9;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <h2>📊 Analytics</h2>
-  <button class="button" onclick="goToDashboard()">← Back to Dashboard</button>
+<!-- HEADER -->
+<div class="topbar">
+  <div>
+    <h1>📊 Analytics</h1>
+    <div style="color:#6b7280;">Performance insights & KPIs</div>
+  </div>
+
+  <button class="btnBack" onclick="goBack()">← Back to Dashboard</button>
 </div>
 
-<!-- KPI GRID -->
-<div class="kpi-grid" id="kpis"></div>
+<!-- KPI -->
+<div class="grid">
 
-<!-- Carrier Performance -->
-<div class="section">
-  <h3>Carrier Performance</h3>
-  <div id="carrierChart"></div>
+  <div class="card">
+    <div class="value" id="totalShipments">0</div>
+    <div class="sub">Distinct Shipments</div>
+  </div>
+
+  <div class="card">
+    <div class="value" id="delivered">0</div>
+    <div class="sub">Delivered</div>
+  </div>
+
+  <div class="card">
+    <div class="value" id="late">0</div>
+    <div class="sub">Delivered Late</div>
+  </div>
+
+  <div class="card">
+    <div class="value" id="delayed">0</div>
+    <div class="sub">In Delay</div>
+  </div>
+
+  <div class="card">
+    <div class="value" id="success">0%</div>
+    <div class="sub">Success Rate</div>
+  </div>
+
+</div>
+
+<!-- Carrier -->
+<div class="carrier">
+  <h2>Carrier Performance</h2>
+  <div id="carrierBox"></div>
 </div>
 
 <script>
-let shipments = [];
 
-function goToDashboard() {
-  window.location.href = "/dashboard";
+/* =============================
+   SAME CONFIG AS DASHBOARD
+============================= */
+const API_V1 = "https://api.transportal.gr/api/v1";
+
+function authFetch(url, options = {}) {
+  const token = localStorage.getItem("token");
+  const clientKey = localStorage.getItem("client_key");
+
+  return fetch(API_V1 + url, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      Authorization: "Bearer " + token,
+      "x-api-key": clientKey
+    }
+  });
 }
 
-async function loadData() {
-  const res = await fetch('https://dashboard.transportal.gr/api/v1/shipments');
-  shipments = await res.json();
+/* =============================
+   LOAD DATA
+============================= */
+async function loadAnalytics() {
 
-  renderKPIs();
-  renderCarrierPerformance();
-}
+  const res = await authFetch("/shipments");
+  const data = await res.json();
 
-function renderKPIs() {
+  console.log("Analytics data:", data);
 
-  const uniqueTrackings = [...new Set(shipments.map(s => s.tracking))];
+  /* =============================
+     🔥 COUNT DISTINCT (CRITICAL)
+  ============================= */
+  const unique = {};
+  data.forEach(s => {
+    unique[s.tracking] = s;
+  });
 
-  const delivered = new Set(
-    shipments.filter(s => s.final_status === 'delivered')
-             .map(s => s.tracking)
-  );
+  const shipments = Object.values(unique);
 
-  const pending = new Set(
-    shipments.filter(s => s.final_status === 'pending')
-             .map(s => s.tracking)
-  );
+  /* =============================
+     KPI
+  ============================= */
+  const total = shipments.length;
 
-  const errors = new Set(
-    shipments.filter(s => s.final_status === 'error')
-             .map(s => s.tracking)
-  );
+  const delivered = shipments.filter(s =>
+    s.normalized_status === "delivered"
+  ).length;
 
-  const total = uniqueTrackings.length;
-  const deliveredCount = delivered.size;
-  const pendingCount = pending.size;
-  const errorCount = errors.size;
+  const late = shipments.filter(s => s.delay_status === 2).length;
 
-  const successRate = total > 0
-    ? ((deliveredCount / total) * 100).toFixed(1)
-    : 0;
+  const delayed = shipments.filter(s => s.delay_status === 1).length;
 
-  document.getElementById('kpis').innerHTML = `
-    <div class="card"><h3>Total Shipments</h3><p>${total}</p></div>
-    <div class="card"><h3>Delivered</h3><p>${deliveredCount}</p></div>
-    <div class="card"><h3>Pending</h3><p>${pendingCount}</p></div>
-    <div class="card"><h3>Errors</h3><p>${errorCount}</p></div>
-    <div class="card"><h3>Success Rate</h3><p>${successRate}%</p></div>
-  `;
-}
+  const success = total ? Math.round((delivered / total) * 100) : 0;
 
-function renderCarrierPerformance() {
+  document.getElementById("totalShipments").textContent = total;
+  document.getElementById("delivered").textContent = delivered;
+  document.getElementById("late").textContent = late;
+  document.getElementById("delayed").textContent = delayed;
+  document.getElementById("success").textContent = success + "%";
 
-  const carrierMap = {};
+  /* =============================
+     CARRIER
+  ============================= */
+  const carriers = {};
 
   shipments.forEach(s => {
-    if (!carrierMap[s.carrier]) {
-      carrierMap[s.carrier] = new Set();
-    }
-    carrierMap[s.carrier].add(s.tracking);
+    const c = s.carrier || "UNKNOWN";
+    if (!carriers[c]) carriers[c] = { total:0, delivered:0 };
+
+    carriers[c].total++;
+    if (s.normalized_status === "delivered") carriers[c].delivered++;
   });
 
-  const max = Math.max(...Object.values(carrierMap).map(s => s.size));
+  const box = document.getElementById("carrierBox");
+  box.innerHTML = "";
 
-  let html = '';
+  Object.entries(carriers).forEach(([name,val]) => {
 
-  Object.entries(carrierMap).forEach(([carrier, set]) => {
-    const count = set.size;
-    const width = (count / max) * 100;
+    const pct = val.total ? Math.round((val.delivered / val.total)*100) : 0;
 
-    html += `
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <b>${name}</b> (${val.total})
       <div class="bar">
-        <div class="bar-label">${carrier}</div>
-        <div class="bar-fill" style="width:${width}%"></div>
-        <div style="margin-left:8px">${count}</div>
+        <div class="fill" style="width:${pct}%"></div>
       </div>
+      <div class="sub">${val.delivered} delivered • ${pct}%</div>
     `;
+
+    box.appendChild(div);
   });
 
-  document.getElementById('carrierChart').innerHTML = html;
 }
 
-loadData();
+/* =============================
+   NAVIGATION
+============================= */
+function goBack() {
+  window.location.href = "/dashboard.html";
+}
+
+/* =============================
+   INIT
+============================= */
+loadAnalytics();
+
 </script>
 
 </body>
