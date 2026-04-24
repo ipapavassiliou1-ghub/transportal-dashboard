@@ -340,7 +340,11 @@ async function loadAnalytics(){
 
   volumeChart=new Chart(document.getElementById("volumeChart"),{
     type:"line",
-    data:{labels:dates,datasets:[{data:vol,tension:0.3}]}
+    data:{labels:dates,datasets:[{
+  label:"Shipments",
+  data:vol,
+  tension:0.3
+}]
   });
 
   slaTrendChart=new Chart(document.getElementById("slaTrendChart"),{
