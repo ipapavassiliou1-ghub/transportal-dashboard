@@ -381,8 +381,6 @@ async function loadAnalytics(){
 
   /* SLA PIE CHART */
 
-  if (slaChart) slaChart.destroy();
-
   const onTime = Math.max(0, delivered - late);
   const breachRate = total
     ? Math.round((late / total) * 100)
