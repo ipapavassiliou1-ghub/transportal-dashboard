@@ -377,20 +377,27 @@ async function loadAnalytics(){
 
   /* SLA PIE CHART */
   const onTime = Math.max(0, delivered - late);
+  const breachRate = total ? Math.round((late / total) * 100) : 0;
 
   slaChart = new Chart(document.getElementById("slaChart"), {
-    type:"pie",
-    data:{
-      labels:["On Time","Late"],
-      datasets:[{
-        data:[onTime, late]
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false
+  type:"doughnut",
+  data:{
+    labels:["On Time","SLA Breach"],
+    datasets:[{
+      data:[onTime, late]
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      title:{
+        display:true,
+        text:"SLA Compliance"
+      }
     }
-  });
+  }
+});
 
   /* TREND DATA */
   const grouped = groupByDate(filtered);
