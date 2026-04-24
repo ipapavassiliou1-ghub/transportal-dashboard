@@ -382,9 +382,6 @@ async function loadAnalytics(){
   /* SLA PIE CHART */
 
   const onTime = Math.max(0, delivered - late);
-  const breachRate = total
-    ? Math.round((late / total) * 100)
-    : 0;
 
   slaChart = new Chart(document.getElementById("slaChart"), {
     type: "doughnut",
