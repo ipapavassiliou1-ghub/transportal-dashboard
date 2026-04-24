@@ -158,6 +158,40 @@ h1 { margin:0; font-size:30px; }
   <div id="carrierBox"></div>
 </div>
 
+<div class="footer">
+  powered by <span class="brand">transportal</span>
+</div>
+
+  function goDashboard() {
+  window.location.href = "/dashboard.html";
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("client_key");
+  localStorage.removeItem("user_email");
+  localStorage.removeItem("display_name");
+  window.location.href = "/login.html";
+}
+
+function hydrateUserHeader() {
+  const userEmail = localStorage.getItem("user_email") || "Unknown";
+  const displayName = localStorage.getItem("display_name") || "Client";
+
+  document.getElementById("userInfo").textContent = "👤 " + userEmail;
+  document.getElementById("clientDisplay").textContent = displayName;
+}
+
+hydrateUserHeader();
+
+document.getElementById("refreshBtn").addEventListener("click", () => {
+  loadAnalytics();
+});
+
+document.getElementById("timeScope").addEventListener("change", () => {
+  loadAnalytics();
+});
+  
 <script>
 
 /* =============================
@@ -269,11 +303,6 @@ function goBack() {
 loadAnalytics();
   
 </script>
-
-  <div class="footer">
-  powered by <span class="brand">transportal</span>
-</div>
-
   
 </body>
 </html>
