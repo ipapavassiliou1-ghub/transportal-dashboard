@@ -376,28 +376,33 @@ async function loadAnalytics(){
   });
 
   /* SLA PIE CHART */
+
+  if (slaChart) slaChart.destroy();
+
   const onTime = Math.max(0, delivered - late);
-  const breachRate = total ? Math.round((late / total) * 100) : 0;
+  const breachRate = total
+    ? Math.round((late / total) * 100)
+    : 0;
 
   slaChart = new Chart(document.getElementById("slaChart"), {
-  type:"doughnut",
-  data:{
-    labels:["On Time","SLA Breach"],
-    datasets:[{
-      data:[onTime, late]
-    }]
-  },
-  options:{
-    responsive:true,
-    maintainAspectRatio:false,
-    plugins:{
-      title:{
-        display:true,
-        text:"SLA Compliance"
+    type: "doughnut",
+    data: {
+      labels: ["On Time", "SLA Breach"],
+      datasets: [{
+        data: [onTime, late]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: "SLA Compliance"
+        }
       }
     }
-  }
-});
+  });
 
   /* TREND DATA */
   const grouped = groupByDate(filtered);
