@@ -312,10 +312,19 @@ async function loadAnalytics(){
   });
 
   /* PIE */
-  slaChart=new Chart(document.getElementById("slaChart"),{
-    type:"pie",
-    data:{labels:["On Time","Late"],datasets:[{data:[delivered-late,late]}]}
-  });
+  slaChart = new Chart(document.getElementById("slaChart"), {
+  type: "pie",
+  data: {
+    labels: ["On Time", "Late"],
+    datasets: [{
+      data: [delivered - late, late]
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false
+  }
+});
 
   /* TREND */
   const grouped=groupByDate(shipments);
