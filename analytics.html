@@ -383,23 +383,32 @@ if (slaTrendChart) slaTrendChart.destroy();
   }
 });
 
-  //* TREND */
-const grouped = groupByDate(shipments);
+//* TREND */
+/* =====================================
+   🔹 TREND (USE FILTERED DATA)
+===================================== */
+const grouped = groupByDate(filtered);
+
 const dates = Object.keys(grouped).sort();
 
-const vol = [], sla = [], lateData = [];
+const vol = [];
+const sla = [];
+const lateData = [];
 
 dates.forEach(d => {
   const day = grouped[d];
 
+  /* ---- Volume ---- */
   vol.push(day.total);
 
+  /* ---- SLA % ---- */
   sla.push(
     day.total
       ? Math.round((day.delivered / day.total) * 100)
       : 0
   );
 
+  /* ---- Late Shipments ---- */
   lateData.push(day.late);
 });
 
