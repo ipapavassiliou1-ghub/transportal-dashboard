@@ -349,36 +349,52 @@ async function loadAnalytics(){
   if (volumeChart) volumeChart.destroy();
   if (slaTrendChart) slaTrendChart.destroy();
 
-  /* CARRIER BAR CHART */
-  const labels = [];
-  const vals = [];
+  /* CARRIER SLA BAR CHART */
+  const carrierLabels = [];
+const carrierSLA = [];
 
-  Object.entries(carriers).forEach(([n,v])=>{
-    labels.push(n);
-    vals.push(v.total ? Math.round((v.delivered / v.total) * 100) : 0);
-  });
+Object.entries(carriers).forEach(([name, val]) => {
 
-  carrierChart = new Chart(document.getElementById("carrierChart"), {
-    type:"bar",
-    data:{
-      labels: labels,
-      datasets:[{
-        label:"% Delivered",
-        data: vals
-      }]
+  // count late shipments for this carrier
+  const lateCount = filtered.filter(s =>
+    (s.carrier || "UNKNOWN") === name &&
+    Number(s.delay_status) === 2
+  ).length;
+
+  // on-time = delivered - late
+  const onTimeCount = val.delivered - lateCount;
+
+  const pct = val.total
+    ? Math.round((onTimeCount / val.total) * 100)
+    : 0;
+
+  carrierLabels.push(name);
+  carrierSLA.push(pct);
+});
+
+/* CHART */
+carrierChart = new Chart(document.getElementById("carrierChart"), {
+  type: "bar",
+  data: {
+    labels: carrierLabels,
+    datasets: [{
+      label: "On-Time %",
+      data: carrierSLA
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false }
     },
-    options:{
-      responsive:true,
-      plugins:{ legend:{ display:false } },
-      scales:{
-        y:{
-          beginAtZero:true,
-          max:100
-        }
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100
       }
     }
-  });
-
+  }
+});
   /* SLA PIE CHART */
 
   const onTime = Math.max(0, delivered - late);
