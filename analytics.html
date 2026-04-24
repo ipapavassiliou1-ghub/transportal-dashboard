@@ -398,9 +398,13 @@ carrierChart = new Chart(document.getElementById("carrierChart"), {
     },
     scales: {
       y: {
-        beginAtZero: true,
-        max: 100
-      }
+      beginAtZero: true,
+      min: 0,
+      max: 100,
+     ticks: {
+       stepSize: 10
+  }
+}
     }
   }
 });
