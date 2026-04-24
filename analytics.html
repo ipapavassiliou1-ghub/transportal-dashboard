@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Transportal - Analytics</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f7fa;
+  margin: 0;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.button {
+  padding: 8px 14px;
+  background: #1e88e5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #777;
+}
+
+.card p {
+  font-size: 22px;
+  margin: 5px 0 0;
+  font-weight: bold;
+}
+
+.section {
+  margin-top: 30px;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.bar-label {
+  width: 120px;
+}
+
+.bar-fill {
+  height: 10px;
+  background: #1e88e5;
+  border-radius: 6px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>📊 Analytics</h2>
+  <button class="button" onclick="goToDashboard()">← Back to Dashboard</button>
+</div>
+
+<!-- KPI GRID -->
+<div class="kpi-grid" id="kpis"></div>
+
+<!-- Carrier Performance -->
+<div class="section">
+  <h3>Carrier Performance</h3>
+  <div id="carrierChart"></div>
+</div>
+
+<script>
+let shipments = [];
+
+function goToDashboard() {
+  window.location.href = "/dashboard";
+}
+
+async function loadData() {
+  const res = await fetch('/api/v1/shipments');
+  shipments = await res.json();
+
+  renderKPIs();
+  renderCarrierPerformance();
+}
+
+function renderKPIs() {
+
+  const uniqueTrackings = [...new Set(shipments.map(s => s.tracking))];
+
+  const delivered = new Set(
+    shipments.filter(s => s.final_status === 'delivered')
+             .map(s => s.tracking)
+  );
+
+  const pending = new Set(
+    shipments.filter(s => s.final_status === 'pending')
+             .map(s => s.tracking)
+  );
+
+  const errors = new Set(
+    shipments.filter(s => s.final_status === 'error')
+             .map(s => s.tracking)
+  );
+
+  const total = uniqueTrackings.length;
+  const deliveredCount = delivered.size;
+  const pendingCount = pending.size;
+  const errorCount = errors.size;
+
+  const successRate = total > 0
+    ? ((deliveredCount / total) * 100).toFixed(1)
+    : 0;
+
+  document.getElementById('kpis').innerHTML = `
+    <div class="card"><h3>Total Shipments</h3><p>${total}</p></div>
+    <div class="card"><h3>Delivered</h3><p>${deliveredCount}</p></div>
+    <div class="card"><h3>Pending</h3><p>${pendingCount}</p></div>
+    <div class="card"><h3>Errors</h3><p>${errorCount}</p></div>
+    <div class="card"><h3>Success Rate</h3><p>${successRate}%</p></div>
+  `;
+}
+
+function renderCarrierPerformance() {
+
+  const carrierMap = {};
+
+  shipments.forEach(s => {
+    if (!carrierMap[s.carrier]) {
+      carrierMap[s.carrier] = new Set();
+    }
+    carrierMap[s.carrier].add(s.tracking);
+  });
+
+  const max = Math.max(...Object.values(carrierMap).map(s => s.size));
+
+  let html = '';
+
+  Object.entries(carrierMap).forEach(([carrier, set]) => {
+    const count = set.size;
+    const width = (count / max) * 100;
+
+    html += `
+      <div class="bar">
+        <div class="bar-label">${carrier}</div>
+        <div class="bar-fill" style="width:${width}%"></div>
+        <div style="margin-left:8px">${count}</div>
+      </div>
+    `;
+  });
+
+  document.getElementById('carrierChart').innerHTML = html;
+}
+
+loadData();
+</script>
+
+</body>
+</html>
