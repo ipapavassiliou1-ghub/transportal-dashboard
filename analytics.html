@@ -333,14 +333,25 @@ async function loadAnalytics(){
   const carriers = {};
 
   filtered.forEach(s => {
-    const c = s.carrier || "UNKNOWN";
+    const c = (s.carrier || "UNKNOWN").toUpperCase();
 
     if (!carriers[c]) {
-      carriers[c] = { total:0, delivered:0 };
+      carriers[c] = {
+        total: 0,
+        delivered: 0,
+        late: 0
+      };
     }
 
     carriers[c].total++;
-    if (isDelivered(s)) carriers[c].delivered++;
+
+    if (isDelivered(s)) {
+      carriers[c].delivered++;
+    }
+
+    if (Number(s.delay_status) === 2) {
+      carriers[c].late++;
+    }
   });
 
   /* RESET CHARTS */
