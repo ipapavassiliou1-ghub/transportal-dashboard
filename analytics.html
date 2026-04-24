@@ -101,7 +101,7 @@ function goToDashboard() {
 }
 
 async function loadData() {
-  const res = await fetch('/api/v1/shipments');
+  const res = await fetch('https://dashboard.transportal.gr/api/v1/shipments');
   shipments = await res.json();
 
   renderKPIs();
