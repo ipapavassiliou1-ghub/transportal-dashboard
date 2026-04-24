@@ -205,27 +205,36 @@ canvas {
 
 <script>
 
-/* NAV */
-function goDashboard() { window.location.href = "/dashboard.html"; }
+/* =====================================
+   🔹 NAVIGATION
+===================================== */
+function goDashboard() {
+  window.location.href = "/dashboard.html";
+}
+
 function logout() {
   localStorage.clear();
   window.location.href = "/login.html";
 }
 
-/* USER */
+
+/* =====================================
+   🔹 USER HEADER (CLIENT + USER INFO)
+===================================== */
 function hydrateUserHeader() {
   document.getElementById("userInfo").textContent =
     "👤 " + (localStorage.getItem("user_email") || "Unknown");
+
   document.getElementById("clientDisplay").textContent =
     localStorage.getItem("display_name") || "Client";
 }
+
 hydrateUserHeader();
 
-/* EVENTS */
-document.getElementById("refreshBtn").addEventListener("click", loadAnalytics);
-document.getElementById("timeScope").addEventListener("change", loadAnalytics);
 
-/* API */
+/* =====================================
+   🔹 API CONFIG (AUTH FETCH)
+===================================== */
 const API_V1 = "https://api.transportal.gr/api/v1";
 
 function authFetch(url) {
@@ -237,75 +246,175 @@ function authFetch(url) {
   });
 }
 
-let carrierChart, slaChart;
 
-/* MAIN */
+/* =====================================
+   🔹 GLOBAL CHART REFERENCES
+===================================== */
+let carrierChart = null;
+let slaChart = null;
+
+
+/* =====================================
+   🔹 UI EVENTS (REFRESH / TIME SCOPE)
+===================================== */
+document.getElementById("refreshBtn").addEventListener("click", loadAnalytics);
+document.getElementById("timeScope").addEventListener("change", loadAnalytics);
+
+
+/* =====================================
+   🔹 STATUS HELPERS
+===================================== */
+function isDelivered(s) {
+  return (
+    s.final_status === "delivered" ||
+    s.normalized_status === "delivered" ||
+    String(s.status || "").toLowerCase() === "delivered"
+  );
+}
+
+
+/* =====================================
+   🔹 MAIN ANALYTICS LOADER
+===================================== */
 async function loadAnalytics() {
 
+  /* ---- Fetch data ---- */
   const res = await authFetch("/shipments");
-  const data = await res.json();
 
+  if (!res.ok) {
+    console.error("Analytics API failed:", res.status);
+    return;
+  }
+
+  const data = await res.json();
+  console.log("Analytics data:", data);
+
+
+  /* ---- DISTINCT shipments (by tracking) ---- */
   const unique = {};
-  data.forEach(s => unique[s.tracking] = s);
+  data.forEach(s => {
+    if (s.tracking) unique[s.tracking] = s;
+  });
+
   const shipments = Object.values(unique);
 
+
+  /* =====================================
+     🔹 KPI CALCULATIONS
+  ===================================== */
   const total = shipments.length;
-  const delivered = shipments.filter(s => s.normalized_status === "delivered").length;
-  const late = shipments.filter(s => s.delay_status === 2).length;
-  const delayed = shipments.filter(s => s.delay_status === 1).length;
+  const delivered = shipments.filter(isDelivered).length;
+  const late = shipments.filter(s => Number(s.delay_status) === 2).length;
+  const delayed = shipments.filter(s => Number(s.delay_status) === 1).length;
 
-  const success = total ? Math.round((delivered / total)*100) : 0;
+  const success = total ? Math.round((delivered / total) * 100) : 0;
 
-  totalShipments.textContent = total;
-  deliveredEl.textContent = delivered;
-  lateEl.textContent = late;
-  delayedEl.textContent = delayed;
-  successEl.textContent = success + "%";
 
-  /* FIX DOM refs */
+  /* ---- Update KPI UI ---- */
+  document.getElementById("totalShipments").textContent = total;
   document.getElementById("delivered").textContent = delivered;
   document.getElementById("late").textContent = late;
   document.getElementById("delayed").textContent = delayed;
   document.getElementById("success").textContent = success + "%";
 
-  /* CARRIERS */
+
+  /* =====================================
+     🔹 CARRIER AGGREGATION
+  ===================================== */
   const carriers = {};
+
   shipments.forEach(s => {
     const c = s.carrier || "UNKNOWN";
-    if (!carriers[c]) carriers[c] = { total:0, delivered:0 };
+
+    if (!carriers[c]) {
+      carriers[c] = { total: 0, delivered: 0 };
+    }
+
     carriers[c].total++;
-    if (s.normalized_status === "delivered") carriers[c].delivered++;
-  });
 
-  /* CHARTS */
-  if (carrierChart) carrierChart.destroy();
-  if (slaChart) slaChart.destroy();
-
-  const labels = [];
-  const dataVals = [];
-
-  Object.entries(carriers).forEach(([name,val]) => {
-    labels.push(name);
-    dataVals.push(Math.round((val.delivered/val.total)*100));
-  });
-
-  carrierChart = new Chart(carrierChartCanvas, {
-    type:"bar",
-    data:{ labels, datasets:[{ data:dataVals }] },
-    options:{ plugins:{legend:{display:false}}, scales:{y:{max:100}} }
-  });
-
-  slaChart = new Chart(slaChartCanvas, {
-    type:"pie",
-    data:{
-      labels:["On Time","Late"],
-      datasets:[{ data:[delivered-late, late] }]
+    if (isDelivered(s)) {
+      carriers[c].delivered++;
     }
   });
 
+
+  /* =====================================
+     🔹 CHART RESET (IMPORTANT)
+  ===================================== */
+  if (carrierChart) carrierChart.destroy();
+  if (slaChart) slaChart.destroy();
+
+
+  /* =====================================
+     🔹 CARRIER PERFORMANCE CHART (BAR)
+  ===================================== */
+  const carrierLabels = [];
+  const carrierData = [];
+
+  Object.entries(carriers).forEach(([name, val]) => {
+    carrierLabels.push(name);
+
+    const pct = val.total
+      ? Math.round((val.delivered / val.total) * 100)
+      : 0;
+
+    carrierData.push(pct);
+  });
+
+  carrierChart = new Chart(
+    document.getElementById("carrierChart"),
+    {
+      type: "bar",
+      data: {
+        labels: carrierLabels,
+        datasets: [{
+          label: "% Delivered",
+          data: carrierData
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    }
+  );
+
+
+  /* =====================================
+     🔹 SLA PERFORMANCE CHART (PIE)
+  ===================================== */
+  const onTime = Math.max(0, delivered - late);
+
+  slaChart = new Chart(
+    document.getElementById("slaChart"),
+    {
+      type: "pie",
+      data: {
+        labels: ["On Time", "Late"],
+        datasets: [{
+          data: [onTime, late]
+        }]
+      },
+      options: {
+        responsive: true
+      }
+    }
+  );
+
 }
 
-/* INIT */
+
+/* =====================================
+   🔹 INITIAL LOAD
+===================================== */
 loadAnalytics();
 
 </script>
