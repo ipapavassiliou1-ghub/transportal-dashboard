@@ -354,7 +354,7 @@ async function loadAnalytics(){
     }
   });
   
-  console.log("Carriers debug:", carriers);
+  console.log("Carriers debug:", JSON.stringify(carriers, null, 2));
   
   /* RESET CHARTS */
   if (carrierChart) carrierChart.destroy();
