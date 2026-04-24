@@ -327,43 +327,75 @@ async function loadAnalytics(){
   }
 });
 
-  /* TREND */
-  const grouped=groupByDate(shipments);
-  const dates=Object.keys(grouped).sort();
+  //* TREND */
+const grouped = groupByDate(shipments);
+const dates = Object.keys(grouped).sort();
 
-  const vol=[],sla=[];
-  dates.forEach(d=>{
-    const day=grouped[d];
-    vol.push(day.total);
-    sla.push(day.total?Math.round(day.delivered/day.total*100):0);
-    lateData.push(day.late);
-  });
+const vol = [], sla = [], lateData = [];
 
-  volumeChart=new Chart(document.getElementById("volumeChart"),{
-    type:"line",
-    data:{labels:dates,datasets:[{
-  label:"Shipments",
-  data:vol,
-  tension:0.3
-}]
-  });
+dates.forEach(d => {
+  const day = grouped[d];
 
-  slaTrendChart=new Chart(document.getElementById("slaTrendChart"),{
-    type:"line",
-    data:{labels:dates,ddatasets: [
-  {
-    label: "SLA %",
-    data: sla,
-    tension: 0.3
+  vol.push(day.total);
+
+  sla.push(
+    day.total
+      ? Math.round((day.delivered / day.total) * 100)
+      : 0
+  );
+
+  lateData.push(day.late);
+});
+
+/* VOLUME CHART */
+volumeChart = new Chart(document.getElementById("volumeChart"), {
+  type: "line",
+  data: {
+    labels: dates,
+    datasets: [
+      {
+        label: "Shipments",
+        data: vol,
+        tension: 0.3
+      }
+    ]
   },
-  {
-    label: "Late Shipments",
-    data: lateData,
-    tension: 0.3
+  options: {
+    scales: {
+      y: { beginAtZero: true }
+    }
   }
-]
-    options:{scales:{y:{max:100,min:0}}}
-  });
+});
+
+/* SLA TREND CHART */
+slaTrendChart = new Chart(document.getElementById("slaTrendChart"), {
+  type: "line",
+
+  data: {
+    labels: dates,
+    datasets: [
+      {
+        label: "SLA %",
+        data: sla,
+        tension: 0.3
+      },
+      {
+        label: "Late Shipments",
+        data: lateData,
+        tension: 0.3
+      }
+    ]
+  },
+
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100
+      }
+    }
+  }
+});
 
 }
 
