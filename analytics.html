@@ -353,7 +353,9 @@ async function loadAnalytics(){
       carriers[c].late++;
     }
   });
-
+  
+  console.log("Carriers debug:", carriers);
+  
   /* RESET CHARTS */
   if (carrierChart) carrierChart.destroy();
   if (slaChart) slaChart.destroy();
