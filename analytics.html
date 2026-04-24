@@ -5,7 +5,7 @@
 <title>Transportal Analytics</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<!-- ✅ Chart.js -->
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -16,7 +16,6 @@ body {
   padding:28px;
 }
 
-/* HEADER */
 .topbar {
   display:flex;
   justify-content:space-between;
@@ -40,7 +39,6 @@ h1 { margin:0; font-size:30px; }
   font-weight:600;
 }
 
-/* CONTROLS */
 .controlsRow {
   display:flex;
   align-items:center;
@@ -89,11 +87,6 @@ h1 { margin:0; font-size:30px; }
   cursor:pointer;
 }
 
-.pillButton:hover {
-  background:#f9fafb;
-}
-
-/* KPI */
 .grid {
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
@@ -117,11 +110,8 @@ h1 { margin:0; font-size:30px; }
   color:#6b7280;
 }
 
-h2 {
-  margin-top:30px;
-}
+h2 { margin-top:30px; }
 
-/* FOOTER */
 .footer {
   text-align:center;
   margin-top:40px;
@@ -134,9 +124,7 @@ h2 {
   font-weight:800;
 }
 
-canvas {
-  margin-top:10px;
-}
+canvas { margin-top:10px; }
 </style>
 </head>
 
@@ -183,7 +171,7 @@ canvas {
   <div class="card"><div class="value" id="success">0%</div><div class="sub">Success Rate</div></div>
 </div>
 
-<!-- CHARTS -->
+<!-- VISUAL -->
 <h2>Visual Analytics</h2>
 
 <div class="grid">
@@ -198,223 +186,156 @@ canvas {
   </div>
 </div>
 
-<!-- FOOTER -->
+<!-- NEW TREND CHARTS -->
+<h2>Trends</h2>
+
+<div class="grid">
+  <div class="card">
+    <h3>Shipments Over Time</h3>
+    <canvas id="volumeChart"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>SLA Trend</h3>
+    <canvas id="slaTrendChart"></canvas>
+  </div>
+</div>
+
 <div class="footer">
   powered by <span class="brand">transportal</span>
 </div>
 
 <script>
 
-/* =====================================
-   🔹 NAVIGATION
-===================================== */
-function goDashboard() {
-  window.location.href = "/dashboard.html";
+/* NAV */
+function goDashboard(){ window.location.href="/dashboard.html"; }
+function logout(){ localStorage.clear(); window.location.href="/login.html"; }
+
+/* USER */
+function hydrateUserHeader(){
+  userInfo.textContent="👤 "+(localStorage.getItem("user_email")||"Unknown");
+  clientDisplay.textContent=localStorage.getItem("display_name")||"Client";
 }
-
-function logout() {
-  localStorage.clear();
-  window.location.href = "/login.html";
-}
-
-
-/* =====================================
-   🔹 USER HEADER (CLIENT + USER INFO)
-===================================== */
-function hydrateUserHeader() {
-  document.getElementById("userInfo").textContent =
-    "👤 " + (localStorage.getItem("user_email") || "Unknown");
-
-  document.getElementById("clientDisplay").textContent =
-    localStorage.getItem("display_name") || "Client";
-}
-
 hydrateUserHeader();
 
+/* API */
+const API_V1="https://api.transportal.gr/api/v1";
 
-/* =====================================
-   🔹 API CONFIG (AUTH FETCH)
-===================================== */
-const API_V1 = "https://api.transportal.gr/api/v1";
-
-function authFetch(url) {
-  return fetch(API_V1 + url, {
-    headers: {
-      Authorization: "Bearer " + localStorage.getItem("token"),
-      "x-api-key": localStorage.getItem("client_key")
+function authFetch(url){
+  return fetch(API_V1+url,{
+    headers:{
+      Authorization:"Bearer "+localStorage.getItem("token"),
+      "x-api-key":localStorage.getItem("client_key")
     }
   });
 }
 
+/* CHARTS */
+let carrierChart,slaChart,volumeChart,slaTrendChart;
 
-/* =====================================
-   🔹 GLOBAL CHART REFERENCES
-===================================== */
-let carrierChart = null;
-let slaChart = null;
+/* EVENTS */
+refreshBtn.onclick=loadAnalytics;
+timeScope.onchange=loadAnalytics;
 
-
-/* =====================================
-   🔹 UI EVENTS (REFRESH / TIME SCOPE)
-===================================== */
-document.getElementById("refreshBtn").addEventListener("click", loadAnalytics);
-document.getElementById("timeScope").addEventListener("change", loadAnalytics);
-
-
-/* =====================================
-   🔹 STATUS HELPERS
-===================================== */
-function isDelivered(s) {
-  return (
-    s.final_status === "delivered" ||
-    s.normalized_status === "delivered" ||
-    String(s.status || "").toLowerCase() === "delivered"
-  );
+/* HELPERS */
+function isDelivered(s){
+  return s.final_status==="delivered" ||
+         s.normalized_status==="delivered" ||
+         String(s.status||"").toLowerCase()==="delivered";
 }
 
-
-/* =====================================
-   🔹 MAIN ANALYTICS LOADER
-===================================== */
-async function loadAnalytics() {
-
-  /* ---- Fetch data ---- */
-  const res = await authFetch("/shipments");
-
-  if (!res.ok) {
-    console.error("Analytics API failed:", res.status);
-    return;
-  }
-
-  const data = await res.json();
-  console.log("Analytics data:", data);
-
-
-  /* ---- DISTINCT shipments (by tracking) ---- */
-  const unique = {};
-  data.forEach(s => {
-    if (s.tracking) unique[s.tracking] = s;
+function groupByDate(arr){
+  const map={};
+  arr.forEach(s=>{
+    const d=(s.created_at||"").slice(0,10);
+    if(!d) return;
+    if(!map[d]) map[d]={total:0,delivered:0,late:0};
+    map[d].total++;
+    if(isDelivered(s)) map[d].delivered++;
+    if(Number(s.delay_status)===2) map[d].late++;
   });
+  return map;
+}
 
-  const shipments = Object.values(unique);
+/* MAIN */
+async function loadAnalytics(){
 
+  const res=await authFetch("/shipments");
+  const data=await res.json();
 
-  /* =====================================
-     🔹 KPI CALCULATIONS
-  ===================================== */
-  const total = shipments.length;
-  const delivered = shipments.filter(isDelivered).length;
-  const late = shipments.filter(s => Number(s.delay_status) === 2).length;
-  const delayed = shipments.filter(s => Number(s.delay_status) === 1).length;
+  const unique={};
+  data.forEach(s=>{ if(s.tracking) unique[s.tracking]=s });
+  const shipments=Object.values(unique);
 
-  const success = total ? Math.round((delivered / total) * 100) : 0;
+  const total=shipments.length;
+  const delivered=shipments.filter(isDelivered).length;
+  const late=shipments.filter(s=>Number(s.delay_status)===2).length;
+  const delayed=shipments.filter(s=>Number(s.delay_status)===1).length;
+  const success=total?Math.round((delivered/total)*100):0;
 
+  totalShipments.textContent=total;
+  document.getElementById("delivered").textContent=delivered;
+  document.getElementById("late").textContent=late;
+  document.getElementById("delayed").textContent=delayed;
+  document.getElementById("success").textContent=success+"%";
 
-  /* ---- Update KPI UI ---- */
-  document.getElementById("totalShipments").textContent = total;
-  document.getElementById("delivered").textContent = delivered;
-  document.getElementById("late").textContent = late;
-  document.getElementById("delayed").textContent = delayed;
-  document.getElementById("success").textContent = success + "%";
-
-
-  /* =====================================
-     🔹 CARRIER AGGREGATION
-  ===================================== */
-  const carriers = {};
-
-  shipments.forEach(s => {
-    const c = s.carrier || "UNKNOWN";
-
-    if (!carriers[c]) {
-      carriers[c] = { total: 0, delivered: 0 };
-    }
-
+  /* CARRIER */
+  const carriers={};
+  shipments.forEach(s=>{
+    const c=s.carrier||"UNKNOWN";
+    if(!carriers[c]) carriers[c]={total:0,delivered:0};
     carriers[c].total++;
-
-    if (isDelivered(s)) {
-      carriers[c].delivered++;
-    }
+    if(isDelivered(s)) carriers[c].delivered++;
   });
 
+  if(carrierChart) carrierChart.destroy();
+  if(slaChart) slaChart.destroy();
+  if(volumeChart) volumeChart.destroy();
+  if(slaTrendChart) slaTrendChart.destroy();
 
-  /* =====================================
-     🔹 CHART RESET (IMPORTANT)
-  ===================================== */
-  if (carrierChart) carrierChart.destroy();
-  if (slaChart) slaChart.destroy();
-
-
-  /* =====================================
-     🔹 CARRIER PERFORMANCE CHART (BAR)
-  ===================================== */
-  const carrierLabels = [];
-  const carrierData = [];
-
-  Object.entries(carriers).forEach(([name, val]) => {
-    carrierLabels.push(name);
-
-    const pct = val.total
-      ? Math.round((val.delivered / val.total) * 100)
-      : 0;
-
-    carrierData.push(pct);
+  /* BAR */
+  const labels=[],vals=[];
+  Object.entries(carriers).forEach(([n,v])=>{
+    labels.push(n);
+    vals.push(v.total?Math.round(v.delivered/v.total*100):0);
   });
 
-  carrierChart = new Chart(
-    document.getElementById("carrierChart"),
-    {
-      type: "bar",
-      data: {
-        labels: carrierLabels,
-        datasets: [{
-          label: "% Delivered",
-          data: carrierData
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 100
-          }
-        }
-      }
-    }
-  );
+  carrierChart=new Chart(carrierChart,{
+    type:"bar",
+    data:{labels,datasets:[{data:vals}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{max:100}}}
+  });
 
+  /* PIE */
+  slaChart=new Chart(document.getElementById("slaChart"),{
+    type:"pie",
+    data:{labels:["On Time","Late"],datasets:[{data:[delivered-late,late]}]}
+  });
 
-  /* =====================================
-     🔹 SLA PERFORMANCE CHART (PIE)
-  ===================================== */
-  const onTime = Math.max(0, delivered - late);
+  /* TREND */
+  const grouped=groupByDate(shipments);
+  const dates=Object.keys(grouped).sort();
 
-  slaChart = new Chart(
-    document.getElementById("slaChart"),
-    {
-      type: "pie",
-      data: {
-        labels: ["On Time", "Late"],
-        datasets: [{
-          data: [onTime, late]
-        }]
-      },
-      options: {
-        responsive: true
-      }
-    }
-  );
+  const vol=[],sla=[];
+  dates.forEach(d=>{
+    const day=grouped[d];
+    vol.push(day.total);
+    sla.push(day.total?Math.round(day.delivered/day.total*100):0);
+  });
+
+  volumeChart=new Chart(document.getElementById("volumeChart"),{
+    type:"line",
+    data:{labels:dates,datasets:[{data:vol,tension:0.3}]}
+  });
+
+  slaTrendChart=new Chart(document.getElementById("slaTrendChart"),{
+    type:"line",
+    data:{labels:dates,datasets:[{data:sla,tension:0.3}]},
+    options:{scales:{y:{max:100,min:0}}}
+  });
 
 }
 
-
-/* =====================================
-   🔹 INITIAL LOAD
-===================================== */
 loadAnalytics();
 
 </script>
