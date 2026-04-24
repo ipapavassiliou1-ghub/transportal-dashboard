@@ -220,8 +220,11 @@ function logout(){ localStorage.clear(); window.location.href="/login.html"; }
 
 /* USER */
 function hydrateUserHeader(){
-  userInfo.textContent="👤 "+(localStorage.getItem("user_email")||"Unknown");
-  clientDisplay.textContent=localStorage.getItem("display_name")||"Client";
+  document.getElementById("userInfo").textContent =
+    "👤 "+(localStorage.getItem("user_email")||"Unknown");
+
+  document.getElementById("clientDisplay").textContent =
+    localStorage.getItem("display_name")||"Client";
 }
 hydrateUserHeader();
 
@@ -244,8 +247,8 @@ let volumeChart = null;
 let slaTrendChart = null;
 
 /* EVENTS */
-refreshBtn.onclick=loadAnalytics;
-timeScope.onchange=loadAnalytics;
+document.getElementById("refreshBtn").onclick = loadAnalytics;
+document.getElementById("timeScope").onchange = loadAnalytics;
 
 /* HELPERS */
 function isDelivered(s){
@@ -256,14 +259,18 @@ function isDelivered(s){
 
 function groupByDate(arr){
   const map={};
+
   arr.forEach(s=>{
     const d=(s.created_at||"").slice(0,10);
     if(!d) return;
+
     if(!map[d]) map[d]={total:0,delivered:0,late:0};
+
     map[d].total++;
     if(isDelivered(s)) map[d].delivered++;
     if(Number(s.delay_status)===2) map[d].late++;
   });
+
   return map;
 }
 
@@ -271,216 +278,201 @@ function groupByDate(arr){
 async function loadAnalytics(){
 
   const res = await authFetch("/shipments");
+
+  if (!res.ok) {
+    console.error("Analytics API failed:", res.status);
+    return;
+  }
+
   const data = await res.json();
 
-  /* ---- DISTINCT shipments ---- */
+  /* DISTINCT shipments */
   const unique = {};
-  data.forEach(s => { if (s.tracking) unique[s.tracking] = s });
+  data.forEach(s => {
+    if (s.tracking) unique[s.tracking] = s;
+  });
+
   const shipments = Object.values(unique);
 
-  /* =====================================
-     🔹 TIME FILTER (MUST BE HERE)
-  ===================================== */
+  /* TIME FILTER */
   const scope = document.getElementById("timeScope").value;
 
   let filtered = shipments;
 
   if (scope !== "all") {
-    const days = parseInt(scope);
+    const days = parseInt(scope, 10);
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - days);
 
     filtered = shipments.filter(s => {
-      return new Date(s.created_at) >= cutoff;
+      if (!s.created_at) return false;
+      return new Date(String(s.created_at).replace(" ", "T")) >= cutoff;
     });
   }
 
-  /* =====================================
-     🔹 KPI CALCULATIONS (USE FILTERED)
-  ===================================== */
+  /* KPI CALCULATIONS */
   const total = filtered.length;
-
   const delivered = filtered.filter(isDelivered).length;
+  const late = filtered.filter(s => Number(s.delay_status) === 2).length;
+  const delayed = filtered.filter(s => Number(s.delay_status) === 1).length;
+  const success = total ? Math.round((delivered / total) * 100) : 0;
 
-  const late = filtered.filter(s =>
-    Number(s.delay_status) === 2
-  ).length;
-
-  const delayed = filtered.filter(s =>
-    Number(s.delay_status) === 1
-  ).length;
-
-  const success = total
-    ? Math.round((delivered / total) * 100)
-    : 0;
-
-  /* ---- UPDATE UI ---- */
   document.getElementById("totalShipments").textContent = total;
   document.getElementById("delivered").textContent = delivered;
   document.getElementById("late").textContent = late;
   document.getElementById("delayed").textContent = delayed;
   document.getElementById("success").textContent = success + "%";
 
-}
+  /* CARRIER AGGREGATION */
+  const carriers = {};
 
-/* CARRIER */
-/* =====================================
-   🔹 CARRIER (USE FILTERED DATA)
-===================================== */
-const carriers = {};
+  filtered.forEach(s => {
+    const c = s.carrier || "UNKNOWN";
 
-filtered.forEach(s => {
-  const c = s.carrier || "UNKNOWN";
+    if (!carriers[c]) {
+      carriers[c] = { total:0, delivered:0 };
+    }
 
-  if (!carriers[c]) {
-    carriers[c] = {
-      total: 0,
-      delivered: 0
-    };
-  }
+    carriers[c].total++;
+    if (isDelivered(s)) carriers[c].delivered++;
+  });
 
-  carriers[c].total++;
+  /* RESET CHARTS */
+  if (carrierChart) carrierChart.destroy();
+  if (slaChart) slaChart.destroy();
+  if (volumeChart) volumeChart.destroy();
+  if (slaTrendChart) slaTrendChart.destroy();
 
-  if (isDelivered(s)) {
-    carriers[c].delivered++;
-  }
-});
+  /* CARRIER BAR CHART */
+  const labels = [];
+  const vals = [];
 
-
-/* =====================================
-   🔹 RESET CHARTS (IMPORTANT)
-===================================== */
-if (carrierChart) carrierChart.destroy();
-if (slaChart) slaChart.destroy();
-if (volumeChart) volumeChart.destroy();
-if (slaTrendChart) slaTrendChart.destroy();
-
-  /* BAR */
-  const labels=[],vals=[];
   Object.entries(carriers).forEach(([n,v])=>{
     labels.push(n);
-    vals.push(v.total?Math.round(v.delivered/v.total*100):0);
+    vals.push(v.total ? Math.round((v.delivered / v.total) * 100) : 0);
   });
 
   carrierChart = new Chart(document.getElementById("carrierChart"), {
     type:"bar",
-    data:{labels,datasets:[{data:vals}]},
-    options:{plugins:{legend:{display:false}},scales:{y:{max:100}}}
+    data:{
+      labels: labels,
+      datasets:[{
+        label:"% Delivered",
+        data: vals
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{ display:false } },
+      scales:{
+        y:{
+          beginAtZero:true,
+          max:100
+        }
+      }
+    }
   });
 
-  /* PIE */
+  /* SLA PIE CHART */
+  const onTime = Math.max(0, delivered - late);
+
   slaChart = new Chart(document.getElementById("slaChart"), {
-  type: "pie",
-  data: {
-    labels: ["On Time", "Late"],
-    datasets: [{
-      data: [delivered - late, late]
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false
-  }
-});
-
-//* TREND */
-/* =====================================
-   🔹 TREND (USE FILTERED DATA)
-===================================== */
-const grouped = groupByDate(filtered);
-
-const dates = Object.keys(grouped).sort();
-
-const vol = [];
-const sla = [];
-const lateData = [];
-
-dates.forEach(d => {
-  const day = grouped[d];
-
-  /* ---- Volume ---- */
-  vol.push(day.total);
-
-  /* ---- SLA % ---- */
-  sla.push(
-    day.total
-      ? Math.round((day.delivered / day.total) * 100)
-      : 0
-  );
-
-  /* ---- Late Shipments ---- */
-  lateData.push(day.late);
-});
-
-/* VOLUME CHART */
-volumeChart = new Chart(document.getElementById("volumeChart"), {
-  type: "line",
-  data: {
-    labels: dates,
-    datasets: [
-      {
-        label: "Shipments",
-        data: vol,
-        tension: 0.3
-      }
-    ]
-  },
-  options: {
-    scales: {
-      y: { beginAtZero: true }
+    type:"pie",
+    data:{
+      labels:["On Time","Late"],
+      datasets:[{
+        data:[onTime, late]
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false
     }
-  }
-});
+  });
 
-/* SLA TREND CHART */
-slaTrendChart = new Chart(document.getElementById("slaTrendChart"), {
-  type: "line",
+  /* TREND DATA */
+  const grouped = groupByDate(filtered);
+  const dates = Object.keys(grouped).sort();
 
-  data: {
-    labels: dates,
-    datasets: [
-      {
-        label: "SLA %",
-        data: sla,
-        tension: 0.3,
-        yAxisID: 'y1'
-      },
-      {
-        label: "Late Shipments",
-        data: lateData,
-        tension: 0.3,
-        yAxisID: 'y2'
+  const vol = [];
+  const sla = [];
+  const lateData = [];
+
+  dates.forEach(d => {
+    const day = grouped[d];
+
+    vol.push(day.total);
+
+    sla.push(
+      day.total
+        ? Math.round((day.delivered / day.total) * 100)
+        : 0
+    );
+
+    lateData.push(day.late);
+  });
+
+  /* VOLUME CHART */
+  volumeChart = new Chart(document.getElementById("volumeChart"), {
+    type:"line",
+    data:{
+      labels:dates,
+      datasets:[{
+        label:"Shipments",
+        data:vol,
+        tension:0.3
+      }]
+    },
+    options:{
+      responsive:true,
+      scales:{
+        y:{ beginAtZero:true }
       }
-    ]
-  },
+    }
+  });
 
-  options: {
-    scales: {
-      y1: {
-        position: 'left',
-        beginAtZero: true,
-        max: 100,
-        title: {
-          display: true,
-          text: 'SLA %'
-        }
-      },
-      y2: {
-        position: 'right',
-        beginAtZero: true,
-        grid: {
-          drawOnChartArea: false
+  /* SLA TREND CHART */
+  slaTrendChart = new Chart(document.getElementById("slaTrendChart"), {
+    type:"line",
+    data:{
+      labels:dates,
+      datasets:[
+        {
+          label:"SLA %",
+          data:sla,
+          tension:0.3,
+          yAxisID:"y1"
         },
-        title: {
-          display: true,
-          text: 'Late Shipments'
+        {
+          label:"Late Shipments",
+          data:lateData,
+          tension:0.3,
+          yAxisID:"y2"
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      scales:{
+        y1:{
+          position:"left",
+          beginAtZero:true,
+          max:100,
+          title:{ display:true, text:"SLA %" }
+        },
+        y2:{
+          position:"right",
+          beginAtZero:true,
+          grid:{ drawOnChartArea:false },
+          title:{ display:true, text:"Late Shipments" }
         }
       }
     }
-  }
-});
+  });
+
 }
 
+/* INITIAL LOAD */
 loadAnalytics();
 
 </script>
