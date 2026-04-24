@@ -300,7 +300,7 @@ async function loadAnalytics(){
     vals.push(v.total?Math.round(v.delivered/v.total*100):0);
   });
 
-  carrierChart=new Chart(carrierChart,{
+  carrierChart = new Chart(document.getElementById("carrierChart"), {
     type:"bar",
     data:{labels,datasets:[{data:vals}]},
     options:{plugins:{legend:{display:false}},scales:{y:{max:100}}}
