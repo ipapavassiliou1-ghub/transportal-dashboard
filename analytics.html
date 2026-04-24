@@ -117,12 +117,17 @@ h1 { margin:0; font-size:30px; }
 <!-- HEADER -->
 <div class="topbar">
   <div>
-    <h1>📊 Analytics</h1>
-    <div class="subtitle">Performance insights across carriers, SLA and shipments</div>
+    <h1>📊 Operations Control Tower</h1>
+    <p class="subtitle">Analytics & performance insights</p>
   </div>
 
-  <div style="display:flex; gap:10px; align-items:center;">
-    <span id="userInfo" style="font-size:13px; color:#6b7280;"></span>
+  <div style="display:flex; align-items:center; gap:12px;">
+    <div class="pill">
+      <span class="dot idle"></span>
+      Idle
+    </div>
+
+    <span id="userInfo"></span>
 
     <button onclick="goDashboard()" class="btnGhost">Dashboard</button>
     <button onclick="logout()" class="btnGhost">Logout</button>
