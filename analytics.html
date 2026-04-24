@@ -318,6 +318,10 @@ async function loadAnalytics(){
   const delayed = filtered.filter(s => Number(s.delay_status) === 1).length;
   const success = total ? Math.round((delivered / total) * 100) : 0;
 
+  const breachRate = total
+    ? Math.round((late / total) * 100)
+    : 0;
+  
   document.getElementById("totalShipments").textContent = total;
   document.getElementById("delivered").textContent = delivered;
   document.getElementById("late").textContent = late;
