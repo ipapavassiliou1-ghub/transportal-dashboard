@@ -5,6 +5,9 @@
 <title>Transportal Analytics</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+<!-- ✅ Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 body {
   font-family: system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
@@ -46,15 +49,48 @@ h1 { margin:0; font-size:30px; }
   margin-bottom:20px;
 }
 
-.control label {
-  font-size:12px;
-  color:#6b7280;
-  display:block;
+.pillClient {
+  background:#eef2ff;
+  color:#4f46e5;
+  font-weight:700;
+  padding:10px 16px;
+  border-radius:14px;
 }
 
-.clientName {
-  font-weight:700;
-  font-size:18px;
+.pillControl {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:white;
+  border:1px solid #e5e7eb;
+  padding:10px 14px;
+  border-radius:14px;
+}
+
+.pillControl .label {
+  font-size:13px;
+  color:#6b7280;
+}
+
+.pillControl select {
+  border:none;
+  outline:none;
+  font-weight:600;
+  background:transparent;
+  cursor:pointer;
+}
+
+.pillButton {
+  background:white;
+  border:1px solid #e5e7eb;
+  padding:10px 16px;
+  border-radius:14px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.pillButton:hover {
+  background:#f9fafb;
 }
 
 /* KPI */
@@ -81,21 +117,8 @@ h1 { margin:0; font-size:30px; }
   color:#6b7280;
 }
 
-/* CARRIER */
-.carrier {
+h2 {
   margin-top:30px;
-}
-
-.bar {
-  height:10px;
-  background:#eee;
-  border-radius:10px;
-  overflow:hidden;
-}
-
-.fill {
-  height:100%;
-  background:#6d28d9;
 }
 
 /* FOOTER */
@@ -111,54 +134,9 @@ h1 { margin:0; font-size:30px; }
   font-weight:800;
 }
 
-  /* CLIENT (Sky Logistics) */
-.pillClient {
-  background:#eef2ff;
-  color:#4f46e5;
-  font-weight:700;
-  padding:10px 16px;
-  border-radius:14px;
+canvas {
+  margin-top:10px;
 }
-
-/* TIME SCOPE BOX */
-.pillControl {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:white;
-  border:1px solid #e5e7eb;
-  padding:10px 14px;
-  border-radius:14px;
-}
-
-.pillControl .label {
-  font-size:13px;
-  color:#6b7280;
-}
-
-/* DROPDOWN CLEAN */
-.pillControl select {
-  border:none;
-  outline:none;
-  font-weight:600;
-  background:transparent;
-  cursor:pointer;
-}
-
-/* REFRESH BUTTON */
-.pillButton {
-  background:white;
-  border:1px solid #e5e7eb;
-  padding:10px 16px;
-  border-radius:14px;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.pillButton:hover {
-  background:#f9fafb;
-}
-
 </style>
 </head>
 
@@ -173,7 +151,6 @@ h1 { margin:0; font-size:30px; }
 
   <div style="display:flex; align-items:center; gap:12px;">
     <span id="userInfo"></span>
-
     <button onclick="goDashboard()" class="btnGhost">Dashboard</button>
     <button onclick="logout()" class="btnGhost">Logout</button>
   </div>
@@ -181,11 +158,8 @@ h1 { margin:0; font-size:30px; }
 
 <!-- CONTROLS -->
 <div class="controlsRow">
-
-  <!-- CLIENT PILL -->
   <div class="pillClient" id="clientDisplay">Sky Logistics</div>
 
-  <!-- TIME SCOPE -->
   <div class="pillControl">
     <span class="label">Time Scope</span>
     <select id="timeScope">
@@ -195,47 +169,33 @@ h1 { margin:0; font-size:30px; }
     </select>
   </div>
 
-  <!-- REFRESH -->
   <button id="refreshBtn" class="pillButton">Refresh</button>
-
 </div>
 
 <!-- KPI -->
-<h2 style="margin-top:20px;">Analytics</h2>
-  
+<h2>Analytics</h2>
+
 <div class="grid">
-
-  <div class="card">
-    <div class="value" id="totalShipments">0</div>
-    <div class="sub">Distinct Shipments</div>
-  </div>
-
-  <div class="card">
-    <div class="value" id="delivered">0</div>
-    <div class="sub">Delivered</div>
-  </div>
-
-  <div class="card">
-    <div class="value" id="late">0</div>
-    <div class="sub">Delivered Late</div>
-  </div>
-
-  <div class="card">
-    <div class="value" id="delayed">0</div>
-    <div class="sub">In Delay</div>
-  </div>
-
-  <div class="card">
-    <div class="value" id="success">0%</div>
-    <div class="sub">Success Rate</div>
-  </div>
-
+  <div class="card"><div class="value" id="totalShipments">0</div><div class="sub">Distinct Shipments</div></div>
+  <div class="card"><div class="value" id="delivered">0</div><div class="sub">Delivered</div></div>
+  <div class="card"><div class="value" id="late">0</div><div class="sub">Late Deliveries</div></div>
+  <div class="card"><div class="value" id="delayed">0</div><div class="sub">Active Delays</div></div>
+  <div class="card"><div class="value" id="success">0%</div><div class="sub">Success Rate</div></div>
 </div>
 
-<!-- CARRIER -->
-<div class="carrier">
-  <h2>Carrier Performance</h2>
-  <div id="carrierBox"></div>
+<!-- CHARTS -->
+<h2>Visual Analytics</h2>
+
+<div class="grid">
+  <div class="card">
+    <h3>Carrier Performance</h3>
+    <canvas id="carrierChart"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>SLA Performance</h3>
+    <canvas id="slaChart"></canvas>
+  </div>
 </div>
 
 <!-- FOOTER -->
@@ -243,31 +203,22 @@ h1 { margin:0; font-size:30px; }
   powered by <span class="brand">transportal</span>
 </div>
 
-<!-- ================= JS ================= -->
 <script>
 
-/* NAVIGATION */
-function goDashboard() {
-  window.location.href = "/dashboard.html";
-}
-
+/* NAV */
+function goDashboard() { window.location.href = "/dashboard.html"; }
 function logout() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("client_key");
-  localStorage.removeItem("user_email");
-  localStorage.removeItem("display_name");
+  localStorage.clear();
   window.location.href = "/login.html";
 }
 
-/* USER HEADER */
+/* USER */
 function hydrateUserHeader() {
-  const userEmail = localStorage.getItem("user_email") || "Unknown";
-  const displayName = localStorage.getItem("display_name") || "Client";
-
-  document.getElementById("userInfo").textContent = "👤 " + userEmail;
-  document.getElementById("clientDisplay").textContent = displayName;
+  document.getElementById("userInfo").textContent =
+    "👤 " + (localStorage.getItem("user_email") || "Unknown");
+  document.getElementById("clientDisplay").textContent =
+    localStorage.getItem("display_name") || "Client";
 }
-
 hydrateUserHeader();
 
 /* EVENTS */
@@ -277,21 +228,18 @@ document.getElementById("timeScope").addEventListener("change", loadAnalytics);
 /* API */
 const API_V1 = "https://api.transportal.gr/api/v1";
 
-function authFetch(url, options = {}) {
-  const token = localStorage.getItem("token");
-  const clientKey = localStorage.getItem("client_key");
-
+function authFetch(url) {
   return fetch(API_V1 + url, {
-    ...options,
     headers: {
-      ...(options.headers || {}),
-      Authorization: "Bearer " + token,
-      "x-api-key": clientKey
+      Authorization: "Bearer " + localStorage.getItem("token"),
+      "x-api-key": localStorage.getItem("client_key")
     }
   });
 }
 
-/* LOAD DATA */
+let carrierChart, slaChart;
+
+/* MAIN */
 async function loadAnalytics() {
 
   const res = await authFetch("/shipments");
@@ -299,7 +247,6 @@ async function loadAnalytics() {
 
   const unique = {};
   data.forEach(s => unique[s.tracking] = s);
-
   const shipments = Object.values(unique);
 
   const total = shipments.length;
@@ -307,44 +254,53 @@ async function loadAnalytics() {
   const late = shipments.filter(s => s.delay_status === 2).length;
   const delayed = shipments.filter(s => s.delay_status === 1).length;
 
-  const success = total ? Math.round((delivered / total) * 100) : 0;
+  const success = total ? Math.round((delivered / total)*100) : 0;
 
-  document.getElementById("totalShipments").textContent = total;
+  totalShipments.textContent = total;
+  deliveredEl.textContent = delivered;
+  lateEl.textContent = late;
+  delayedEl.textContent = delayed;
+  successEl.textContent = success + "%";
+
+  /* FIX DOM refs */
   document.getElementById("delivered").textContent = delivered;
   document.getElementById("late").textContent = late;
   document.getElementById("delayed").textContent = delayed;
   document.getElementById("success").textContent = success + "%";
 
-  /* CARRIER */
+  /* CARRIERS */
   const carriers = {};
-
   shipments.forEach(s => {
     const c = s.carrier || "UNKNOWN";
     if (!carriers[c]) carriers[c] = { total:0, delivered:0 };
-
     carriers[c].total++;
     if (s.normalized_status === "delivered") carriers[c].delivered++;
   });
 
-  const box = document.getElementById("carrierBox");
-  box.innerHTML = "";
+  /* CHARTS */
+  if (carrierChart) carrierChart.destroy();
+  if (slaChart) slaChart.destroy();
+
+  const labels = [];
+  const dataVals = [];
 
   Object.entries(carriers).forEach(([name,val]) => {
+    labels.push(name);
+    dataVals.push(Math.round((val.delivered/val.total)*100));
+  });
 
-    const pct = val.total ? Math.round((val.delivered / val.total)*100) : 0;
+  carrierChart = new Chart(carrierChartCanvas, {
+    type:"bar",
+    data:{ labels, datasets:[{ data:dataVals }] },
+    options:{ plugins:{legend:{display:false}}, scales:{y:{max:100}} }
+  });
 
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `
-      <b>${name}</b> (${val.total})
-      <div class="bar">
-        <div class="fill" style="width:${pct}%"></div>
-      </div>
-      <div class="sub">${val.delivered} delivered • ${pct}%</div>
-    `;
-
-    box.appendChild(div);
+  slaChart = new Chart(slaChartCanvas, {
+    type:"pie",
+    data:{
+      labels:["On Time","Late"],
+      datasets:[{ data:[delivered-late, late] }]
+    }
   });
 
 }
