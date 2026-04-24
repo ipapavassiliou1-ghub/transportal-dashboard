@@ -132,10 +132,12 @@ h1 { margin:0; font-size:30px; }
 <!-- CONTROLS -->
 <div class="controlsRow">
 
-  <div class="clientName" id="clientDisplay"></div>
+  <!-- CLIENT PILL -->
+  <div class="pillClient" id="clientDisplay">Sky Logistics</div>
 
-  <div class="control">
-    <label>Time Scope</label>
+  <!-- TIME SCOPE -->
+  <div class="pillControl">
+    <span class="label">Time Scope</span>
     <select id="timeScope">
       <option value="7">Last 7 days</option>
       <option value="30">Last 30 days</option>
@@ -143,7 +145,8 @@ h1 { margin:0; font-size:30px; }
     </select>
   </div>
 
-  <button id="refreshBtn" class="btnGhost">Refresh</button>
+  <!-- REFRESH -->
+  <button id="refreshBtn" class="pillButton">Refresh</button>
 
 </div>
 
