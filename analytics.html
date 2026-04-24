@@ -390,13 +390,25 @@ carrierChart = new Chart(document.getElementById("carrierChart"), {
     labels: carrierLabels,
     datasets: [{
       label: "On-Time %",
-      data: carrierSLA
+      data: carrierSLA,
+      backgroundColor: carrierSLA.map(v =>
+        v === 0 ? "#ef4444" :   // red
+        v < 70 ? "#f59e0b" :    // orange
+                 "#16a34a"      // green
+      )
     }]
   },
   options: {
     responsive: true,
     plugins: {
-      legend: { display: false }
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return carrierSLA[context.dataIndex] + "% on-time";
+          }
+        }
+      }
     },
     scales: {
       y: {
