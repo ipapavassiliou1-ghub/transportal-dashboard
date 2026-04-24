@@ -381,26 +381,43 @@ slaTrendChart = new Chart(document.getElementById("slaTrendChart"), {
       {
         label: "SLA %",
         data: sla,
-        tension: 0.3
+        tension: 0.3,
+        yAxisID: 'y1'
       },
       {
         label: "Late Shipments",
         data: lateData,
-        tension: 0.3
+        tension: 0.3,
+        yAxisID: 'y2'
       }
     ]
   },
 
   options: {
     scales: {
-      y: {
+      y1: {
+        position: 'left',
         beginAtZero: true,
-        max: 100
+        max: 100,
+        title: {
+          display: true,
+          text: 'SLA %'
+        }
+      },
+      y2: {
+        position: 'right',
+        beginAtZero: true,
+        grid: {
+          drawOnChartArea: false
+        },
+        title: {
+          display: true,
+          text: 'Late Shipments'
+        }
       }
     }
   }
 });
-
 }
 
 loadAnalytics();
