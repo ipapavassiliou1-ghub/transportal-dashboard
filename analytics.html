@@ -336,6 +336,7 @@ async function loadAnalytics(){
     const day=grouped[d];
     vol.push(day.total);
     sla.push(day.total?Math.round(day.delivered/day.total*100):0);
+    lateData.push(day.late);
   });
 
   volumeChart=new Chart(document.getElementById("volumeChart"),{
