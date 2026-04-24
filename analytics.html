@@ -268,7 +268,21 @@ function groupByDate(arr){
 }
 
 /* MAIN */
-async function loadAnalytics(){
+const scope = document.getElementById("timeScope").value;
+
+let filtered = shipments;
+
+if (scope !== "all") {
+  const days = parseInt(scope);
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+
+  filtered = shipments.filter(s => {
+    return new Date(s.created_at) >= cutoff;
+  });
+}
+  
+  async function loadAnalytics(){
 
   const res=await authFetch("/shipments");
   const data=await res.json();
