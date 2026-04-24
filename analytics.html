@@ -323,19 +323,37 @@ async function loadAnalytics(){
 
 }
 
-  /* CARRIER */
-  const carriers={};
-  shipments.forEach(s=>{
-    const c=s.carrier||"UNKNOWN";
-    if(!carriers[c]) carriers[c]={total:0,delivered:0};
-    carriers[c].total++;
-    if(isDelivered(s)) carriers[c].delivered++;
-  });
+/* CARRIER */
+/* =====================================
+   🔹 CARRIER (USE FILTERED DATA)
+===================================== */
+const carriers = {};
 
-  if(carrierChart) carrierChart.destroy();
-  if(slaChart) slaChart.destroy();
-  if(volumeChart) volumeChart.destroy();
-  if(slaTrendChart) slaTrendChart.destroy();
+filtered.forEach(s => {
+  const c = s.carrier || "UNKNOWN";
+
+  if (!carriers[c]) {
+    carriers[c] = {
+      total: 0,
+      delivered: 0
+    };
+  }
+
+  carriers[c].total++;
+
+  if (isDelivered(s)) {
+    carriers[c].delivered++;
+  }
+});
+
+
+/* =====================================
+   🔹 RESET CHARTS (IMPORTANT)
+===================================== */
+if (carrierChart) carrierChart.destroy();
+if (slaChart) slaChart.destroy();
+if (volumeChart) volumeChart.destroy();
+if (slaTrendChart) slaTrendChart.destroy();
 
   /* BAR */
   const labels=[],vals=[];
