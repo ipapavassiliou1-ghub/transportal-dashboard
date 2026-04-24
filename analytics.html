@@ -362,26 +362,20 @@ async function loadAnalytics(){
 
   /* CARRIER SLA BAR CHART */
   const carrierLabels = [];
-const carrierSLA = [];
+  const carrierSLA = [];
 
-Object.entries(carriers).forEach(([name, val]) => {
+  Object.entries(carriers).forEach(([name, val]) => {
 
-  // count late shipments for this carrier
-  const lateCount = filtered.filter(s =>
-    (s.carrier || "UNKNOWN") === name &&
-    Number(s.delay_status) === 2
-  ).length;
+    // use precomputed late (no re-filter!)
+    const onTime = val.delivered - val.late;
 
-  // on-time = delivered - late
-  const onTimeCount = val.delivered - lateCount;
+    const pct = val.total
+      ? Math.round((onTime / val.total) * 100)
+      : 0;
 
-  const pct = val.total
-    ? Math.round((onTimeCount / val.total) * 100)
-    : 0;
-
-  carrierLabels.push(name);
-  carrierSLA.push(pct);
-});
+    carrierLabels.push(name);
+    carrierSLA.push(pct);
+  });
 
 /* CHART */
 carrierChart = new Chart(document.getElementById("carrierChart"), {
