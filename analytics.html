@@ -268,40 +268,60 @@ function groupByDate(arr){
 }
 
 /* MAIN */
-const scope = document.getElementById("timeScope").value;
+async function loadAnalytics(){
 
-let filtered = shipments;
+  const res = await authFetch("/shipments");
+  const data = await res.json();
 
-if (scope !== "all") {
-  const days = parseInt(scope);
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - days);
+  /* ---- DISTINCT shipments ---- */
+  const unique = {};
+  data.forEach(s => { if (s.tracking) unique[s.tracking] = s });
+  const shipments = Object.values(unique);
 
-  filtered = shipments.filter(s => {
-    return new Date(s.created_at) >= cutoff;
-  });
-}
-  
-  async function loadAnalytics(){
+  /* =====================================
+     🔹 TIME FILTER (MUST BE HERE)
+  ===================================== */
+  const scope = document.getElementById("timeScope").value;
 
-  const res=await authFetch("/shipments");
-  const data=await res.json();
+  let filtered = shipments;
 
-  const unique={};
-  data.forEach(s=>{ if(s.tracking) unique[s.tracking]=s });
-  const shipments=Object.values(unique);
+  if (scope !== "all") {
+    const days = parseInt(scope);
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
 
-  const total=shipments.length;
-  const delivered=shipments.filter(isDelivered).length;
-  const late=shipments.filter(s=>Number(s.delay_status)===2).length;
-  const delayed=shipments.filter(s=>Number(s.delay_status)===1).length;
-  const success=total?Math.round((delivered/total)*100):0;
+    filtered = shipments.filter(s => {
+      return new Date(s.created_at) >= cutoff;
+    });
+  }
 
+  /* =====================================
+     🔹 KPI CALCULATIONS (USE FILTERED)
+  ===================================== */
+  const total = filtered.length;
+
+  const delivered = filtered.filter(isDelivered).length;
+
+  const late = filtered.filter(s =>
+    Number(s.delay_status) === 2
+  ).length;
+
+  const delayed = filtered.filter(s =>
+    Number(s.delay_status) === 1
+  ).length;
+
+  const success = total
+    ? Math.round((delivered / total) * 100)
+    : 0;
+
+  /* ---- UPDATE UI ---- */
   document.getElementById("totalShipments").textContent = total;
-  document.getElementById("delivered").textContent=delivered;
-  document.getElementById("late").textContent=late;
-  document.getElementById("delayed").textContent=delayed;
-  document.getElementById("success").textContent=success+"%";
+  document.getElementById("delivered").textContent = delivered;
+  document.getElementById("late").textContent = late;
+  document.getElementById("delayed").textContent = delayed;
+  document.getElementById("success").textContent = success + "%";
+
+}
 
   /* CARRIER */
   const carriers={};
