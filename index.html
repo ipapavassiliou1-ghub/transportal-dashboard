@@ -1493,27 +1493,32 @@ function renderExceptions() {
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  // 🔥 Shipment-based metrics (aligned with final_status)
-  const processingOver24h = scopedShipments.filter(s =>
-    s.final_status === "delayed"
-  ).length;
+/// 🔥 Shipment-based metrics (SLA-based using delay_status)
 
-  const shipmentErrors = scopedShipments.filter(s =>
-    s.final_status === "error"
-  ).length;
+const processingOver24h = scopedShipments.filter(s =>
+  s.delay_status === 1   // delayed (in progress, breached SLA)
+).length;
 
-  const shipmentPending = scopedShipments.filter(s =>
-    s.final_status === "pending" ||
-    s.final_status === "in_transit"
-  ).length;
+const lateShipments = scopedShipments.filter(s =>
+  s.delay_status === 2   // late (delivered, breached SLA)
+).length;
 
-  const completedToday = scopedShipments.filter(s => {
-    if (s.final_status !== "delivered") return false;
-    if (!s.created_at) return false;
+const shipmentErrors = scopedShipments.filter(s =>
+  s.final_status === "error"
+).length;
 
-    const created = new Date(s.created_at);
-    return created >= todayStart;
-  }).length;
+const shipmentPending = scopedShipments.filter(s =>
+  s.final_status === "pending" ||
+  s.final_status === "in_transit"
+).length;
+
+const completedToday = scopedShipments.filter(s => {
+  if (s.final_status !== "delivered") return false;
+  if (!s.created_at) return false;
+
+  const created = new Date(s.created_at);
+  return created >= todayStart;
+}).length;
 
   // 🔥 Update UI
   document.getElementById("exProcessing").textContent = processingOver24h;
