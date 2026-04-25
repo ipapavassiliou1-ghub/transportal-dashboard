@@ -376,16 +376,41 @@ const shipments = Object.values(unique);
   }
 
   /* KPI CALCULATIONS */
-  const total = filtered.length;
-  const delivered = filtered.filter(isDelivered).length;
-  const late = filtered.filter(s => Number(s.delay_status) === 2).length;
-  const delayed = filtered.filter(s => Number(s.delay_status) === 1).length;
-  const success = total ? Math.round((delivered / total) * 100) : 0;
+  /* =====================================
+   🔹 KPI CALCULATIONS (ALIGNED WITH DASHBOARD)
+  ===================================== */
 
+  const total = filtered.length;
+
+  /* Delivered = final_status === delivered */
+  const delivered = filtered.filter(s =>
+    s.final_status === "delivered"
+  ).length;
+
+  /* Late = SLA breach */
+  const late = filtered.filter(s =>
+    Number(s.delay_status) === 2
+  ).length;
+
+  /* Delayed = still at risk */
+  const delayed = filtered.filter(s =>
+    Number(s.delay_status) === 1
+  ).length;
+
+  /* Success rate = delivered / total */
+  const success = total
+    ? Math.round((delivered / total) * 100)
+    : 0;
+
+  /* SLA breach rate */
   const breachRate = total
     ? Math.round((late / total) * 100)
     : 0;
-  
+
+  /* =====================================
+     🔹 UPDATE UI
+  ===================================== */
+
   document.getElementById("totalShipments").textContent = total;
   document.getElementById("delivered").textContent = delivered;
   document.getElementById("late").textContent = late;
