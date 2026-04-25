@@ -1686,7 +1686,6 @@ async function loadDashboard(force){
 
     await buildShipmentDataset(token);
 
-    renderKpis();
     renderExceptions();
     renderTable();
     renderShipmentMonitor();
@@ -1794,9 +1793,6 @@ function applyShipmentQuickFilter(type) {
 document.getElementById("uploadBtn").addEventListener("click",uploadBatch);
 document.getElementById("refreshBtn").addEventListener("click",()=>loadDashboard(true));
 
-document.getElementById("statusFilter").addEventListener("change",()=>{page=1;applyFilters();renderKpis();renderTable();});
-document.getElementById("searchInput").addEventListener("input",()=>{page=1;applyFilters();renderKpis();renderTable();});
-document.getElementById("pageSize").addEventListener("change",()=>{page=1;applyFilters();renderKpis();renderTable();});
 document.getElementById("prevBtn").addEventListener("click",()=>{page=Math.max(1,page-1);renderTable();});
 document.getElementById("nextBtn").addEventListener("click",()=>{
   const max=Math.ceil(filtered.length/pageSize);
@@ -1808,7 +1804,6 @@ document.getElementById("timeScope").addEventListener("change", () => {
   page = 1;
   applyTimeScope();
   applyFilters();
-  renderKpis();
   renderExceptions();
   renderTable();
 });
