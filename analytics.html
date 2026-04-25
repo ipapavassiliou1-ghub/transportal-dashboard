@@ -215,6 +215,44 @@ canvas { margin-top:10px; }
 
 <script>
 
+/* =====================================
+   🔐 AUTH GUARD (COPY FROM DASHBOARD)
+===================================== */
+async function enforceAuth() {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = "/login.html";
+      return false;
+    }
+
+    const res = await fetch("https://api.transportal.gr/api/verify", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (!data || !data.success) {
+      localStorage.clear();
+      window.location.href = "/login.html";
+      return false;
+    }
+
+    return true;
+
+  } catch (err) {
+    console.error("Auth failed:", err);
+    localStorage.clear();
+    window.location.href = "/login.html";
+    return false;
+  }
+}
+
+  
 /* NAV */
 function goDashboard(){ window.location.href="/dashboard.html"; }
 function logout(){ localStorage.clear(); window.location.href="/login.html"; }
