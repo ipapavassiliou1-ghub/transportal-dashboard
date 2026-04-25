@@ -328,7 +328,27 @@ async function loadAnalytics(){
   /* DISTINCT shipments */
   const unique = {};
   data.forEach(s => {
-    if (s.tracking) unique[s.tracking] = s;
+    if (s.tracking) const unique = {};
+
+data.forEach(s => {
+  if (!s.tracking) return;
+
+  const existing = unique[s.tracking];
+
+  if (!existing) {
+    unique[s.tracking] = s;
+    return;
+  }
+
+  const currDate = new Date(s.created_at || 0);
+  const prevDate = new Date(existing.created_at || 0);
+
+  if (currDate > prevDate) {
+    unique[s.tracking] = s;
+  }
+});
+
+const shipments = Object.values(unique);
   });
 
   const shipments = data.map(s => ({
