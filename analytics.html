@@ -384,6 +384,10 @@ async function loadAnalytics(){
 
   console.log("FILTERED shipments:", filtered.length);
   
+  console.log("FEDEX late shipments:", filtered.filter(s =>
+  s.carrier === "FEDEX" && s.delay_status === 2
+  ));
+  
   /* KPI CALCULATIONS */
   /* =====================================
    🔹 KPI CALCULATIONS (ALIGNED WITH DASHBOARD)
