@@ -324,7 +324,9 @@ async function loadAnalytics(){
   }
 
   const data = await res.json();
-
+  
+  console.log("RAW shipments:", data.length);
+  
   /* DISTINCT shipments */
   /* =====================================
    🔹 DISTINCT shipments (LATEST PER TRACKING)
