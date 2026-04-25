@@ -326,39 +326,42 @@ async function loadAnalytics(){
   const data = await res.json();
 
   /* DISTINCT shipments */
+  /* =====================================
+   🔹 DISTINCT shipments (LATEST PER TRACKING)
+  ===================================== */
+
   const unique = {};
+
   data.forEach(s => {
-    if (s.tracking) const unique = {};
+    if (!s.tracking) return;
 
-data.forEach(s => {
-  if (!s.tracking) return;
+    const existing = unique[s.tracking];
 
-  const existing = unique[s.tracking];
+    if (!existing) {
+      unique[s.tracking] = s;
+      return;
+    }
 
-  if (!existing) {
-    unique[s.tracking] = s;
-    return;
-  }
+    const currDate = new Date(s.created_at || 0);
+    const prevDate = new Date(existing.created_at || 0);
 
-  const currDate = new Date(s.created_at || 0);
-  const prevDate = new Date(existing.created_at || 0);
-
-  if (currDate > prevDate) {
-    unique[s.tracking] = s;
-  }
-});
-
-const shipments = Object.values(unique);
+    if (currDate > prevDate) {
+      unique[s.tracking] = s;
+    }
   });
 
-  const shipments = data.map(s => ({
+  /* =====================================
+     🔹 NORMALIZE DATA (AFTER DISTINCT)
+  ===================================== */
+
+  const shipments = Object.values(unique).map(s => ({
     tracking: s.tracking,
     carrier: (s.carrier || "UNKNOWN").toUpperCase(),
     created_at: s.created_at,
     delay_status: Number(s.delay_status || 0),
     final_status: s.final_status || "unknown"
   }));
-
+  
   /* TIME FILTER */
   const scope = document.getElementById("timeScope").value;
 
