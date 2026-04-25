@@ -566,7 +566,12 @@ carrierChart = new Chart(document.getElementById("carrierChart"), {
 }
 
 /* INITIAL LOAD */
-loadAnalytics();
+(async () => {
+  const ok = await enforceAuth();
+  if (!ok) return;
+
+  loadAnalytics();
+})();
 
 </script>
 
