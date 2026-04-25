@@ -2013,6 +2013,15 @@ document.addEventListener("DOMContentLoaded", () => {
 /* INITIAL LOAD */
 loadDashboard(true);
 
+/* NAVIGATION */
+function goAnalytics() {
+  window.location.href = "/analytics.html";
+}
+
+function goSLA() {
+  window.location.href = "/sla.html";
+}
+  
 /* LOGOUT */
   function logout() {
   localStorage.removeItem("token");
