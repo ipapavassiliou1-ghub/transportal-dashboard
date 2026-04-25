@@ -331,7 +331,13 @@ async function loadAnalytics(){
     if (s.tracking) unique[s.tracking] = s;
   });
 
-  const shipments = Object.values(unique);
+  const shipments = data.map(s => ({
+    tracking: s.tracking,
+    carrier: (s.carrier || "UNKNOWN").toUpperCase(),
+    created_at: s.created_at,
+    delay_status: Number(s.delay_status || 0),
+    final_status: s.final_status || "unknown"
+  }));
 
   /* TIME FILTER */
   const scope = document.getElementById("timeScope").value;
