@@ -1,101 +1,262 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>SLA Config</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
+<meta charset="UTF-8" />
+<title>Transportal SLA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    h2 { margin-bottom: 10px; }
+<style>
+body {
+  font-family: system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  background:#f5f7fb;
+  margin:0;
+  padding:28px;
+}
 
-    .form-row {
-      margin-bottom: 20px;
-    }
+/* HEADER */
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
 
-    input {
-      padding: 6px;
-      margin-right: 10px;
-    }
+h1 { margin:0; font-size:30px; }
 
-    button {
-      padding: 6px 12px;
-      cursor: pointer;
-      margin-right: 5px;
-    }
+.subtitle {
+  color:#6b7280;
+  font-size:14px;
+}
 
-    .edit-mode {
-      color: green;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
+.btnGhost {
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  background:white;
+  cursor:pointer;
+  font-weight:600;
+}
 
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 20px;
-    }
+/* CONTROLS */
+.controlsRow {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:20px;
+}
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
+.pillClient {
+  background:#eef2ff;
+  color:#4f46e5;
+  font-weight:700;
+  padding:10px 16px;
+  border-radius:14px;
+}
 
-    th {
-      background: #f4f4f4;
-    }
+/* FORM */
+.card {
+  background:white;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+  margin-bottom:20px;
+}
 
-    tr:hover {
-      background: #f9f9f9;
-    }
+input {
+  padding:8px;
+  margin-right:10px;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
 
-    .inactive {
-      opacity: 0.4;
-    }
-  </style>
+button {
+  padding:8px 14px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.btnPrimary {
+  background:#2563eb;
+  color:white;
+}
+
+.btnSecondary {
+  background:white;
+  border:1px solid #ddd;
+}
+
+/* TABLE */
+table {
+  width:100%;
+  border-collapse:collapse;
+}
+
+th, td {
+  padding:10px;
+  border-bottom:1px solid #eee;
+}
+
+th {
+  text-align:left;
+  font-size:13px;
+  color:#6b7280;
+}
+
+tr:hover {
+  background:#f9fafb;
+}
+
+.inactive {
+  opacity:0.4;
+}
+
+/* FOOTER */
+.footer {
+  text-align:center;
+  margin-top:40px;
+  font-size:14px;
+  color:#6b7280;
+}
+
+.footer .brand {
+  color:#6d28d9;
+  font-weight:800;
+}
+</style>
 </head>
+
 <body>
 
-<h2>SLA Rules</h2>
+<!-- HEADER -->
+<div class="topbar">
+  <div>
+    <h1>⚙ SLA Configuration</h1>
+    <p class="subtitle">Define SLA rules per carrier</p>
+  </div>
 
-<div id="editModeLabel" class="edit-mode"></div>
+  <div style="display:flex; align-items:center; gap:12px;">
+    <span id="userInfo"></span>
+    <button onclick="goDashboard()" class="btnGhost">Dashboard</button>
+    <button onclick="logout()" class="btnGhost">Logout</button>
+  </div>
+</div>
 
-<div class="form-row">
+<!-- CLIENT -->
+<div class="controlsRow">
+  <div class="pillClient" id="clientDisplay">Client</div>
+</div>
+
+<!-- FORM -->
+<div class="card">
+
+  <div id="editModeLabel" style="color:#16a34a; font-weight:700; margin-bottom:10px;"></div>
+
   <input id="slaCarrier" placeholder="Carrier (FEDEX)" />
-  <input id="slaService" placeholder="Service (UNKNOWN)" />
+  <input id="slaService" placeholder="Service (STANDARD)" />
   <input id="slaDays" type="number" placeholder="Days" />
 
   <label>
     Active <input type="checkbox" id="slaActive" checked />
   </label>
 
-  <button onclick="saveSlaRule()">Save</button>
-  <button onclick="clearForm()">Clear</button>
+  <button class="btnPrimary" onclick="saveSlaRule()">Save</button>
+  <button class="btnSecondary" onclick="clearForm()">Clear</button>
+
 </div>
 
-<table id="slaTable">
-  <thead>
-    <tr>
-      <th>Carrier</th>
-      <th>Service</th>
-      <th>SLA Days</th>
-      <th>Active</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+<!-- TABLE -->
+<div class="card">
+  <table id="slaTable">
+    <thead>
+      <tr>
+        <th>Carrier</th>
+        <th>Service</th>
+        <th>SLA Days</th>
+        <th>Active</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  powered by <span class="brand">transportal</span>
+</div>
 
 <script>
+
+/* =============================
+   🔐 AUTH PROTECTION
+============================= */
+function checkAuth() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = "/login.html";
+    return;
+  }
+}
+
+/* =============================
+   👤 USER HEADER
+============================= */
+function hydrateUserHeader() {
+  document.getElementById("userInfo").textContent =
+    "👤 " + (localStorage.getItem("user_email") || "Unknown");
+
+  document.getElementById("clientDisplay").textContent =
+    localStorage.getItem("display_name") || "Client";
+}
+
+/* =============================
+   🔗 NAV
+============================= */
+function goDashboard() {
+  window.location.href = "/dashboard.html";
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "/login.html";
+}
+
+/* =============================
+   🌐 API CONFIG (AUTH!)
+============================= */
 const API_BASE = "https://api.transportal.gr";
+
+function authFetch(url, options = {}) {
+  return fetch(API_BASE + url, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      Authorization: "Bearer " + localStorage.getItem("token"),
+      "x-api-key": localStorage.getItem("client_key"),
+      "Content-Type": "application/json"
+    }
+  });
+}
 
 let editingId = null;
 let slaRules = [];
 
-// =======================
-// LOAD + RENDER
-
+/* =============================
+   📥 LOAD SLA RULES
+============================= */
 async function loadSlaRules() {
+
   try {
-    const res = await fetch(`${API_BASE}/api/v1/sla-rules`);
+    const res = await authFetch("/api/v1/sla-rules");
+
+    if (!res.ok) {
+      console.error("SLA LOAD FAILED:", res.status);
+      return;
+    }
+
     slaRules = await res.json();
 
     const tbody = document.querySelector("#slaTable tbody");
@@ -130,12 +291,13 @@ async function loadSlaRules() {
   }
 }
 
-// =======================
-// SAVE (CREATE / UPDATE)
-
+/* =============================
+   💾 SAVE SLA
+============================= */
 async function saveSlaRule() {
+
   const carrier = document.getElementById("slaCarrier").value.trim().toUpperCase();
-  const service = (document.getElementById("slaService").value.trim() || "UNKNOWN").toUpperCase();
+  const service = (document.getElementById("slaService").value.trim() || "STANDARD").toUpperCase();
   const sla_days = Number(document.getElementById("slaDays").value);
   const is_active = document.getElementById("slaActive").checked ? 1 : 0;
 
@@ -144,7 +306,6 @@ async function saveSlaRule() {
     return;
   }
 
-  // 🚫 Prevent duplicates
   const duplicate = slaRules.find(r =>
     r.carrier === carrier &&
     r.service === service &&
@@ -152,37 +313,31 @@ async function saveSlaRule() {
   );
 
   if (duplicate) {
-    alert("Rule already exists for this carrier + service");
+    alert("Rule already exists");
     return;
   }
 
   const payload = { carrier, service, sla_days, is_active };
 
   const url = editingId
-    ? `${API_BASE}/api/v1/sla-rules/${editingId}`
-    : `${API_BASE}/api/v1/sla-rules`;
+    ? `/api/v1/sla-rules/${editingId}`
+    : `/api/v1/sla-rules`;
 
   const method = editingId ? "PUT" : "POST";
 
-  try {
-    await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+  await authFetch(url, {
+    method,
+    body: JSON.stringify(payload)
+  });
 
-    editingId = null;
-    clearForm();
-    loadSlaRules();
-
-  } catch (err) {
-    console.error("SAVE SLA ERROR:", err);
-  }
+  editingId = null;
+  clearForm();
+  loadSlaRules();
 }
 
-// =======================
-// EDIT
-
+/* =============================
+   ✏ EDIT
+============================= */
 function editSla(r) {
   editingId = r.id;
 
@@ -192,12 +347,12 @@ function editSla(r) {
   document.getElementById("slaActive").checked = r.is_active == 1;
 
   document.getElementById("editModeLabel").innerText =
-    `Editing: ${r.carrier} / ${r.service} (ID ${r.id})`;
+    `Editing: ${r.carrier} / ${r.service}`;
 }
 
-// =======================
-// CLEAR
-
+/* =============================
+   🔄 CLEAR
+============================= */
 function clearForm() {
   editingId = null;
 
@@ -209,40 +364,32 @@ function clearForm() {
   document.getElementById("editModeLabel").innerText = "";
 }
 
-// =======================
-// ACTIVATE / DEACTIVATE
-
+/* =============================
+   🔁 TOGGLE ACTIVE
+============================= */
 async function toggleActive(id, current) {
-  const confirmMsg = current
-    ? "Deactivate this rule?"
-    : "Activate this rule?";
-
-  if (!confirm(confirmMsg)) return;
 
   const rule = slaRules.find(r => r.id === id);
   if (!rule) return;
 
-  try {
-    await fetch(`${API_BASE}/api/v1/sla-rules/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...rule,
-        is_active: current ? 0 : 1
-      })
-    });
+  await authFetch(`/api/v1/sla-rules/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      ...rule,
+      is_active: current ? 0 : 1
+    })
+  });
 
-    loadSlaRules();
-
-  } catch (err) {
-    console.error("TOGGLE ERROR:", err);
-  }
+  loadSlaRules();
 }
 
-// =======================
-// INIT
-
+/* =============================
+   🚀 INIT
+============================= */
+checkAuth();
+hydrateUserHeader();
 loadSlaRules();
+
 </script>
 
 </body>
