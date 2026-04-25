@@ -680,22 +680,27 @@ input[type="file"] {
 <div class="section operations">
   
   <!-- Upload -->
-<div class="section sectionCard">
-  <h2 class="sectionTitle">Upload New Batch</h2>
-  <div class="controlsRow">
-    <div class="control">
-      <label>File</label>
+  <div class="uploadInline">
+
+    <div class="uploadItem">
+      <span class="labelInline">File</span>
       <input type="file" id="fileInput" />
     </div>
 
-    <div class="control">
-      <label>Export</label>
+    <div class="uploadItem">
+      <span class="labelInline">Export</span>
       <select id="exportFormat">
         <option value="xlsx" selected>xlsx</option>
         <option value="csv">csv</option>
         <option value="json">json</option>
       </select>
     </div>
+
+  <button class="btnPrimary" id="uploadBtn">Upload</button>
+
+  <span class="toastInline" id="uploadStatus"></span>
+
+</div>
 
     <button class="btnPrimary" id="uploadBtn">Upload</button>
     <span class="toastInline" id="uploadStatus"></span>
