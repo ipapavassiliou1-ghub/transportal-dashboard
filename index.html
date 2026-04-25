@@ -1522,6 +1522,7 @@ const completedToday = scopedShipments.filter(s => {
 
   // 🔥 Update UI
   document.getElementById("exProcessing").textContent = processingOver24h;
+  document.getElementById("exLate").textContent = lateShipments;
   document.getElementById("exErrors").textContent = shipmentErrors;
   document.getElementById("exPending").textContent = shipmentPending;
   document.getElementById("exCompletedToday").textContent = completedToday;
