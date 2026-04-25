@@ -1390,39 +1390,7 @@ async function buildShipmentDataset(token){
   
   console.log("SCOPED:", scopedShipments.length);
 }
-  
-/* =========================================================
-   KPI
-========================================================= */
-function renderKpis(){
-
-  const total = scopedShipments.length;
-
-  const delivered = scopedShipments.filter(s =>
-    s.final_status === "delivered"
-  ).length;
-
-  const pending = scopedShipments.filter(s =>
-    s.final_status === "pending" ||
-    s.final_status === "in_transit"
-  ).length;
-
-  const errors = scopedShipments.filter(s =>
-    s.final_status === "error"
-  ).length;
-
-  const successRate = total
-    ? Math.round((delivered / total) * 100)
-    : 0;
-
-  document.getElementById("totalBatches").textContent = scopedBatches.length;
-  document.getElementById("totalShipments").textContent = total;
-  document.getElementById("deliveredCount").textContent = delivered;
-  document.getElementById("pendingCount").textContent = pending;
-  document.getElementById("errorCount").textContent = errors;
-  document.getElementById("successRate").textContent = successRate + "%";
-}
-  
+    
 /* =========================================================
    EXCEPTIONS
 ========================================================= */
@@ -1460,66 +1428,6 @@ function renderExceptions() {
   document.getElementById("exCompletedToday").textContent = completedToday;
 }
   
-/* =========================================================
-   CARRIER SPLIT
-========================================================= */
-let carrierCacheKey = null;
-
-async function renderCarrierSplit(token){
-  const container = document.getElementById("carrierKpis");
-
-  // Build a simple cache key from completed batch IDs
-  const completed = allBatches
-    .filter(b => b.status === "completed")
-    .map(b => b.request_id)
-    .join("|");
-
-  // If nothing changed → skip re-render
-  if (carrierCacheKey === completed) return;
-
-  carrierCacheKey = completed;
-
-  container.style.opacity = "0.6"; // subtle loading state
-
-  const agg = {};
-
-  for (const b of allBatches.filter(b => b.status === "completed").slice(0,2)) {
-    const d = await fetchDetails(b.request_id, token);
-    if (!d || !d.results) continue;
-
-    d.results.forEach(r=>{
-      const c = r.carrier || "UNKNOWN";
-      if(!agg[c]) agg[c] = { total:0, del:0 };
-      agg[c].total++;
-      if((r.status||"").toLowerCase()==="delivered") agg[c].del++;
-    });
-  }
-
-  container.innerHTML = "";
-
-  Object.entries(agg).forEach(([name,val])=>{
-    const pct = val.total ? Math.round((val.del/val.total)*100) : 0;
-    const div = document.createElement("div");
-    div.className = "carrierCard";
-    div.innerHTML = `
-      <div class="carrierTop">
-        <div class="carrierName">${escapeHtml(name)}</div>
-        <div class="carrierCount">${val.total}</div>
-      </div>
-      <div class="miniBar">
-        <div class="miniFill" style="width:${pct}%"></div>
-      </div>
-      <div class="carrierMeta">
-        <span>${val.del} delivered</span>
-        <span>${pct}%</span>
-      </div>
-    `;
-    container.appendChild(div);
-  });
-
-  container.style.opacity = "1";
-}
-
 /* =========================================================
    VIEW MODAL
 ========================================================= */
