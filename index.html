@@ -1372,6 +1372,7 @@ function renderShipmentMonitor(){
 } else if (shipmentQuickFilter === "late") {
   filteredShipments = filteredShipments.filter(s => s.delay_status === 2);
 
+}
     else if (shipmentQuickFilter === "in_transit_24h") {
   filteredShipments = filteredShipments.filter(s => {
     const status = (s.final_status || "").toLowerCase();
@@ -1384,7 +1385,7 @@ function renderShipmentMonitor(){
   });
 }
     
-}
+
 
   /* 2) optional batch drill-down */
   if (batchQuickFilter) {
