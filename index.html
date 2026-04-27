@@ -1393,8 +1393,8 @@ function renderShipmentMonitor(){
   if (focusMode) {
     filteredShipments = filteredShipments.filter(s =>
       s.final_status === "error" ||
-      s.final_status === "late" ||
-      s.final_status === "delayed"
+      s.delay_status === 2 || // late
+      s.delay_status === 1    // delayed
     );
   }
 
