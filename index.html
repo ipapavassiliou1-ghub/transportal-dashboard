@@ -1379,7 +1379,7 @@ function renderShipmentMonitor(){
   }
 
   /* 3) existing dropdown filter */
-  if (statusFilter !== "all") {
+  if (shipmentQuickFilter === "all" && statusFilter !== "all") {
     filteredShipments = filteredShipments.filter(s => s.final_status === statusFilter);
   }
 
