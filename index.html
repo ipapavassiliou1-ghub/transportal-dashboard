@@ -2006,6 +2006,10 @@ document.getElementById("cardProcessing24h")?.addEventListener("click", () => {
   applyShipmentQuickFilter("delayed");
 });
 
+document.getElementById("cardLate")?.addEventListener("click", () => {
+  applyShipmentQuickFilter("late");
+});
+  
 /* Focus Mode toggle */
 document.addEventListener("DOMContentLoaded", () => {
   const el = document.getElementById("focusModeToggleWrap");
