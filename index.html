@@ -1885,9 +1885,14 @@ function setActiveDashboardCard() {
   if (shipmentQuickFilter === "delayed") {
     document.getElementById("cardProcessing24h")?.classList.add("activeFilter");
   }
+
+  if (shipmentQuickFilter === "late") {
+  document.getElementById("cardLateShipments")?.classList.add("activeFilter");
 }
-  
-function clearShipmentQuickFilters() {
+
+}
+
+  function clearShipmentQuickFilters() {
   shipmentQuickFilter = "all";
   batchQuickFilter = null;
   shipmentPage = 1;
