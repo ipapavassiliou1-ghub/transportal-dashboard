@@ -1958,8 +1958,10 @@ function applyShipmentQuickFilter(type) {
     document.getElementById("shipmentStatusFilter").value = "pending";
   } else if (shipmentQuickFilter === "errors") {
     document.getElementById("shipmentStatusFilter").value = "error";
+  } else if (shipmentQuickFilter === "late") {
+    document.getElementById("shipmentStatusFilter").value = "late";
   } else {
-    document.getElementById("shipmentStatusFilter").value = "all";
+    document.getElementById("shipmentStatusFilter").value = "all"; 
   }
 
   setActiveDashboardCard();
