@@ -1844,7 +1844,7 @@ async function loadDashboard(force){
         (b.status || "").toLowerCase() === "processing"
       ).length + " processing";
 
-    renderCarrierSplit(token);
+    //renderCarrierSplit(token); >remove*
 
     const hasProcessing = filtered.some(b =>
       (b.status || "").toLowerCase() === "processing"
