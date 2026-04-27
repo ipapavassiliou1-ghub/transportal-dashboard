@@ -1543,9 +1543,15 @@ function renderExceptions() {
 
 /// 🔥 Shipment-based metrics (SLA-based using delay_status)
 
-const processingOver24h = scopedShipments.filter(s =>
-  s.delay_status === 1   // delayed (in progress, breached SLA)
-).length;
+const processingOver24h = scopedShipments.filter(s => {
+  const status = (s.final_status || "").toLowerCase();
+
+  return (
+    status !== "delivered" &&
+    status !== "error" &&
+    Number(s.days_open) > 1
+  );
+}).length;
 
 const lateShipments = scopedShipments.filter(s =>
   s.delay_status === 2   // late (delivered, breached SLA)
