@@ -1394,7 +1394,16 @@ function renderShipmentMonitor(){
 
   /* 3) existing dropdown filter */
   if (shipmentQuickFilter === "all" && statusFilter !== "all") {
-    filteredShipments = filteredShipments.filter(s => s.final_status === statusFilter);
+
+    if (statusFilter === "late") {
+      filteredShipments = filteredShipments.filter(s => s.delay_status === 2);
+
+    } else if (statusFilter === "delayed") {
+      filteredShipments = filteredShipments.filter(s => s.delay_status === 1);
+
+    } else {
+      filteredShipments = filteredShipments.filter(s => s.final_status === statusFilter);
+    }
   }
 
   if (searchText) {
