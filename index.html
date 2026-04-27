@@ -1440,8 +1440,8 @@ function renderShipmentMonitor(){
     
     // Row highlight
    if (s.final_status === "error") tr.classList.add("row-error");
-   if (s.final_status === "late") tr.classList.add("row-late");
-   if (s.final_status === "delayed") tr.classList.add("row-delayed");
+   if (s.delay_status === 2) tr.classList.add("row-late");
+   if (s.delay_status === 1) tr.classList.add("row-delayed");
 
     
    // Badge (SLA result ONLY)
