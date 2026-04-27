@@ -1906,8 +1906,9 @@ async function loadDashboard(force){
 }
 
 function setActiveDashboardCard() {
-  document.querySelectorAll("#cardProcessing24h, #cardShipmentErrors, #cardPendingShipments, #cardLate")
-    .forEach(el => el.classList.remove("activeFilter"));
+  document.querySelectorAll(
+    "#cardProcessing24h, #cardShipmentErrors, #cardPendingShipments, #cardLate, #cardDelayed"
+  ).forEach(el => el.classList.remove("activeFilter"));
 
   if (shipmentQuickFilter === "errors") {
     document.getElementById("cardShipmentErrors")?.classList.add("activeFilter");
@@ -1918,13 +1919,16 @@ function setActiveDashboardCard() {
   }
 
   if (shipmentQuickFilter === "delayed") {
-    document.getElementById("cardProcessing24h")?.classList.add("activeFilter");
+    document.getElementById("cardDelayed")?.classList.add("activeFilter");
   }
 
   if (shipmentQuickFilter === "late") {
-  document.getElementById("cardLate")?.classList.add("activeFilter");
-}
+    document.getElementById("cardLate")?.classList.add("activeFilter");
+  }
 
+  if (shipmentQuickFilter === "in_transit_24h") {
+    document.getElementById("cardProcessing24h")?.classList.add("activeFilter");
+  }
 }
 
   function clearShipmentQuickFilters() {
