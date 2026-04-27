@@ -671,19 +671,25 @@ input[type="file"] {
     <div class="value" id="exLate">0</div>
     <div class="sub">Delivered after SLA</div>
   </div>
-    
- <div class="card clickable" id="cardShipmentErrors">
-    <h3>Shipment Errors</h3>
-    <div class="value" id="exErrors">–</div>
-    <div class="sub">Failed lookups (scoped)</div>
- </div>
 
+  <div class="card clickable" id="cardDelayed">
+   <h3>Delayed Shipments</h3>
+   <div class="value" id="exDelayed">0</div>
+   <div class="sub">SLA breached (in transit)</div>
+ </div>
+  
  <div class="card clickable" id="cardPendingShipments">
    <h3>Pending Shipments</h3>
    <div class="value" id="exPending">–</div>
    <div class="sub">In transit / unresolved</div>
  </div>
 
+ <div class="card clickable" id="cardShipmentErrors">
+    <h3>Shipment Errors</h3>
+    <div class="value" id="exErrors">–</div>
+    <div class="sub">Failed lookups (scoped)</div>
+ </div>
+    
     <div class="card">
       <h3>Completed Today</h3>
       <div class="value" id="exCompletedToday">–</div>
