@@ -1402,10 +1402,10 @@ function renderShipmentMonitor(){
   filteredShipments.sort((a, b) => {
     const priority = (s) => {
       if (s.final_status === "error") return 0;
-      if (s.final_status === "late") return 1;
-      if (s.final_status === "delayed") return 2;
-      return 3;
-    };
+      if (s.delay_status === 2) return 1; // late
+      if (s.delay_status === 1) return 2; // delayed
+    return 3;
+  };
 
     const pDiff = priority(a) - priority(b);
     if (pDiff !== 0) return pDiff;
