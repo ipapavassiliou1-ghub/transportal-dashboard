@@ -1093,11 +1093,13 @@ async function uploadBatch(){
     showToast("Batch accepted: "+data.request_id);
     document.getElementById("fileInput").value="";
 
-    // Immediate refresh (shows batch quickly)
+    // Show batch immediately
     await loadDashboard(true);
 
-    // Follow-up refresh (after backend finishes processing)
-    setTimeout(() => loadDashboard(true), 2000);
+   // Ensure final state is picked up
+   setTimeout(() => {
+   loadDashboard(true);
+   }, 2000);
 
   }catch(e){
     console.error(e);
