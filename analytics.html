@@ -556,26 +556,25 @@ carrierChart = new Chart(document.getElementById("carrierChart"), {
   });
 
   /* TREND DATA */
-  const grouped = groupByDate(filtered);
-  const dates = Object.keys(grouped).sort();
+  const { labels, series } = groupByDate(filtered);
 
   const vol = [];
   const sla = [];
   const lateData = [];
 
-  dates.forEach(d => {
-    const day = grouped[d];
+  series.forEach(day => {
 
     vol.push(day.total);
 
-    sla.push(
-      day.total
-        ? Math.round((day.delivered / day.total) * 100)
-        : 0
-    );
+  /* SLA = on-time / delivered */
+  sla.push(
+    day.delivered
+      ? Math.round(((day.delivered - day.late) / day.delivered) * 100)
+      : 0
+  );
 
-    lateData.push(day.late);
-  });
+  lateData.push(day.late);
+ });
 
   /* VOLUME CHART */
   volumeChart = new Chart(document.getElementById("volumeChart"), {
