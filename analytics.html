@@ -409,8 +409,13 @@ async function loadAnalytics(){
   ).length;
 
   /* Success rate = delivered / total */
+  const onTimeDelivered = filtered.filter(s =>
+    s.final_status === "delivered" &&
+    Number(s.delay_status) !== 2
+   ).length;
+
   const success = total
-    ? Math.round((delivered / total) * 100)
+    ? Math.round((onTimeDelivered / total) * 100)
     : 0;
 
   /* SLA breach rate */
