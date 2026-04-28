@@ -1882,9 +1882,14 @@ async function loadDashboard(force){
 
     //renderCarrierSplit(token); >remove*
 
-    const hasProcessing = filtered.some(b =>
-      (b.status || "").toLowerCase() === "processing"
-    );
+    const hasProcessing = filtered.some(b => {
+      const status = (b.status || "").toLowerCase();
+
+      return (
+        status === "processing" ||
+        status === "pending"
+      );
+    });
 
     if(hasProcessing){
       if(!pollTimer){
