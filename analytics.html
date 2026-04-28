@@ -474,14 +474,19 @@ async function loadAnalytics(){
   Object.entries(carriers).forEach(([name, val]) => {
 
     // use precomputed late (no re-filter!)
+    const deliveredCount = filtered.filter(s =>
+      (s.carrier || "UNKNOWN").toUpperCase() === name &&
+      isDelivered(s)
+    ).length;
+
     const onTime = filtered.filter(s =>
       (s.carrier || "UNKNOWN").toUpperCase() === name &&
       isDelivered(s) &&
       Number(s.delay_status) !== 2
     ).length;
 
-    const pct = val.total
-      ? Math.round((onTime / val.total) * 100)
+    const pct = deliveredCount
+      ? Math.round((onTime / deliveredCount) * 100)
       : 0;
 
     carrierLabels.push(name);
