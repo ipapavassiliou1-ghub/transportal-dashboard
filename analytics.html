@@ -102,8 +102,9 @@ h1 { margin:0; font-size:30px; }
 
 .kpiRow {
   display:grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(180px,1fr));
   gap:16px;
+  overflow-x:auto;
 }
   
 .value {
