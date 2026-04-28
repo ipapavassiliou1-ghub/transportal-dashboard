@@ -420,7 +420,7 @@ async function loadAnalytics(){
 
   /* SLA breach rate */
   const breachRate = total
-    ? Math.round((late / total) * 100)
+    ? Math.round(((late + delayed) / total) * 100)
     : 0;
 
   /* =====================================
