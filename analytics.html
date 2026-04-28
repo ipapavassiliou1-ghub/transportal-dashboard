@@ -587,7 +587,7 @@ carrierChart = new Chart(document.getElementById("carrierChart"), {
   volumeChart = new Chart(document.getElementById("volumeChart"), {
     type:"line",
     data:{
-      labels:dates,
+      labels: labels,
       datasets:[{
         label:"Shipments",
         data:vol,
@@ -606,7 +606,7 @@ carrierChart = new Chart(document.getElementById("carrierChart"), {
   slaTrendChart = new Chart(document.getElementById("slaTrendChart"), {
     type:"line",
     data:{
-      labels:dates,
+      labels: labels,
       datasets:[
         {
           label:"SLA %",
