@@ -302,20 +302,31 @@ function isDelivered(s){
 }
 
 function groupByDate(arr){
-  const map={};
+  const map = {};
 
-  arr.forEach(s=>{
-    const d=(s.created_at||"").slice(0,10);
+  arr.forEach(s => {
+    const d = (s.created_at || "").slice(0,10);
     if(!d) return;
 
-    if(!map[d]) map[d]={total:0,delivered:0,late:0};
+    if(!map[d]) map[d] = { total:0, delivered:0, late:0 };
 
     map[d].total++;
-    if(isDelivered(s)) map[d].delivered++;
-    if(Number(s.delay_status)===2) map[d].late++;
+
+    if(isDelivered(s)){
+      map[d].delivered++;
+
+      if(Number(s.delay_status) === 2){
+        map[d].late++;
+      }
+    }
   });
 
-  return map;
+  const labels = Object.keys(map).sort();
+
+  return {
+    labels,
+    series: labels.map(d => map[d])
+  };
 }
 
 /* MAIN */
