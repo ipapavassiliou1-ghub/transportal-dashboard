@@ -291,9 +291,7 @@ document.getElementById("timeScope").onchange = loadAnalytics;
 
 /* HELPERS */
 function isDelivered(s){
-  return s.final_status==="delivered" ||
-         s.normalized_status==="delivered" ||
-         String(s.status||"").toLowerCase()==="delivered";
+  return s.final_status === "delivered";
 }
 
 function groupByDate(arr){
