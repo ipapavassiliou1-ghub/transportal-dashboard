@@ -1371,7 +1371,7 @@ function renderShipmentMonitor(){
 
   /* 1) dashboard quick filter */
   if (shipmentQuickFilter === "errors") {
-  filteredShipments = filteredShipments.filter(s => s.final_status === "error");
+  filteredShipments = filteredShipments.filter(s => s.status === "error");
 
 } else if (shipmentQuickFilter === "pending") {
   filteredShipments = filteredShipments.filter(s =>
