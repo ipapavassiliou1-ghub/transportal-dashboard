@@ -1605,7 +1605,7 @@ const shipmentPending = scopedShipments.filter(s =>
 ).length;
 
 const completedToday = scopedShipments.filter(s => {
-  if (s.final_status !== "delivered") return false;
+  if (s.status !== "delivered") return false;
   if (!s.created_at) return false;
 
   const created = new Date(s.created_at);
