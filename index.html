@@ -1507,9 +1507,10 @@ function renderShipmentMonitor(){
       <td>${escapeHtml(s.reference)}</td>
       <td>${escapeHtml(s.carrier)}</td>
       <td>${escapeHtml(
-        String(s.status || "").replace("_", " ")
-         .replace(/\b\w/g, c => c.toUpperCase())
-      )}</td>
+        String(s.status || "")
+          .replace(/_/g, " ")
+          .toLowerCase()
+          .replace(/\b\w/g, c => c.toUpperCase())
       <td>${escapeHtml(s.days_open)}</td>
       <td>${slaText}</td>
       <td>
