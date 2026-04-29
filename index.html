@@ -1389,7 +1389,7 @@ function renderShipmentMonitor(){
 }
     else if (shipmentQuickFilter === "in_transit_24h") {
   filteredShipments = filteredShipments.filter(s => {
-    const status = (s.final_status || "").toLowerCase();
+    const status = (s.status || "").toLowerCase();
 
     return (
       status !== "delivered" &&
