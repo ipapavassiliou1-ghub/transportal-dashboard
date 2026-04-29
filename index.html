@@ -1375,7 +1375,7 @@ function renderShipmentMonitor(){
 
 } else if (shipmentQuickFilter === "pending") {
   filteredShipments = filteredShipments.filter(s => {
-    const status = (s.status || "").toLowerCase();
+    const status = (s.final_status || s.status || "").toLowerCase();
 
     return (
       status !== "delivered" &&
