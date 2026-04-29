@@ -1391,8 +1391,6 @@ function renderShipmentMonitor(){
 
 }
     
-  console.log("Filtered shipments:", filteredShipments);
-  
    else if (shipmentQuickFilter === "in_transit_24h") {
   filteredShipments = filteredShipments.filter(s => {
     const status = (s.status || "").toLowerCase();
@@ -1404,7 +1402,8 @@ function renderShipmentMonitor(){
     );
   });
 }
-    
+  
+ console.log("Filtered shipments:", filteredShipments);   
 
 
   /* 2) optional batch drill-down */
