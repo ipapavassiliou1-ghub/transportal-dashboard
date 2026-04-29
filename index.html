@@ -1390,7 +1390,10 @@ function renderShipmentMonitor(){
   filteredShipments = filteredShipments.filter(s => s.delay_status === 2);
 
 }
-    else if (shipmentQuickFilter === "in_transit_24h") {
+    
+  console.log("Filtered shipments:", filteredShipments);
+  
+   else if (shipmentQuickFilter === "in_transit_24h") {
   filteredShipments = filteredShipments.filter(s => {
     const status = (s.status || "").toLowerCase();
 
