@@ -1581,7 +1581,7 @@ function renderExceptions() {
 /// 🔥 Shipment-based metrics (SLA-based using delay_status)
 
 const processingOver24h = scopedShipments.filter(s => {
-  const status = (s.final_status || "").toLowerCase();
+  const status = (s.status || "").toLowerCase();
 
   return (
     status !== "delivered" &&
