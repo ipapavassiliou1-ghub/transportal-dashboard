@@ -1416,7 +1416,7 @@ function renderShipmentMonitor(){
       filteredShipments = filteredShipments.filter(s => s.delay_status === 1);
 
     } else {
-      filteredShipments = filteredShipments.filter(s => s.final_status === statusFilter);
+      filteredShipments = filteredShipments.filter(s => s.status === statusFilter);
     }
   }
 
