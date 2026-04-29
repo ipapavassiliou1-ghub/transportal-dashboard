@@ -1375,7 +1375,9 @@ function renderShipmentMonitor(){
 
 } else if (shipmentQuickFilter === "pending") {
   filteredShipments = filteredShipments.filter(s =>
-    s.final_status === "pending" || s.final_status === "in_transit"
+    s.status === "pending" ||
+    s.status === "in_transit" ||
+    s.status === "out_for_delivery"
   );
 
 } else if (shipmentQuickFilter === "delayed") {
