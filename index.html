@@ -1601,6 +1601,18 @@ const lateShipments = scopedShipments.filter(s =>
   s.delay_status === 2   // late (delivered, breached SLA)
 ).length;
 
+const delayedShipments = scopedShipments.filter(s => {
+  const status = (s.status || s.final_status || "").toLowerCase();
+
+  return (
+    (
+      status !== "delivered" &&
+      Number(s.days_open) > Number(s.sla_days)
+    ) ||
+    status === "exception"
+  );
+}).length;
+  
 const shipmentErrors = scopedShipments.filter(s =>
   s.status === "error"
 ).length;
