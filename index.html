@@ -1374,10 +1374,15 @@ function renderShipmentMonitor(){
   filteredShipments = filteredShipments.filter(s => s.status === "error");
 
 } else if (shipmentQuickFilter === "pending") {
-  filteredShipments = filteredShipments.filter(s =>
-    s.status === "pending" ||
-    s.status === "in_transit" ||
-    s.status === "out_for_delivery"
+  filteredShipments = filteredShipments.filter(s => {
+    const status = (s.status || "").toLowerCase();
+
+    return (
+      status !== "delivered" &&
+      status !== "error"
+    );
+  });
+}
   );
 
 } else if (shipmentQuickFilter === "delayed") {
