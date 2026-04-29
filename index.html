@@ -1477,7 +1477,7 @@ function renderShipmentMonitor(){
     const tr = document.createElement("tr");
     
     // Row highlight
-   if (s.final_status === "error") tr.classList.add("row-error");
+   if (s.status === "error") tr.classList.add("row-error");
    if (s.delay_status === 2) tr.classList.add("row-late");
    if (s.delay_status === 1) tr.classList.add("row-delayed");
 
