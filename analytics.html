@@ -497,24 +497,19 @@ async function loadAnalytics(){
   Object.entries(carriers).forEach(([name, val]) => {
 
     // use precomputed late (no re-filter!)
-    const deliveredCount = filtered.filter(s =>
-      (s.carrier || "UNKNOWN").toUpperCase() === name &&
-      isDelivered(s)
-    ).length;
+    Object.entries(carriers).forEach(([name, val]) => {
 
-    const onTime = filtered.filter(s =>
-      (s.carrier || "UNKNOWN").toUpperCase() === name &&
-      isDelivered(s) &&
-      Number(s.delay_status) !== 2
-    ).length;
+      const deliveredCount = val.delivered;
 
-    const pct = deliveredCount
-      ? Math.round((onTime / deliveredCount) * 100)
-      : 0;
+      const onTime = val.delivered - val.late;
 
-    carrierLabels.push(name);
-    carrierSLA.push(pct);
-  });
+      const pct = deliveredCount
+        ? Math.round((onTime / deliveredCount) * 100)
+        : 0;
+
+      carrierLabels.push(name);
+      carrierSLA.push(pct);
+   });
 
 /* CHART */
 carrierChart = new Chart(document.getElementById("carrierChart"), {
