@@ -490,26 +490,21 @@ async function loadAnalytics(){
   if (volumeChart) volumeChart.destroy();
   if (slaTrendChart) slaTrendChart.destroy();
 
-  /* CARRIER SLA BAR CHART */
-  const carrierLabels = [];
-  const carrierSLA = [];
+  //* CARRIER SLA BAR CHART */
+const carrierLabels = [];
+const carrierSLA = [];
 
-  Object.entries(carriers).forEach(([name, val]) => {
+Object.entries(carriers).forEach(([name, val]) => {
+  const deliveredCount = val.delivered;
+  const onTime = val.delivered - val.late;
 
-    // use precomputed late (no re-filter!)
-    Object.entries(carriers).forEach(([name, val]) => {
+  const pct = deliveredCount
+    ? Math.round((onTime / deliveredCount) * 100)
+    : 0;
 
-      const deliveredCount = val.delivered;
-
-      const onTime = val.delivered - val.late;
-
-      const pct = deliveredCount
-        ? Math.round((onTime / deliveredCount) * 100)
-        : 0;
-
-      carrierLabels.push(name);
-      carrierSLA.push(pct);
-   });
+  carrierLabels.push(name);
+  carrierSLA.push(pct);
+});
 
 /* CHART */
 carrierChart = new Chart(document.getElementById("carrierChart"), {
@@ -520,9 +515,9 @@ carrierChart = new Chart(document.getElementById("carrierChart"), {
       label: "On-Time %",
       data: carrierSLA,
       backgroundColor: carrierSLA.map(v =>
-        v === 0 ? "#ef4444" :   // red
-        v < 70 ? "#f59e0b" :    // orange
-                 "#16a34a"      // green
+        v === 0 ? "#ef4444" :
+        v < 70 ? "#f59e0b" :
+                 "#16a34a"
       )
     }]
   },
@@ -540,16 +535,17 @@ carrierChart = new Chart(document.getElementById("carrierChart"), {
     },
     scales: {
       y: {
-      beginAtZero: true,
-      min: 0,
-      max: 100,
-     ticks: {
-       stepSize: 10
-  }
-}
+        beginAtZero: true,
+        min: 0,
+        max: 100,
+        ticks: {
+          stepSize: 10
+        }
+      }
     }
   }
 });
+  
   /* SLA PIE CHART */
 
   const onTime = Math.max(0, delivered - late);
@@ -651,7 +647,8 @@ carrierChart = new Chart(document.getElementById("carrierChart"), {
       }
     }
   });
-
+}
+  
 /* INITIAL LOAD */
 (async () => {
   const ok = await enforceAuth();
