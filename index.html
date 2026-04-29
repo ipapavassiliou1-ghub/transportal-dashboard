@@ -1605,11 +1605,14 @@ const shipmentErrors = scopedShipments.filter(s =>
   s.status === "error"
 ).length;
 
-const shipmentPending = scopedShipments.filter(s =>
-  s.status === "pending" ||
-  s.status === "in_transit" ||
-  s.status === "out_for_delivery"
-).length;
+const shipmentPending = scopedShipments.filter(s => {
+  const status = (s.status || s.final_status || "").toLowerCase();
+
+  return (
+    status !== "delivered" &&
+    status !== "error"
+  );
+}).length;
 
 const completedToday = scopedShipments.filter(s => {
   if (s.status !== "delivered") return false;
