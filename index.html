@@ -1595,7 +1595,7 @@ const lateShipments = scopedShipments.filter(s =>
 ).length;
 
 const shipmentErrors = scopedShipments.filter(s =>
-  s.final_status === "error"
+  s.status === "error"
 ).length;
 
 const shipmentPending = scopedShipments.filter(s =>
