@@ -1459,7 +1459,17 @@ function renderShipmentMonitor(){
   });
   
   const total = filteredShipments.length;
-  const delayedCount = scopedShipments.filter(s => s.delay_status === 1).length;
+  const delayedCount = scopedShipments.filter(s => {
+    const status = (s.status || s.final_status || "").toLowerCase();
+
+    return (
+      (
+        status !== "delivered" &&
+        Number(s.days_open) > Number(s.sla_days)
+      ) ||
+      status === "exception"
+    );
+  }).length;
   const lateCount = scopedShipments.filter(s => s.delay_status === 2).length;
   const maxPage = Math.max(1, Math.ceil(total / shipmentPageSize));
   if (shipmentPage > maxPage) shipmentPage = maxPage;
