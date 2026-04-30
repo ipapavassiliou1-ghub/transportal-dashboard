@@ -89,7 +89,6 @@ button:active {
 }
 
 
-
 .pillClient {
   background:#eef2ff;
   color:#4f46e5;
@@ -164,6 +163,40 @@ canvas { margin-top:10px; }
   max-height: 260px;
 }
 
+@media (max-width: 768px) {
+  body {
+    padding:18px;
+  }
+
+  .topbar {
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .topbar > div:last-child {
+    flex-wrap:wrap;
+  }
+
+  .controlsRow {
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .pillClient,
+  .pillControl,
+  .pillButton,
+  .btnGhost {
+    width:100%;
+    justify-content:center;
+  }
+
+  .kpiRow,
+  .cardGrid,
+  .grid {
+    grid-template-columns:1fr;
+  }
+}
+  
 </style>
 </head>
 
