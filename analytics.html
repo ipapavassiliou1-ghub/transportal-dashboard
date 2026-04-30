@@ -145,12 +145,16 @@ button:active {
 
 h2 { margin-top:30px; }
 
-footer {
-  margin-top: 32px;
-  text-align: center;
+.footer {
+  display: flex;
+  justify-content: center;   /* 🔥 ensures true centering */
+  align-items: center;
+
+  margin-top: 40px;          /* space from cards */
+  margin-bottom: 10px;       /* small bottom breathing */
 
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.4;
 
   color: #6b7280;
 }
