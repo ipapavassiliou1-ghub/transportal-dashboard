@@ -19,33 +19,76 @@ body {
 .topbar {
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:18px;
 }
 
-h1 { margin:0; font-size:30px; }
+h1 {
+  margin:0 0 6px;
+  font-size:34px;
+  letter-spacing:-0.02em;
+}
 
 .subtitle {
+  margin:0;
   color:#6b7280;
-  font-size:14px;
+  font-size:15px;
+}
+
+button {
+  padding:10px 14px;
+  border:none;
+  border-radius:12px;
+  font-weight:900;
+  cursor:pointer;
+  transition: transform .08s ease, opacity .2s ease;
+  user-select:none;
+}
+
+button:active {
+  transform: translateY(1px);
 }
 
 .btnGhost {
-  padding:8px 12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  background:white;
-  cursor:pointer;
-  font-weight:600;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  color:#111827;
+  box-shadow:0 10px 30px rgba(0,0,0,0.06);
 }
 
 .controlsRow {
   display:flex;
+  gap:10px;
+  flex-wrap:wrap;
   align-items:center;
-  gap:14px;
-  margin-top:20px;
-  margin-bottom:20px;
+  margin-top:26px;
+  margin-bottom:26px;
 }
+
+.pillControl {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:white;
+  border:1px solid #e5e7eb;
+  padding:8px 14px;
+  border-radius:14px;
+}
+
+.pillControl select {
+  border:none;
+  outline:none;
+  background:transparent;
+  font-weight:600;
+  font-size:14px;
+  cursor:pointer;
+  height:20px;
+  line-height:20px;
+  padding:0;
+}
+
+
 
 .pillClient {
   background:#eef2ff;
@@ -55,27 +98,11 @@ h1 { margin:0; font-size:30px; }
   border-radius:14px;
 }
 
-.pillControl {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:white;
-  border:1px solid #e5e7eb;
-  padding:10px 14px;
-  border-radius:14px;
-}
+
 
 .pillControl .label {
   font-size:13px;
   color:#6b7280;
-}
-
-.pillControl select {
-  border:none;
-  outline:none;
-  font-weight:600;
-  background:transparent;
-  cursor:pointer;
 }
 
 .pillButton {
