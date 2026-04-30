@@ -601,6 +601,41 @@ input[type="file"] {
   padding:10px 16px;
   border-radius:14px;
 }
+
+/* Mobile friendly */
+@media (max-width: 768px) {
+  body {
+    padding:18px;
+  }
+
+  .topbar {
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .topbar > div:last-child {
+    flex-wrap:wrap;
+  }
+
+  .controlsRow {
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .pillClient,
+  .pillControl,
+  .pillButton,
+  .btnGhost {
+    width:100%;
+    justify-content:center;
+  }
+
+  .kpiRow,
+  .cardGrid,
+  .grid {
+    grid-template-columns:1fr;
+  }
+}
   
 </style>
 </head>
