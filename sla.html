@@ -17,24 +17,28 @@ body {
 .topbar {
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
+  align-items:flex-start;   /* 🔥 fix */
+  gap:12px;
+  margin-bottom:18px;       /* 🔥 match dashboard */
 }
 
-h1 { margin:0; font-size:30px; }
+h1 {
+  margin:0 0 6px;
+  font-size:34px;           /* 🔥 exact match */
+  letter-spacing:-0.02em;
+}
 
 .subtitle {
+  margin:0;
   color:#6b7280;
-  font-size:14px;
+  font-size:15px;           /* 🔥 match */
 }
 
 .btnGhost {
-  padding:8px 12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  background:white;
-  cursor:pointer;
-  font-weight:600;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  color:#111827;
+  box-shadow:0 10px 30px rgba(0,0,0,0.06);
 }
 
 /* CONTROLS */
@@ -70,11 +74,16 @@ input {
 }
 
 button {
-  padding:8px 14px;
-  border-radius:10px;
+  padding:10px 14px;
   border:none;
+  border-radius:12px;
+  font-weight:900;
   cursor:pointer;
-  font-weight:600;
+  transition: transform .08s ease, opacity .2s ease;
+}
+
+button:active {
+  transform: translateY(1px);
 }
 
 .btnPrimary {
