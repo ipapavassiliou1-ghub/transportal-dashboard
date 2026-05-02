@@ -87,10 +87,11 @@ button:active {
 }
 
 td button {
-  padding:8px 12px;
+  padding:8px 14px;
   border-radius:10px;
   font-weight:700;
   background:#f3f4f6;
+  display:inline-block;     /* 🔥 stabilizes alignment */
 }
   
 .btnPrimary {
@@ -110,25 +111,23 @@ table {
 }
 
 td {
-  padding:12px 10px;        /* 🔥 match header */
+  padding:12px 10px;
   border-bottom:1px solid #f1f5f9;
+  vertical-align:middle;    /* 🔥 important */
 }
 
 th {
   text-align:left;
   font-size:13px;
-  font-weight:600;          /* 🔥 key fix */
-  color:#6b7280;
-  padding:12px 10px;        /* 🔥 better spacing */
+  font-weight:700;          /* 🔥 stronger */
+  color:#111827;            /* 🔥 black like dashboard */
+  padding:12px 10px;
   border-bottom:1px solid #e5e7eb;
 }
 
+th:last-child,
 td:last-child {
-  text-align:right;         /* 🔥 clean alignment */
-}
-
-th:last-child {
-  text-align:right;
+  text-align:center;        /* 🔥 center header + button */
 }
   
 tr:hover {
