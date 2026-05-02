@@ -189,6 +189,109 @@ td {
   color:#6d28d9;
 }
 
+/* MOBILE FRIENDLY */
+  
+@media (max-width: 768px) {
+
+  /* PAGE */
+  body {
+    padding:18px;
+  }
+
+  /* HEADER */
+  .topbar {
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .topbar > div:last-child {
+    width:100%;
+    display:flex;
+    gap:10px;
+  }
+
+  .btnGhost {
+    flex:1;
+  }
+
+  #userInfo {
+    width:100%;
+    margin-bottom:6px;
+  }
+
+  /* CLIENT PILL */
+  .controlsRow {
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .pillClient {
+    width:100%;
+    text-align:center;
+  }
+
+  /* FORM */
+  .card input {
+    width:100%;
+    margin-bottom:10px;
+  }
+
+  .card button {
+    width:100%;
+    margin-top:6px;
+  }
+
+  /* 🔥 TABLE → STACK MODE */
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display:block;
+    width:100%;
+  }
+
+  thead {
+    display:none;   /* hide headers */
+  }
+
+  tr {
+    background:white;
+    border-radius:12px;
+    padding:12px;
+    margin-bottom:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.05);
+  }
+
+  td {
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+    border:none;
+    font-size:14px;
+  }
+
+  td::before {
+    font-weight:600;
+    color:#6b7280;
+  }
+
+  /* 🔥 LABELS (CRITICAL) */
+  td:nth-child(1)::before { content:"Carrier"; }
+  td:nth-child(2)::before { content:"Service"; }
+  td:nth-child(3)::before { content:"SLA Days"; }
+  td:nth-child(4)::before { content:"Active"; }
+  td:nth-child(5)::before { content:"Action"; }
+
+  /* BUTTON */
+  td:last-child {
+    justify-content:flex-end;
+  }
+
+}
+  
 </style>
 </head>
 
