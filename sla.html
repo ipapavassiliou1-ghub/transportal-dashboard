@@ -314,7 +314,11 @@ async function loadSlaRules() {
         <td>${r.carrier}</td>
         <td>${r.service}</td>
         <td>${r.sla_days}</td>
-        <td>${r.is_active ? "Yes" : "No"}</td>
+        <td>
+          <span class="statusPill ${r.is_active ? "active" : "inactive"}">
+          ${r.is_active ? "Active" : "Inactive"}
+         </span>
+       </td>
         <td>
           <button onclick="event.stopPropagation(); toggleActive(${r.id}, ${r.is_active})">
             ${r.is_active ? "Deactivate" : "Activate"}
