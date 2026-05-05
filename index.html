@@ -1978,6 +1978,8 @@ async function loadDashboard(force){
 
     await buildShipmentDataset(token);
 
+    populateShipmentFilters();
+    
     renderExceptions();
     renderTable();
     renderShipmentMonitor();
