@@ -1581,12 +1581,13 @@ function renderShipmentMonitor(){
       <td>${escapeHtml(s.reference)}</td>
       <td>${escapeHtml(s.carrier)}</td>
       <td>${escapeHtml(s.service || "STANDARD")}</td>
-      <td>${escapeHtml(
-        String(s.status || "")
-          .replace(/_/g, " ")
-          .toLowerCase()
-          .replace(/\b\w/g, c => c.toUpperCase())
-      )}<td>${escapeHtml(s.days_open)}</td>
+      <<td>${escapeHtml(
+         String(s.status || "")
+         .replace(/_/g, " ")
+         .toLowerCase()
+         .replace(/\b\w/g, c => c.toUpperCase())
+      )}</td>
+      <td>${escapeHtml(s.days_open)}</td>
       <td>${slaText}</td>
       <td>
         <span class="badge ${delayedClass}">
