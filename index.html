@@ -1635,7 +1635,25 @@ async function buildShipmentDataset(token){
   
   console.log("SCOPED:", scopedShipments.length);
 }
-    
+
+function populateShipmentFilters() {
+  const carriers = [...new Set(scopedShipments.map(s => s.carrier).filter(Boolean))];
+  const services = [...new Set(scopedShipments.map(s => s.service).filter(Boolean))];
+
+  const carrierSelect = document.getElementById("carrierFilter");
+  const serviceSelect = document.getElementById("serviceFilter");
+
+  if (!carrierSelect || !serviceSelect) return;
+
+  carrierSelect.innerHTML =
+    `<option value="">All</option>` +
+    carriers.map(c => `<option value="${c}">${c}</option>`).join("");
+
+  serviceSelect.innerHTML =
+    `<option value="">All</option>` +
+    services.map(s => `<option value="${s}">${s}</option>`).join("");
+}
+  
 /* =========================================================
    EXCEPTIONS
 ========================================================= */
