@@ -1495,24 +1495,31 @@ function renderShipmentMonitor(){
   /* 5) auto-sort problems first */
   filteredShipments.sort((a, b) => {
 
-    const priority = (s) => {
+  const getPriority = (s) => {
     const status = (s.status || "").toLowerCase();
     const isDelivered = status === "delivered";
+    const delay = Number(s.delay_status);
 
-    // 🔥 ACTIVE PROBLEMS FIRST
+    // 🔴 1. Errors (top)
     if (status === "error") return 0;
-    if (!isDelivered && s.delay_status === 1) return 1; // delayed (in transit)
-    if (!isDelivered) return 2;                         // active shipments
 
-    // 📦 COMPLETED (LOWER PRIORITY)
-    if (isDelivered && s.delay_status === 2) return 3;  // delivered late
-    return 4;                                           // delivered on time
+    // 🟠 2. Delayed in transit (needs action NOW)
+    if (!isDelivered && delay === 1) return 1;
+
+    // 🟡 3. Active shipments (not delivered yet)
+    if (!isDelivered) return 2;
+
+    // 🔵 4. Delivered late (for reporting, not action)
+    if (isDelivered && delay === 2) return 3;
+
+    // 🟢 5. Delivered on time (lowest priority)
+    return 4;
   };
 
-  const pDiff = priority(a) - priority(b);
+  const pDiff = getPriority(a) - getPriority(b);
   if (pDiff !== 0) return pDiff;
 
-  // secondary sort
+  // 🔥 Secondary sort (within same group)
   return Number(b.days_open) - Number(a.days_open);
 });
   
