@@ -1413,6 +1413,9 @@ function renderShipmentMonitor(){
   tbody.innerHTML = "";
 
   const statusFilter = document.getElementById("shipmentStatusFilter").value;
+  const carrierFilter = document.getElementById("carrierFilter").value;
+  const serviceFilter = document.getElementById("serviceFilter").value;
+  
   const searchText = (document.getElementById("shipmentSearchInput").value || "")
     .toLowerCase()
     .trim();
@@ -1483,6 +1486,18 @@ function renderShipmentMonitor(){
     );
   }
 
+  /* 3b) carrier + service filters */
+  if (carrierFilter) {
+    filteredShipments = filteredShipments.filter(s =>
+      (s.carrier || "") === carrierFilter
+    );
+  }
+  if (serviceFilter) {
+    filteredShipments = filteredShipments.filter(s =>
+      (s.service || "UNKNOWN") === serviceFilter
+    );
+  }
+  
   /* 4) focus mode filter */
   if (focusMode) {
     filteredShipments = filteredShipments.filter(s =>
