@@ -1391,8 +1391,6 @@ function renderTable(){
 
       <td>${s?.total || 0}</td>
       <td>${calculateDaysOpen(b.created_at, b.completed_at)}</td>
-      /* <td>${escapeHtml(b.created_at || "-")}</td> */
-      /* <td>${escapeHtml(b.completed_at || "-")}</td> */
       <td>${formatDateTime(b.created_at)}</td>
       <td>${formatDateTime(b.completed_at)}</td>
 
