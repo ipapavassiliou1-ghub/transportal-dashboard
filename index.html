@@ -1366,8 +1366,10 @@ function renderTable(){
 
     tr.innerHTML = `
       <td class="mono linkLike" data-batchid="${escapeHtml(b.request_id)}">
-        ${escapeHtml(b.request_id)}
-      </td>
+        ${escapeHtml(
+          String(b.request_id || "").replace(/^batch-/, "")
+       )}
+     </td>
 
       <td>
         <span class="badge ${
