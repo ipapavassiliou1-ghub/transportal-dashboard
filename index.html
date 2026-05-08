@@ -1406,6 +1406,23 @@ function renderTable(){
 }
 
 /* =========================================================
+   time and date on shipments table
+========================================================= */
+  
+function formatDateTime(value) {
+  if (!value) return "-";
+
+  const d = new Date(value);
+
+  return d.toLocaleString([], {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+  
+/* =========================================================
    RENDER SHIPMENT MONITOR
 ========================================================= */
 function renderShipmentMonitor(){
