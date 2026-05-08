@@ -1610,6 +1610,7 @@ function renderShipmentMonitor(){
          .toLowerCase()
          .replace(/\b\w/g, c => c.toUpperCase())
       )}</td>
+      <td>${formatDateTime(s.created_at)}</td>
       <td>${escapeHtml(s.days_open)}</td>
       <td>${slaText}</td>
       <td>
