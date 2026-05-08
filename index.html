@@ -1619,7 +1619,9 @@ function renderShipmentMonitor(){
       </td>
       </td>
       <td class="mono linkLike" title="${escapeHtml(s.batch_id)}" onclick="applyBatchQuickFilter('${escapeHtml(s.batch_id)}')">
-        ${escapeHtml(s.batch_id)}
+         ${escapeHtml(
+           String(s.batch_id || "").replace(/^batch-/, "")
+         )}
      </td>
     `;
 
