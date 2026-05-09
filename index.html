@@ -605,12 +605,16 @@ input[type="file"] {
 /* Batches table alignment */
 .batchGrid {
   width: 100%;
-  table-layout: fixed;
 }
 
 .batchGrid th,
 .batchGrid td {
   vertical-align: middle;
+}
+
+.batchGrid td:first-child,
+.batchGrid th:first-child {
+  white-space: nowrap;
 }
   
 /* Mobile friendly */
