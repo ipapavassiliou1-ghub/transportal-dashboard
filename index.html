@@ -1641,11 +1641,13 @@ function renderShipmentMonitor(){
    }
     console.log("DEBUG DELAY:", s.tracking, s.delay_status, s.delay_label);
   
+    const extraDays = Math.max(0, s.days_open - s.sla_days);
+
     const slaText =
-      s.delay_status === 2
-        ? `<span title="Exceeded SLA by ${Math.max(0, s.days_open - s.sla_days)} days">
-            ${s.sla_days} <span style="color:#d46b08;">(+${Math.max(0, s.days_open - s.sla_days)})</span>
-          </span>`
+      [1, 2].includes(Number(s.delay_status))
+        ? `<span title="Exceeded SLA by ${extraDays} days">
+           ${s.sla_days} <span style="color:#d46b08;">(+${extraDays})</span>
+           </span>`
         : `${s.sla_days} <span style="opacity:0.3;">(+0)</span>`;
     
     tr.innerHTML = `
