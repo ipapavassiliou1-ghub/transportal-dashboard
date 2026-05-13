@@ -1722,6 +1722,7 @@ async function buildShipmentDataset(token){
     raw_status: r.raw_status || null,
     batch_id: r.batch_id || "-",
     created_at: r.created_at || null,
+    sla_start_time: r.sla_start_time || null,
     completed_at: null,
     sla_days: Number(r.sla_days || 0),
     days_open: Number(r.days_open || 0),
