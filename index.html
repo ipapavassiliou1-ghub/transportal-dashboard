@@ -1119,6 +1119,18 @@ function calculateDaysOpen(created_at, completed_at) {
   if (filter === "delayed") return "Delayed";
   return filter;
 }
+
+function formatDateTime(dateString) {
+  if (!dateString) return "-";
+
+  return new Date(dateString).toLocaleString('en-GB', {
+    timeZone: 'Europe/Athens',
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
   
 /* =========================================================
    LIVE INDICATOR
