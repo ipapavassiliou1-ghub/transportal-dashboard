@@ -1124,10 +1124,15 @@ function calculateDaysOpen(created_at, completed_at) {
    time and date on tables
 ========================================================= */
   
-function formatDateTime(dateString) {
-  if (!dateString) return "-";
+function formatDateTime(value) {
+  if (!value) return "-";
 
-  return new Date(dateString).toLocaleString('en-GB', {
+  // Convert MySQL datetime to ISO UTC
+  const iso = String(value).replace(" ", "T") + "Z";
+
+  const d = new Date(iso);
+
+  return d.toLocaleString('en-GB', {
     timeZone: 'Europe/Athens',
     day: '2-digit',
     month: 'short',
