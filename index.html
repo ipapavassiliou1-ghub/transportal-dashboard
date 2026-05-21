@@ -1127,10 +1127,16 @@ function calculateDaysOpen(created_at, completed_at) {
 function formatDateTime(value) {
   if (!value) return "-";
 
-  // Convert MySQL datetime to ISO UTC
-  const iso = String(value).replace(" ", "T") + "Z";
+  let d;
 
-  const d = new Date(iso);
+  // MySQL datetime format
+  if (typeof value === "string" && value.includes(" ")) {
+    d = new Date(value.replace(" ", "T") + "Z");
+  } else {
+    d = new Date(value);
+  }
+
+  if (isNaN(d.getTime())) return "-";
 
   return d.toLocaleString('en-GB', {
     timeZone: 'Europe/Athens',
