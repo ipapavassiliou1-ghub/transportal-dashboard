@@ -1127,19 +1127,11 @@ function calculateDaysOpen(created_at, completed_at) {
 function formatDateTime(value) {
   if (!value) return "-";
 
-  let d;
-
-  // MySQL datetime format
-  if (typeof value === "string" && value.includes(" ")) {
-    d = new Date(value.replace(" ", "T") + "Z");
-  } else {
-    d = new Date(value);
-  }
+  const d = new Date(value);
 
   if (isNaN(d.getTime())) return "-";
 
   return d.toLocaleString('en-GB', {
-    timeZone: 'Europe/Athens',
     day: '2-digit',
     month: 'short',
     hour: '2-digit',
