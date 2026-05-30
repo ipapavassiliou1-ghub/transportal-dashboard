@@ -1625,6 +1625,13 @@ function renderShipmentMonitor(){
 
   slice.forEach(s => {
     const tr = document.createElement("tr");
+
+    tr.style.cursor = "pointer";
+
+    tr.addEventListener("click", () => {
+      console.log("OPEN SHIPMENT", s.id);
+      openShipmentDrawer(s.id);
+    });
     
     // Row highlight
    if (s.status === "error") tr.classList.add("row-error");
