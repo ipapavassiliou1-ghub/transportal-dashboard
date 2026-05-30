@@ -2405,7 +2405,9 @@ function renderShipmentDrawer(data) {
   document.getElementById("drawerMeta").innerHTML = `
     <div><strong>Reference:</strong> ${shipment.reference || "-"}</div>
     <div><strong>Carrier:</strong> ${shipment.carrier || "-"}</div>
-    <div><strong>Status:</strong> ${shipment.status || "-"}</div>
+    <div><strong>Status:</strong> ${(shipment.status || "-")
+         .replace(/_/g, " ")
+         .replace(/\b\w/g, c => c.toUpperCase())}</div>
   `;
 
   const timeline =
