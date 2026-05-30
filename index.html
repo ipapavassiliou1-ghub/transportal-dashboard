@@ -2371,6 +2371,8 @@ async function openShipmentDrawer(shipmentId) {
 
   try {
 
+    console.log("FETCHING TIMELINE", shipmentId);
+    
     const res = await authFetch(
       `/shipments/${shipmentId}/events`
     );
@@ -2382,6 +2384,7 @@ async function openShipmentDrawer(shipmentId) {
 
     const data = await res.json();
 
+    console.log("TIMELINE RECEIVED", data);
     renderShipmentDrawer(data);
 
   } catch(err) {
