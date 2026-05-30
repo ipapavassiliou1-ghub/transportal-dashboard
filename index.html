@@ -2481,6 +2481,17 @@ async function openShipmentDrawer(shipmentId) {
 
   }
 }
+
+document
+  .getElementById("closeDrawerBtn")
+  .addEventListener("click", () => {
+
+    document
+      .getElementById("shipmentDrawer")
+      .classList.remove("open");
+
+  });
+
   
 /* INITIAL LOAD */
 loadDashboard(true);
