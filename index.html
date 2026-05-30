@@ -2309,6 +2309,64 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+
+function renderShipmentDrawer(data) {
+
+  const drawer =
+    document.getElementById("shipmentDrawer");
+
+  const shipment = data.shipment;
+  const events = data.events || [];
+
+  document.getElementById("drawerTracking").textContent =
+    shipment.tracking;
+
+  document.getElementById("drawerMeta").innerHTML = `
+    <div><strong>Reference:</strong> ${shipment.reference || "-"}</div>
+    <div><strong>Carrier:</strong> ${shipment.carrier || "-"}</div>
+    <div><strong>Status:</strong> ${shipment.status || "-"}</div>
+  `;
+
+  const timeline =
+    document.getElementById("drawerTimeline");
+
+  if (!events.length) {
+
+    timeline.innerHTML = `
+      <div style="padding:24px">
+        No tracking events available.
+      </div>
+    `;
+
+  } else {
+
+    timeline.innerHTML = events.map(e => `
+      <div class="timeline-event
+        ${e.is_milestone ? 'milestone' : ''}
+        ${e.is_issue ? 'issue' : ''}
+      ">
+
+        <div class="timeline-status">
+          ${e.display_status}
+        </div>
+
+        <div class="timeline-time">
+          ${new Date(e.event_time).toLocaleString()}
+          ${e.location ? `• ${e.location}` : ''}
+        </div>
+
+        <div class="timeline-description">
+          ${e.description || ''}
+        </div>
+
+      </div>
+    `).join('');
+  }
+
+  drawer.classList.add("open");
+}  
+
+  
 async function openShipmentDrawer(shipmentId) {
 
   try {
