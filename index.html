@@ -2400,6 +2400,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function renderShipmentDrawer(data) {
 
+  const icons = {
+  picked_up: "📦",
+  in_transit: "🚚",
+  out_for_delivery: "🚛",
+  delivered: "✅",
+  exception: "⚠️"
+  };
+  
   const drawer =
     document.getElementById("shipmentDrawer");
 
