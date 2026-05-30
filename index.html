@@ -670,20 +670,24 @@ input[type="file"] {
 
 .shipment-drawer {
   position: fixed;
-  top: 0;
-  right: -500px;
 
-  width: 500px;
-  height: 100vh;
+  top: 20px;
+  right: 20px;
+
+  width: 650px;
+  height: calc(100vh - 40px);
 
   background: #ffffff;
 
+  border-radius: 20px;
+
   box-shadow:
-    -4px 0 20px rgba(0,0,0,.15);
+    0 20px 50px rgba(0,0,0,.18);
 
   overflow-y: auto;
 
-  transition: right .25s ease;
+  transform: translateX(120%);
+  transition: transform .25s ease;
 
   z-index: 9999;
 }
@@ -691,7 +695,6 @@ input[type="file"] {
 .shipment-drawer.open {
   transform: translateX(0);
 }
-
 .shipment-drawer-header {
   padding: 24px;
   border-bottom: 1px solid #eee;
