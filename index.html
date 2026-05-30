@@ -2435,13 +2435,30 @@ function renderShipmentDrawer(data) {
   document.getElementById("drawerTracking").textContent =
     shipment.tracking;
 
-  document.getElementById("drawerMeta").innerHTML = `
-    <div><strong>Reference:</strong> ${shipment.reference || "-"}</div>
-    <div><strong>Carrier:</strong> ${shipment.carrier || "-"}</div>
-    <div><strong>Status:</strong> ${(shipment.status || "-")
-         .replace(/_/g, " ")
-         .replace(/\b\w/g, c => c.toUpperCase())}</div>
-  `;
+  const statusLabel =
+  (shipment.status || "-")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, c => c.toUpperCase());
+
+const statusClass =
+  shipment.status === "delivered"
+    ? "status-delivered"
+    : shipment.status === "pending"
+    ? "status-pending"
+    : shipment.status === "in_transit"
+    ? "status-transit"
+    : "status-default";
+
+document.getElementById("drawerMeta").innerHTML = `
+  <div><strong>Reference:</strong> ${shipment.reference || "-"}</div>
+  <div><strong>Carrier:</strong> ${shipment.carrier || "-"}</div>
+
+  <div class="drawer-status-row">
+    <span class="status-pill ${statusClass}">
+      ${statusLabel}
+    </span>
+  </div>
+`;
 
   const timeline =
     document.getElementById("drawerTimeline");
