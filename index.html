@@ -2445,7 +2445,8 @@ function renderShipmentDrawer(data) {
       ">
 
         <div class="timeline-status">
-          ${e.display_status}
+         ${icons[e.normalized_event_type] || "•"}
+         ${e.display_status}
         </div>
 
         <div class="timeline-time">
