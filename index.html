@@ -2518,20 +2518,22 @@ async function openShipmentDrawer(shipmentId) {
 
 window.addEventListener("DOMContentLoaded", () => {
 
-  const closeBtn =
-    document.getElementById("closeDrawerBtn");
+  cconst closeBtn =
+  document.getElementById("closeDrawerBtn");
 
-  if (closeBtn) {
+if (closeBtn) {
 
-    closeBtn.addEventListener("click", () => {
+  closeBtn.onclick = () => {
 
-      document
-        .getElementById("shipmentDrawer")
-        .classList.remove("open");
+    drawer.classList.remove("open");
 
-    });
+    document
+      .getElementById("drawerOverlay")
+      .classList.remove("open");
 
-  }
+  };
+
+}
 
 });
 
