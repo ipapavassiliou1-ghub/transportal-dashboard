@@ -2482,10 +2482,30 @@ function renderShipmentDrawer(data) {
 
   drawer.classList.add("open");
 
-  document
+document
   .getElementById("drawerOverlay")
   .classList.add("open");
-}  
+
+const closeBtn =
+  document.getElementById("closeDrawerBtn");
+
+if (closeBtn) {
+
+  closeBtn.onclick = () => {
+
+    document
+      .getElementById("shipmentDrawer")
+      .classList.remove("open");
+
+    document
+      .getElementById("drawerOverlay")
+      ?.classList.remove("open");
+
+  };
+
+}
+
+}
 
   
 async function openShipmentDrawer(shipmentId) {
