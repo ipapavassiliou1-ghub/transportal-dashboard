@@ -2324,7 +2324,7 @@ async function openShipmentDrawer(shipmentId) {
 
     const data = await res.json();
 
-    console.log("TIMELINE:", data);
+    renderShipmentDrawer(data);
 
   } catch(err) {
 
