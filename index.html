@@ -1716,6 +1716,7 @@ async function buildShipmentDataset(token){
   if (!Array.isArray(data)) return;
 
   scopedShipments = data.map(r => ({
+    id: r.id,
     tracking: r.tracking || "-",
     reference: r.reference || "-",
     carrier: r.carrier || "-",
