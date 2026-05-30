@@ -2307,6 +2307,31 @@ document.addEventListener("DOMContentLoaded", () => {
     renderShipmentMonitor();
   });
 });
+
+async function openShipmentDrawer(shipmentId) {
+
+  try {
+
+    const res = await authFetch(
+      `/shipments/${shipmentId}/events`
+    );
+
+    if (!res.ok) {
+      alert("Failed loading timeline");
+      return;
+    }
+
+    const data = await res.json();
+
+    console.log("TIMELINE:", data);
+
+  } catch(err) {
+
+    console.error(err);
+    alert("Timeline error");
+
+  }
+}
   
 /* INITIAL LOAD */
 loadDashboard(true);
