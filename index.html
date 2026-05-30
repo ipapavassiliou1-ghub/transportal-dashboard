@@ -2535,28 +2535,6 @@ async function openShipmentDrawer(shipmentId) {
 
   }
 }
-
-window.addEventListener("DOMContentLoaded", () => {
-
-  const closeBtn =
-  document.getElementById("closeDrawerBtn");
-
-if (closeBtn) {
-
-  closeBtn.onclick = () => {
-
-    drawer.classList.remove("open");
-
-    document
-      .getElementById("drawerOverlay")
-      .classList.remove("open");
-
-  };
-
-}
-
-});
-
   
 /* INITIAL LOAD */
 loadDashboard(true);
