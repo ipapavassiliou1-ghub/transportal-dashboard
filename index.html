@@ -2517,6 +2517,7 @@ document.getElementById("drawerMeta").innerHTML = `
       <div class="timeline-event
         ${e.is_milestone ? 'milestone' : ''}
         ${e.is_issue ? 'issue' : ''}
+        ${latestEvent && latestEvent.id === e.id ? 'current-event' : ''}
       ">
 
         <div class="timeline-status">
