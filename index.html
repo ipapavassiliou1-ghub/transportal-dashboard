@@ -2467,6 +2467,11 @@ function renderShipmentDrawer(data) {
   const shipment = data.shipment;
   const events = data.events || [];
 
+  const latestEvent =
+  events.length
+    ? events[events.length - 1]
+    : null;
+  
   document.getElementById("drawerTracking").textContent =
     shipment.tracking;
 
