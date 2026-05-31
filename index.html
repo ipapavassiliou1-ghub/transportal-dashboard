@@ -1806,6 +1806,21 @@ function renderShipmentMonitor(){
    if (s.delay_status === 2) tr.classList.add("row-late");
    if (s.delay_status === 1) tr.classList.add("row-delayed");
 
+   let operationalLabel = "Active";
+
+   if (s.operational_state === "awaiting_acceptance") {
+     operationalLabel = "Awaiting Acceptance";
+   }
+   else if (s.operational_state === "stale") {
+     operationalLabel = "Stale";
+   }
+   else if (s.operational_state === "exception") {
+     operationalLabel = "Exception";
+   }
+   else if (s.operational_state === "delivered") {
+     operationalLabel = "Delivered";
+   }
+    
     
    // Badge (SLA result ONLY)
    let delayedLabel = "On Time";
