@@ -2557,6 +2557,26 @@ if (closeBtn) {
 
 }
 
+const overlay =
+
+  document.getElementById("drawerOverlay");
+
+if (overlay) {
+
+  overlay.onclick = () => {
+
+    document
+
+      .getElementById("shipmentDrawer")
+
+      .classList.remove("open");
+
+    overlay.classList.remove("open");
+
+  };
+
+}
+  
 }
 
   
