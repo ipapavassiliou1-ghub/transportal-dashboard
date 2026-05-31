@@ -1849,12 +1849,9 @@ function renderShipmentMonitor(){
       <td>${escapeHtml(s.reference)}</td>
       <td>${escapeHtml(s.carrier)}</td>
       <td>${escapeHtml(s.service || "STANDARD")}</td>
-      <td>${escapeHtml(
-         String(s.status || "")
-         .replace(/_/g, " ")
-         .toLowerCase()
-         .replace(/\b\w/g, c => c.toUpperCase())
-      )}</td>
+      <td>
+       ${escapeHtml(operationalLabel)}
+     </td>
       <td>${formatDateTime(s.created_at)}</td>
       <td>
         ${
