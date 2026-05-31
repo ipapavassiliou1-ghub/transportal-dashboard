@@ -815,6 +815,22 @@ input[type="file"] {
   margin-top: 8px;
   margin-bottom: 8px;
 } 
+
+.current-badge {
+  display: inline-block;
+
+  margin-right: 8px;
+
+  padding: 3px 8px;
+
+  border-radius: 999px;
+
+  background: #2563eb;
+  color: white;
+
+  font-size: 11px;
+  font-weight: 700;
+}
   
 </style>
 
@@ -2532,9 +2548,12 @@ document.getElementById("drawerMeta").innerHTML = `
       ">
 
         <div class="timeline-status">
-         ${icons[e.normalized_event_type] || "•"}
-         ${e.display_status}
-        </div>
+          ${latestEvent && latestEvent.id === e.id
+              ? '<span class="current-badge">CURRENT</span>'
+              : ''}
+          ${icons[e.normalized_event_type] || "•"}
+          ${e.display_status}
+       </div>
 
         <div class="timeline-time">
           ${new Date(e.event_time).toLocaleString()}
