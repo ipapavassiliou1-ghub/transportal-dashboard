@@ -1897,7 +1897,8 @@ async function buildShipmentDataset(token){
     carrier: r.carrier || "-",
     service: r.service || "UNKNOWN",
     status: r.status || "pending",
-    normalized_status: r.normalized_status || r.status || "pending",
+    normalized_status:
+    r.normalized_status || r.status || "pending",
     raw_status: r.raw_status || null,
     batch_id: r.batch_id || "-",
     created_at: r.created_at || null,
@@ -1906,7 +1907,16 @@ async function buildShipmentDataset(token){
     sla_days: Number(r.sla_days || 0),
     days_open: Number(r.days_open || 0),
     delay_status: Number(r.delay_status || 0),
-    final_status: r.final_status || "unknown"
+    operational_state:
+      r.operational_state || "active",
+    event_count:
+      Number(r.event_count || 0),
+    latest_event_time:
+      r.latest_event_time || null,
+    days_since_last_event:
+      Number(r.days_since_last_event || 0),
+    final_status:
+      r.final_status || "unknown"
   }));
   
   console.log("SCOPED:", scopedShipments.length);
