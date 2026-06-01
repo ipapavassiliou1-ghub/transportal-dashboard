@@ -1730,9 +1730,11 @@ function renderShipmentMonitor(){
   /* 4) focus mode filter */
   if (focusMode) {
     filteredShipments = filteredShipments.filter(s =>
-      s.status === "error" ||
-      s.delay_status === 2 || // late
-      s.delay_status === 1    // delayed
+      s.operational_state === "exception" ||
+      s.operational_state === "awaiting_acceptance" ||
+      s.operational_state === "stale" ||
+      Number(s.delay_status) === 1 ||
+      Number(s.delay_status) === 2
     );
   }
 
