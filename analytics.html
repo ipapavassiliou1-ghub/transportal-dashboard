@@ -497,15 +497,10 @@ async function loadAnalytics(){
   ).length;
 
   /* Delayed = still at risk */
-  const delayed = filtered.filter(s => {
-    const status = (s.final_status || "").toLowerCase();
-
-    return (
-      Number(s.delay_status) === 1 ||
-      status === "exception"
-    );
-  }).length;
-
+  const delayed = filtered.filter(s =>
+    Number(s.delay_status) === 1
+  ).length;
+  
   /* Success rate = delivered / total */
   const onTimeDelivered = filtered.filter(s =>
     s.final_status === "delivered" &&
