@@ -1742,24 +1742,30 @@ function renderShipmentMonitor(){
   filteredShipments.sort((a, b) => {
 
   const getPriority = (s) => {
-    const status = (s.status || "").toLowerCase();
-    const isDelivered = status === "delivered";
+ 
+    const state = (s.operational_state || "active").toLowerCase();
     const delay = Number(s.delay_status);
 
-    // 🔴 1. Errors (top)
-    if (status === "error") return 0;
+    // 🔴 1. Exceptions (needs immediate attention)
+    if (state === "exception") return 0;
 
-    // 🟠 2. Delayed in transit (needs action NOW)
-    if (!isDelivered && delay === 1) return 1;
+    // 🟠 2. Awaiting acceptance (carrier never picked up)
+    if (state === "awaiting_acceptance") return 1;
 
-    // 🟡 3. Active shipments (not delivered yet)
-    if (!isDelivered) return 2;
+    // 🟡 3. Stale shipments (no movement for too long)
+    if (state === "stale") return 2;
 
-    // 🔵 4. Delivered late (for reporting, not action)
-    if (isDelivered && delay === 2) return 3;
+    // 🟠 4. Delayed shipments (active SLA breach)
+    if (delay === 1) return 3;
 
-    // 🟢 5. Delivered on time (lowest priority)
-    return 4;
+    // 🔵 5. Active shipments
+    if (state !== "delivered") return 4;
+
+    // 🟣 6. Delivered late (reporting)
+    if (delay === 2) return 5;
+
+    // 🟢 7. Delivered on time (lowest priority)
+    return 6;
   };
 
   const pDiff = getPriority(a) - getPriority(b);
