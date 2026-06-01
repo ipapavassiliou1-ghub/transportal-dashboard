@@ -446,8 +446,13 @@ async function loadAnalytics(){
     tracking: s.tracking,
     carrier: (s.carrier || "UNKNOWN").toUpperCase(),
     created_at: s.created_at,
+
     delay_status: Number(s.delay_status || 0),
-    final_status: s.final_status || "unknown"
+
+    final_status: s.final_status || "unknown",
+
+    operational_state:
+      s.operational_state || "active"
   }));
 
   console.log("DISTINCT shipments:", shipments.length);
