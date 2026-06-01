@@ -1654,14 +1654,16 @@ function renderShipmentMonitor(){
   }
 
 } else if (shipmentQuickFilter === "pending") {
-  filteredShipments = filteredShipments.filter(s => {
-    const status = (s.final_status || s.status || "").toLowerCase();
 
-    return (
-      status !== "delivered" &&
-      status !== "error"
-    );
-  });
+  filteredShipments = filteredShipments.filter(s =>
+    [
+      "active",
+      "awaiting_acceptance",
+      "stale"
+    ].includes(s.operational_state)
+  );
+
+}
 
 } else if (shipmentQuickFilter === "delayed") {
   filteredShipments = filteredShipments.filter(s => Number(s.delay_status) === 1);
