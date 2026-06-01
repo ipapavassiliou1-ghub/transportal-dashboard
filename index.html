@@ -1645,45 +1645,45 @@ function renderShipmentMonitor(){
   let filteredShipments = scopedShipments.slice();
 
   /* 1) dashboard quick filter */
-  if (shipmentQuickFilter === "errors") {
-    filteredShipments = filteredShipments.filter(
-      s =>
-        s.operational_state === "exception" ||
-        s.final_status === "error"
-    );
-  }
+ if (shipmentQuickFilter === "errors") {
 
-} else if (shipmentQuickFilter === "pending") {
+   filteredShipments = filteredShipments.filter(
+     s =>
+       s.operational_state === "exception" ||
+       s.final_status === "error"
+   );
 
-  filteredShipments = filteredShipments.filter(s =>
-    [
-      "active",
-      "awaiting_acceptance",
-      "stale"
-    ].includes(s.operational_state)
-  );
+ } else if (shipmentQuickFilter === "pending") {
+ 
+   filteredShipments = filteredShipments.filter(s =>
+     [
+       "active",
+       "awaiting_acceptance",
+       "stale"
+     ].includes(s.operational_state)
+   );
 
-}
+ } else if (shipmentQuickFilter === "delayed") {
 
-} else if (shipmentQuickFilter === "delayed") {
-  filteredShipments = filteredShipments.filter(s => Number(s.delay_status) === 1);
+   filteredShipments = filteredShipments.filter(
+     s => Number(s.delay_status) === 1
+   );
 
-} else if (shipmentQuickFilter === "late") {
-  filteredShipments = filteredShipments.filter(s => s.delay_status === 2);
+ } else if (shipmentQuickFilter === "late") {
 
-}
-    
-   else if (shipmentQuickFilter === "in_transit_24h") {
-  filteredShipments = filteredShipments.filter(s => {
-    const status = (s.status || "").toLowerCase();
+   filteredShipments = filteredShipments.filter(
+     s => Number(s.delay_status) === 2
+   );
 
-    return (
-      status !== "delivered" &&
-      status !== "error" &&
-      Number(s.days_open) > 1
-    );
-  });
-}
+ } else if (shipmentQuickFilter === "in_transit_24h") {
+
+   filteredShipments = filteredShipments.filter(s =>
+     s.operational_state !== "delivered" &&
+     s.operational_state !== "exception" &&
+     Number(s.days_open) > 1
+   );
+
+ }
   
  console.log("Quick filter:", shipmentQuickFilter); 
  console.log("Filtered shipments:", filteredShipments);   
