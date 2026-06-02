@@ -2405,7 +2405,45 @@ function applyShipmentQuickFilter(type) {
    EVENTS
 ========================================================= */
 document.getElementById("uploadBtn").addEventListener("click",uploadBatch);
-document.getElementById("refreshBtn").addEventListener("click",()=>loadDashboard(true));
+
+document.getElementById("refreshBtn").addEventListener("click", () => {
+
+  shipmentQuickFilter = "all";
+  batchQuickFilter = null;
+  shipmentPage = 1;
+  page = 1;
+
+  const shipmentStatusFilter =
+    document.getElementById("shipmentStatusFilter");
+
+  const carrierFilter =
+    document.getElementById("carrierFilter");
+
+  const serviceFilter =
+    document.getElementById("serviceFilter");
+
+  const shipmentSearchInput =
+    document.getElementById("shipmentSearchInput");
+
+  const focusModeToggle =
+    document.getElementById("focusModeToggleWrap");
+
+  if (shipmentStatusFilter) shipmentStatusFilter.value = "all";
+  if (carrierFilter) carrierFilter.value = "";
+  if (serviceFilter) serviceFilter.value = "";
+  if (shipmentSearchInput) shipmentSearchInput.value = "";
+
+  focusMode = false;
+
+  if (focusModeToggle) {
+    focusModeToggle.classList.remove("active");
+  }
+
+  setActiveDashboardCard();
+
+  loadDashboard(true);
+
+});
 
 document.getElementById("prevBtn").addEventListener("click",()=>{page=Math.max(1,page-1);renderTable();});
 document.getElementById("nextBtn").addEventListener("click",()=>{
